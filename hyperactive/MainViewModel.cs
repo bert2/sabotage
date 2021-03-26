@@ -58,6 +58,7 @@
         private void LoadRepository() {
             repo?.Dispose();
             repo = new Repository(Directory);
+
             Branches = repo
                 .Branches
                 .Where(b => !b.IsRemote)
@@ -65,15 +66,16 @@
                 .ToArray();
             LocalBranchesCount = Branches.Length;
             RemoteBranchesCount = repo.Branches.Count(b => b.IsRemote);
+
             IsLoaded = true;
         }
 
-        private int GitFlowOrder(string a, string b) => (a, b) switch {
-            ("master", _) => 1,
-            (_, "master") => -1,
-            ("develop", _) => -1,
-            (_, "develop") => 1,
-            _ => a.CompareTo(b)
+        private int GitFlowOrder(string branch1, string branch2) => (branch1, branch2) switch {
+            ("master" , _        ) =>  1,
+            (_        , "master" ) => -1,
+            ("develop", _        ) => -1,
+            (_        , "develop") =>  1,
+            (_        , _        ) => branch1.CompareTo(branch2)
         };
     }
 }
