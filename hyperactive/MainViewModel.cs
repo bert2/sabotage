@@ -61,8 +61,18 @@
 
         private void LoadRepository() {
             Repo = new Repository(Directory);
-            Branches = repo?.Branches.Where(b => !b.IsRemote);
+            Branches = repo?.Branches
+                .Where(b => !b.IsRemote)
+                .OrderBy(b => b.FriendlyName, Comparer<string>.Create(GitFlowOrder));
             IsLoaded = true;
         }
+
+        private int GitFlowOrder(string a, string b) => (a, b) switch {
+            ("master", _) => 1,
+            (_, "master") => -1,
+            ("develop", _) => -1,
+            (_, "develop") => 1,
+            _ => a.CompareTo(b)
+        };
     }
 }
