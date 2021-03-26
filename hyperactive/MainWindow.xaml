@@ -30,7 +30,7 @@
         <TextBox
           Name="txtDirectory"
           Grid.Column="0"
-          mat:HintAssist.Hint="Path to Git repository"
+          mat:HintAssist.Hint="path to git repository"
           mat:TextFieldAssist.HasClearButton="True"
           mat:TextFieldAssist.HasLeadingIcon="True"
           mat:TextFieldAssist.LeadingIcon="Git"
@@ -48,13 +48,13 @@
           Margin="8,0,0,0"
           Command="{Binding SelectDirectoryCmd}"
           Content="{mat:PackIcon FolderOpen}"
-          ToolTip="Open Git repository" />
+          ToolTip="open git repository" />
         <Button
           Grid.Column="2"
           Margin="8,0,0,0"
           Command="{Binding LoadRepositoryCmd}"
           Content="{mat:PackIcon Reload}"
-          ToolTip="Load Git repository">
+          ToolTip="reload git repository">
           <Button.IsEnabled>
             <Binding
               Converter="{StaticResource NotConverter}"

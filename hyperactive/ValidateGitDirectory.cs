@@ -16,6 +16,6 @@
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
             => value is string path && Repository.IsValid(path)
                 ? ValidationResult.ValidResult
-                : new ValidationResult(false, "Not a Git repository");
+                : new ValidationResult(false, "not a git repository");
     }
 }
