@@ -9,7 +9,7 @@
     using LibGit2Sharp;
 
     public class MainViewModel: ViewModelBase {
-        private string? directory;// = @"D:\DEV\git-conflicts"; // TODO: remove test value
+        private string? directory = @"D:\DEV\git-conflicts"; // TODO: remove test value
         public string? Directory {
             get => directory;
             set {
@@ -39,7 +39,7 @@
         public MainViewModel() {
             SelectDirectoryCmd = new Command(SelectDirectory);
             LoadRepositoryCmd = new Command(LoadRepository);
-            //LoadRepository(); // TODO: remove test code
+            LoadRepository(); // TODO: remove test code
         }
 
         public ICommand SelectDirectoryCmd { get; }
