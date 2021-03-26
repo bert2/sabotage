@@ -4,14 +4,13 @@
     using System.Windows;
     using System.Windows.Forms;
 
-    using LibGit2Sharp;
-
     public partial class MainWindow : Window {
         private readonly MainViewModel mainViewModel = new();
 
         public MainWindow() {
             InitializeComponent();
             DataContext = mainViewModel;
+            mainViewModel.Load();
         }
 
         private void OpenDirectory(object sender, RoutedEventArgs e) {
@@ -24,13 +23,10 @@
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
                 mainViewModel.Directory = dialog.SelectedPath;
-                LoadDirectory(sender: null!, e: null!);
+                mainViewModel.Load();
             }
         }
 
-        private void LoadDirectory(object sender, RoutedEventArgs e) {
-            if (!Repository.IsValid(mainViewModel.Directory)) return;
-            mainViewModel.Repo = new Repository(mainViewModel.Directory);
-        }
+        private void LoadDirectory(object sender, RoutedEventArgs e) => mainViewModel.Load();
     }
 }

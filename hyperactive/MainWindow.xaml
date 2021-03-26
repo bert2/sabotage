@@ -10,6 +10,7 @@
   Title="MainWindow"
   Width="800"
   Height="450"
+  d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
   Background="{DynamicResource MaterialDesignPaper}"
   DataContext="{Binding RelativeSource={RelativeSource Self}}"
   FontFamily="{DynamicResource MaterialDesignFont}"
@@ -28,9 +29,18 @@
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <TextBox
+          Name="txtDirectory"
           Grid.Column="0"
-          FontSize="16"
-          Text="{Binding Directory}" />
+          mat:HintAssist.Hint="Path to Git repository"
+          FontSize="16">
+          <TextBox.Text>
+            <Binding Path="Directory" UpdateSourceTrigger="PropertyChanged">
+              <Binding.ValidationRules>
+                <local:ValidateGitDirectory ValidatesOnTargetUpdated="True" />
+              </Binding.ValidationRules>
+            </Binding>
+          </TextBox.Text>
+        </TextBox>
         <Button
           Grid.Column="1"
           Margin="8,0,0,0"
@@ -42,10 +52,23 @@
           Margin="8,0,0,0"
           Click="LoadDirectory"
           Content="{mat:PackIcon Reload}"
-          ToolTip="Load Git repository" />
+          ToolTip="Load Git repository">
+          <Button.IsEnabled>
+            <Binding
+              Converter="{StaticResource NotConverter}"
+              ElementName="txtDirectory"
+              Path="(Validation.HasError)" />
+          </Button.IsEnabled>
+        </Button>
       </Grid>
     </mat:Card>
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+      <ScrollViewer.IsEnabled>
+        <Binding
+          Converter="{StaticResource NotConverter}"
+          ElementName="txtDirectory"
+          Path="(Validation.HasError)" />
+      </ScrollViewer.IsEnabled>
       <ItemsControl ItemsSource="{Binding Branches}">
         <ItemsControl.ItemTemplate>
           <DataTemplate DataType="{x:Type git:Branch}">
