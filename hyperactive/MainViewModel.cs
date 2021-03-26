@@ -9,12 +9,12 @@
     using LibGit2Sharp;
 
     public class MainViewModel: ViewModelBase {
-        private string? directory = @"D:\DEV\git-conflicts";
+        private string? directory;// = @"D:\DEV\git-conflicts"; // TODO: remove test value
         public string? Directory {
             get => directory;
             set {
                 SetProperty(ref directory, value);
-                Load();
+                LoadRepository();
             }
         }
 
@@ -31,16 +31,16 @@
         }
 
         public MainViewModel() {
-            SelectDirectory = new Command(Select);
-            LoadDirectory = new Command(Load, () => Repository.IsValid(Directory));
-            Load();
+            SelectDirectoryCmd = new Command(SelectDirectory);
+            LoadRepositoryCmd = new Command(LoadRepository);
+            //LoadRepository(); // TODO: remove test code
         }
 
-        public ICommand SelectDirectory { get; }
+        public ICommand SelectDirectoryCmd { get; }
 
-        public ICommand LoadDirectory { get; }
+        public ICommand LoadRepositoryCmd { get; }
 
-        private void Select() {
+        private void SelectDirectory() {
             using var dialog = new FolderBrowserDialog {
                 Description = "Select Git Repository",
                 UseDescriptionForTitle = true,
@@ -50,11 +50,10 @@
 
             if (dialog.ShowDialog() == DialogResult.OK) {
                 Directory = dialog.SelectedPath;
-                Load();
             }
         }
 
-        private void Load() {
+        private void LoadRepository() {
             Repo = new Repository(Directory);
             Branches = repo?.Branches.Where(b => !b.IsRemote);
         }
