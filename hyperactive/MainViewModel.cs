@@ -19,22 +19,18 @@
         }
 
         private Repository? repo;
-        public Repository? Repo {
-            get => repo;
-            private set => SetProperty(ref repo, value);
-        }
 
-        private IEnumerable<Branch>? branches;
-        public IEnumerable<Branch>? Branches {
-            get => branches;
-            private set => SetProperty(ref branches, value);
-        }
+        private Branch[]? branches;
+        public Branch[]? Branches { get => branches; private set => SetProperty(ref branches, value); }
+
+        private int localBranchesCount;
+        public int LocalBranchesCount { get => localBranchesCount; private set => SetProperty(ref localBranchesCount, value); }
+
+        private int remoteBranchesCount;
+        public int RemoteBranchesCount { get => remoteBranchesCount; private set => SetProperty(ref remoteBranchesCount, value); }
 
         private bool isLoaded;
-        public bool IsLoaded {
-            get => isLoaded;
-            private set => SetProperty(ref isLoaded, value);
-        }
+        public bool IsLoaded { get => isLoaded; private set => SetProperty(ref isLoaded, value); }
 
         public MainViewModel() {
             SelectDirectoryCmd = new Command(SelectDirectory);
@@ -60,10 +56,15 @@
         }
 
         private void LoadRepository() {
-            Repo = new Repository(Directory);
-            Branches = repo?.Branches
+            repo?.Dispose();
+            repo = new Repository(Directory);
+            Branches = repo
+                .Branches
                 .Where(b => !b.IsRemote)
-                .OrderBy(b => b.FriendlyName, Comparer<string>.Create(GitFlowOrder));
+                .OrderBy(b => b.FriendlyName, Comparer<string>.Create(GitFlowOrder))
+                .ToArray();
+            LocalBranchesCount = Branches.Length;
+            RemoteBranchesCount = repo.Branches.Count(b => b.IsRemote);
             IsLoaded = true;
         }
 

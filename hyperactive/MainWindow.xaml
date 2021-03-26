@@ -24,51 +24,59 @@
   </Window.Resources>
   <StackPanel>
     <mat:Card Margin="16" Padding="8">
-      <Grid>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition />
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <TextBox
-          Name="txtDirectory"
-          Grid.Column="0"
-          mat:HintAssist.Hint="path to git repository"
-          mat:TextFieldAssist.HasClearButton="True"
-          mat:TextFieldAssist.HasLeadingIcon="True"
-          mat:TextFieldAssist.LeadingIcon="Git"
-          FontSize="16">
-          <TextBox.Text>
-            <Binding Path="Directory" UpdateSourceTrigger="PropertyChanged">
-              <Binding.ValidationRules>
-                <local:ValidateGitDirectory />
-              </Binding.ValidationRules>
-            </Binding>
-          </TextBox.Text>
-        </TextBox>
-        <Button
-          Grid.Column="1"
-          Margin="8,0,0,0"
-          Command="{Binding SelectDirectoryCmd}"
-          Content="{mat:PackIcon FolderOpen}"
-          ToolTip="open git repository" />
-        <Button
-          Grid.Column="2"
-          Margin="8,0,0,0"
-          Command="{Binding LoadRepositoryCmd}"
-          Content="{mat:PackIcon Reload}"
-          ToolTip="reload git repository">
-          <Button.IsEnabled>
-            <MultiBinding Converter="{StaticResource AndConverter}">
-              <Binding
-                Converter="{StaticResource NotConverter}"
-                ElementName="txtDirectory"
-                Path="(Validation.HasError)" />
-              <Binding Path="IsLoaded" />
-            </MultiBinding>
-          </Button.IsEnabled>
-        </Button>
-      </Grid>
+      <StackPanel>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <TextBox
+            Name="txtDirectory"
+            Grid.Column="0"
+            mat:HintAssist.Hint="path to git repository"
+            mat:TextFieldAssist.HasClearButton="True"
+            mat:TextFieldAssist.HasLeadingIcon="True"
+            mat:TextFieldAssist.LeadingIcon="Git"
+            FontSize="16">
+            <TextBox.Text>
+              <Binding Path="Directory" UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                  <local:ValidateGitDirectory />
+                </Binding.ValidationRules>
+              </Binding>
+            </TextBox.Text>
+          </TextBox>
+          <Button
+            Grid.Column="1"
+            Margin="8,0,0,0"
+            Command="{Binding SelectDirectoryCmd}"
+            Content="{mat:PackIcon FolderOpen}"
+            ToolTip="open git repository" />
+          <Button
+            Grid.Column="2"
+            Margin="8,0,0,0"
+            Command="{Binding LoadRepositoryCmd}"
+            Content="{mat:PackIcon Reload}"
+            ToolTip="reload git repository">
+            <Button.IsEnabled>
+              <MultiBinding Converter="{StaticResource AndConverter}">
+                <Binding
+                  Converter="{StaticResource NotConverter}"
+                  ElementName="txtDirectory"
+                  Path="(Validation.HasError)" />
+                <Binding Path="IsLoaded" />
+              </MultiBinding>
+            </Button.IsEnabled>
+          </Button>
+        </Grid>
+        <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
+          <TextBlock Text="local branches: " />
+          <TextBlock Text="{Binding LocalBranchesCount}" />
+          <TextBlock Margin="32,0,0,0" Text="remote branches: " />
+          <TextBlock Text="{Binding RemoteBranchesCount}" />
+        </StackPanel>
+      </StackPanel>
     </mat:Card>
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
       <ScrollViewer.IsEnabled>
