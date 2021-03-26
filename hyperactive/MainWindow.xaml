@@ -10,7 +10,8 @@
   Title="hyperactive"
   Width="1024"
   Height="576"
-  d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
+  d:DataContext="{d:DesignInstance Type=local:MainViewModel,
+                                   IsDesignTimeCreatable=True}"
   Background="{DynamicResource MaterialDesignPaper}"
   FontFamily="{DynamicResource MaterialDesignFont}"
   TextElement.FontSize="13"
@@ -91,14 +92,14 @@
       <ItemsControl ItemsSource="{Binding Branches}">
         <ItemsControl.ItemTemplate>
           <DataTemplate DataType="{x:Type git:Branch}">
-            <mat:Card Margin="16" Padding="32">
+            <mat:Card Margin="16" Padding="64">
               <TextBlock Style="{DynamicResource MaterialDesignHeadline6TextBlock}" Text="{Binding FriendlyName}" />
             </mat:Card>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>
-            <StackPanel Orientation="Horizontal" />
+            <UniformGrid Rows="1" />
           </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
       </ItemsControl>
