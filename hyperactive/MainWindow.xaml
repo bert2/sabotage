@@ -1,0 +1,65 @@
+﻿<Window
+  x:Class="hyperactive.MainWindow"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:git="clr-namespace:LibGit2Sharp;assembly=LibGit2Sharp"
+  xmlns:local="clr-namespace:hyperactive"
+  xmlns:mat="http://materialdesigninxaml.net/winfx/xaml/themes"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  Title="MainWindow"
+  Width="800"
+  Height="450"
+  Background="{DynamicResource MaterialDesignPaper}"
+  DataContext="{Binding RelativeSource={RelativeSource Self}}"
+  FontFamily="{DynamicResource MaterialDesignFont}"
+  TextElement.FontSize="13"
+  TextElement.FontWeight="Regular"
+  TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+  TextOptions.TextFormattingMode="Ideal"
+  TextOptions.TextRenderingMode="Auto"
+  mc:Ignorable="d">
+  <StackPanel>
+    <mat:Card Margin="16" Padding="8">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <TextBox
+          Grid.Column="0"
+          FontSize="16"
+          Text="{Binding Directory}" />
+        <Button
+          Grid.Column="1"
+          Margin="8,0,0,0"
+          Click="OpenDirectory"
+          Content="{mat:PackIcon FolderOpen}"
+          ToolTip="Open Git repository" />
+        <Button
+          Grid.Column="2"
+          Margin="8,0,0,0"
+          Click="LoadDirectory"
+          Content="{mat:PackIcon Reload}"
+          ToolTip="Load Git repository" />
+      </Grid>
+    </mat:Card>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+      <ItemsControl ItemsSource="{Binding Branches}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="{x:Type git:Branch}">
+            <mat:Card Margin="16" Padding="32">
+              <TextBlock Style="{DynamicResource MaterialDesignHeadline6TextBlock}" Text="{Binding FriendlyName}" />
+            </mat:Card>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Horizontal" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
+    </ScrollViewer>
+  </StackPanel>
+</Window>
