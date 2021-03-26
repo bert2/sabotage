@@ -30,6 +30,12 @@
             private set => SetProperty(ref branches, value);
         }
 
+        private bool isLoaded;
+        public bool IsLoaded {
+            get => isLoaded;
+            private set => SetProperty(ref isLoaded, value);
+        }
+
         public MainViewModel() {
             SelectDirectoryCmd = new Command(SelectDirectory);
             LoadRepositoryCmd = new Command(LoadRepository);
@@ -56,6 +62,7 @@
         private void LoadRepository() {
             Repo = new Repository(Directory);
             Branches = repo?.Branches.Where(b => !b.IsRemote);
+            IsLoaded = true;
         }
     }
 }
