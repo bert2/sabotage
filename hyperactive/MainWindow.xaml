@@ -101,6 +101,15 @@
         </Grid>
 
         <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
+          <StackPanel.IsEnabled>
+            <MultiBinding Converter="{StaticResource AndConverter}">
+              <Binding
+                Converter="{StaticResource NotConverter}"
+                ElementName="txtDirectory"
+                Path="(Validation.HasError)" />
+              <Binding Path="IsLoaded" />
+            </MultiBinding>
+          </StackPanel.IsEnabled>
           <TextBlock Text="local branches:" />
           <TextBlock Margin="8,0,0,0" Text="{Binding LocalBranchesCount}" />
           <TextBlock Margin="32,0,0,0" Text="remote branches:" />
@@ -125,11 +134,8 @@
       </StackPanel>
     </mat:Card>
 
-    <ScrollViewer
-      Grid.Row="1"
-      HorizontalScrollBarVisibility="Auto"
-      VerticalScrollBarVisibility="Auto">
-      <ScrollViewer.IsEnabled>
+    <ItemsControl Grid.Row="1" ItemsSource="{Binding Branches}">
+      <ItemsControl.IsEnabled>
         <MultiBinding Converter="{StaticResource AndConverter}">
           <Binding
             Converter="{StaticResource NotConverter}"
@@ -137,72 +143,72 @@
             Path="(Validation.HasError)" />
           <Binding Path="IsLoaded" />
         </MultiBinding>
-      </ScrollViewer.IsEnabled>
-      <ItemsControl ItemsSource="{Binding Branches}">
-        <ItemsControl.ItemTemplate>
-          <DataTemplate DataType="{x:Type local:BranchViewModel}">
-            <mat:Card Margin="16" Padding="16">
-              <Grid>
-                <Grid.RowDefinitions>
-                  <RowDefinition Height="auto" />
-                  <RowDefinition Height="200" />
-                  <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+      </ItemsControl.IsEnabled>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="{x:Type local:BranchViewModel}">
+          <mat:Card Margin="16" Padding="16">
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="200" />
+                <RowDefinition Height="*" />
+              </Grid.RowDefinitions>
 
-                <TextBlock
-                  Grid.Row="0"
-                  Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
-                  Text="{Binding Name}"
-                  TextAlignment="Center" />
+              <TextBlock
+                Grid.Row="0"
+                Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
+                Text="{Binding Name}"
+                TextAlignment="Center" />
 
-                <ListBox
-                  Grid.Row="1"
-                  Margin="0,16,0,0"
-                  BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
-                  BorderThickness="2"
-                  ItemsSource="{Binding CurrentTree}"
-                  SelectedItem="{Binding Selected}">
-                  <ListBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type git:TreeEntry}">
-                      <ContentControl Content="{Binding}">
-                        <ContentControl.Style>
-                          <Style TargetType="{x:Type ContentControl}">
-                            <Setter Property="ContentTemplate" Value="{StaticResource FileTemplate}" />
-                            <Style.Triggers>
-                              <DataTrigger Binding="{Binding Path=Mode}" Value="{x:Static git:Mode.Directory}">
-                                <Setter Property="ContentTemplate" Value="{StaticResource DirectoryTemplate}" />
-                              </DataTrigger>
-                            </Style.Triggers>
-                          </Style>
-                        </ContentControl.Style>
-                      </ContentControl>
-                    </DataTemplate>
-                  </ListBox.ItemTemplate>
-                </ListBox>
+              <ListBox
+                Grid.Row="1"
+                Margin="0,16,0,0"
+                BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
+                BorderThickness="2"
+                ItemsSource="{Binding CurrentTree}"
+                SelectedItem="{Binding Selected}">
+                <ListBox.ItemTemplate>
+                  <DataTemplate DataType="{x:Type git:TreeEntry}">
+                    <ContentControl Content="{Binding}">
+                      <ContentControl.Style>
+                        <Style TargetType="{x:Type ContentControl}">
+                          <Setter Property="ContentTemplate" Value="{StaticResource FileTemplate}" />
+                          <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=Mode}" Value="{x:Static git:Mode.Directory}">
+                              <Setter Property="ContentTemplate" Value="{StaticResource DirectoryTemplate}" />
+                            </DataTrigger>
+                          </Style.Triggers>
+                        </Style>
+                      </ContentControl.Style>
+                    </ContentControl>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
 
-                <TextBox
-                  Grid.Row="2"
-                  Margin="0,16,0,0"
-                  AcceptsReturn="True"
-                  AcceptsTab="False"
-                  BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
-                  BorderThickness="2"
-                  CaretBrush="{DynamicResource PrimaryHueLightBrush}"
-                  FontFamily="Consolas"
-                  HorizontalScrollBarVisibility="Auto"
-                  Text="{Binding SelectedContent.Content}"
-                  TextWrapping="NoWrap"
-                  VerticalScrollBarVisibility="Visible" />
-              </Grid>
-            </mat:Card>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <UniformGrid Rows="1" />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-      </ItemsControl>
-    </ScrollViewer>
+              <TextBox
+                Grid.Row="2"
+                Margin="0,16,0,0"
+                VerticalContentAlignment="Stretch"
+                AcceptsReturn="True"
+                AcceptsTab="False"
+                BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
+                BorderThickness="2"
+                CaretBrush="{DynamicResource PrimaryHueLightBrush}"
+                FontFamily="Consolas"
+                HorizontalScrollBarVisibility="Auto"
+                Text="{Binding SelectedContent.Content}"
+                TextWrapping="NoWrap"
+                VerticalScrollBarVisibility="Auto" />
+            </Grid>
+          </mat:Card>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <UniformGrid Rows="1" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+    </ItemsControl>
+
   </Grid>
 </Window>
