@@ -9,7 +9,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   Title="hyperactive"
   Width="1024"
-  Height="576"
+  Height="768"
   d:DataContext="{d:DesignInstance Type=local:RepoViewModel,
                                    IsDesignTimeCreatable=True}"
   Background="{DynamicResource MaterialDesignPaper}"
@@ -39,8 +39,16 @@
       </StackPanel>
     </DataTemplate>
   </Window.Resources>
-  <StackPanel>
-    <mat:Card Margin="16" Padding="8">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <mat:Card
+      Grid.Row="0"
+      Margin="16"
+      Padding="8">
       <StackPanel>
         <Grid>
           <Grid.ColumnDefinitions>
@@ -116,7 +124,11 @@
         </StackPanel>
       </StackPanel>
     </mat:Card>
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+    <ScrollViewer
+      Grid.Row="1"
+      HorizontalScrollBarVisibility="Auto"
+      VerticalScrollBarVisibility="Auto">
       <ScrollViewer.IsEnabled>
         <MultiBinding Converter="{StaticResource AndConverter}">
           <Binding
@@ -134,7 +146,7 @@
                 <Grid.RowDefinitions>
                   <RowDefinition Height="auto" />
                   <RowDefinition Height="200" />
-                  <RowDefinition />
+                  <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <TextBlock
@@ -178,7 +190,6 @@
                   CaretBrush="{DynamicResource PrimaryHueLightBrush}"
                   FontFamily="Consolas"
                   HorizontalScrollBarVisibility="Auto"
-                  MinLines="10"
                   Text="{Binding SelectedContent.Content}"
                   TextWrapping="NoWrap"
                   VerticalScrollBarVisibility="Visible" />
@@ -193,5 +204,5 @@
         </ItemsControl.ItemsPanel>
       </ItemsControl>
     </ScrollViewer>
-  </StackPanel>
+  </Grid>
 </Window>
