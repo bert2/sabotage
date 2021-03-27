@@ -26,11 +26,11 @@
         private BranchViewModel[]? branches;
         public BranchViewModel[]? Branches { get => branches; private set => SetProperty(ref branches, value); }
 
-        private int localBranchesCount;
-        public int LocalBranchesCount { get => localBranchesCount; private set => SetProperty(ref localBranchesCount, value); }
+        private int? localBranchesCount;
+        public int? LocalBranchesCount { get => localBranchesCount; private set => SetProperty(ref localBranchesCount, value); }
 
-        private int remoteBranchesCount;
-        public int RemoteBranchesCount { get => remoteBranchesCount; private set => SetProperty(ref remoteBranchesCount, value); }
+        private int? remoteBranchesCount;
+        public int? RemoteBranchesCount { get => remoteBranchesCount; private set => SetProperty(ref remoteBranchesCount, value); }
 
         private bool isLoading;
         public bool IsLoading { get => isLoading; private set => SetProperty(ref isLoading, value); }
@@ -64,7 +64,8 @@
         private void LoadRepository() {
             IsLoading = true;
 
-            repo?.Dispose();
+            Cleanup();
+
             repo = new Repository(Directory);
 
             Status = new(repo.RetrieveStatus());
@@ -89,5 +90,13 @@
             (_        , "develop") =>  1,
             (_        , _        ) => branch1.CompareTo(branch2)
         };
+
+        private void Cleanup() {
+            Status = new();
+            Branches = Array.Empty<BranchViewModel>();
+            LocalBranchesCount = null;
+            RemoteBranchesCount = null;
+            repo?.Dispose();
+        }
     }
 }
