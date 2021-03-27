@@ -68,7 +68,7 @@
 
             repo = new Repository(Directory);
 
-            Status = new(repo.RetrieveStatus());
+            Status = new(repo);
 
             Branches = repo
                 .Branches

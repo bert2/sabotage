@@ -72,23 +72,22 @@
           </Button>
         </Grid>
         <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
-          <TextBlock Text="local branches: " />
-          <TextBlock Text="{Binding LocalBranchesCount}" />
-          <TextBlock Margin="32,0,0,0" Text="remote branches: " />
-          <TextBlock Text="{Binding RemoteBranchesCount}" />
-          <TextBlock Margin="64,0,0,0" Text="workdir status: " />
-          <TextBlock FontFamily="Courier New">
-            +<Run Text="{Binding Status.WdirAdd, Mode=OneWay}" />
-            ~<Run Text="{Binding Status.WdirMod, Mode=OneWay}" />
-            -<Run Text="{Binding Status.WdirDel, Mode=OneWay}" />
-            !<Run Text="{Binding Status.WdirCon, Mode=OneWay}" />
-          </TextBlock>
-          <TextBlock Margin="32,0,0,0" Text="index status: " />
-          <TextBlock FontFamily="Courier New">
+          <TextBlock Text="local branches:" />
+          <TextBlock Margin="8,0,0,0" Text="{Binding LocalBranchesCount}" />
+          <TextBlock Margin="32,0,0,0" Text="remote branches:" />
+          <TextBlock Margin="8,0,0,0" Text="{Binding RemoteBranchesCount}" />
+          <TextBlock Margin="32,0,0,0" Text="status:" />
+          <TextBlock Margin="8,0,0,0" FontFamily="Consolas">
+            <Run Text="{Binding Status.Head, Mode=OneWay}" />
             +<Run Text="{Binding Status.IdxAdd, Mode=OneWay}" />
             ~<Run Text="{Binding Status.IdxMod, Mode=OneWay}" />
             -<Run Text="{Binding Status.IdxDel, Mode=OneWay}" />
             !<Run Text="{Binding Status.IdxCon, Mode=OneWay}" />
+            |
+            +<Run Text="{Binding Status.WdirAdd, Mode=OneWay}" />
+            ~<Run Text="{Binding Status.WdirMod, Mode=OneWay}" />
+            -<Run Text="{Binding Status.WdirDel, Mode=OneWay}" />
+            !<Run Text="{Binding Status.WdirCon, Mode=OneWay}" />
           </TextBlock>
         </StackPanel>
       </StackPanel>

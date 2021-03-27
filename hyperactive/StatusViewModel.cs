@@ -4,6 +4,8 @@
     using MoreLinq;
 
     public class StatusViewModel {
+        public string? Head { get; private set; }
+
         public int WdirAdd { get; private set; }
 
         public int WdirMod { get; private set; }
@@ -22,27 +24,30 @@
 
         public StatusViewModel() { }
 
-        public StatusViewModel(RepositoryStatus status) => status.ForEach(x => {
-            switch (x.State) {
-                case FileStatus.NewInWorkdir:       WdirAdd++; break;
-                case FileStatus.ModifiedInWorkdir:  WdirMod++; break;
-                case FileStatus.DeletedFromWorkdir: WdirDel++; break;
-                case FileStatus.Conflicted:         WdirCon++; break;
+        public StatusViewModel(Repository repo) {
+            Head = repo.Head.FriendlyName;
+            repo.RetrieveStatus().ForEach(x => {
+                switch (x.State) {
+                    case FileStatus.NewInWorkdir:       WdirAdd++; break;
+                    case FileStatus.ModifiedInWorkdir:  WdirMod++; break;
+                    case FileStatus.DeletedFromWorkdir: WdirDel++; break;
+                    case FileStatus.Conflicted:         WdirCon++; break;
 
-                case FileStatus.NewInIndex:         IdxAdd++; break;
-                case FileStatus.ModifiedInIndex:    IdxMod++; break;
-                case FileStatus.DeletedFromIndex:   IdxDel++; break;
+                    case FileStatus.NewInIndex:         IdxAdd++; break;
+                    case FileStatus.ModifiedInIndex:    IdxMod++; break;
+                    case FileStatus.DeletedFromIndex:   IdxDel++; break;
 
-                case FileStatus.Ignored:
-                case FileStatus.Nonexistent:
-                case FileStatus.RenamedInWorkdir:
-                case FileStatus.RenamedInIndex:
-                case FileStatus.TypeChangeInWorkdir:
-                case FileStatus.TypeChangeInIndex:
-                case FileStatus.Unaltered:
-                case FileStatus.Unreadable:
-                    break;
-            }
-        });
+                    case FileStatus.Ignored:
+                    case FileStatus.Nonexistent:
+                    case FileStatus.RenamedInWorkdir:
+                    case FileStatus.RenamedInIndex:
+                    case FileStatus.TypeChangeInWorkdir:
+                    case FileStatus.TypeChangeInIndex:
+                    case FileStatus.Unaltered:
+                    case FileStatus.Unreadable:
+                        break;
+                }
+            });
+        }
     }
 }
