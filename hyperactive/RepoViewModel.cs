@@ -23,14 +23,17 @@
         private StatusViewModel status = new();
         public StatusViewModel Status { get => status; private set => SetProperty(ref status, value); }
 
-        private Branch[]? branches;
-        public Branch[]? Branches { get => branches; private set => SetProperty(ref branches, value); }
+        private BranchViewModel[]? branches;
+        public BranchViewModel[]? Branches { get => branches; private set => SetProperty(ref branches, value); }
 
         private int localBranchesCount;
         public int LocalBranchesCount { get => localBranchesCount; private set => SetProperty(ref localBranchesCount, value); }
 
         private int remoteBranchesCount;
         public int RemoteBranchesCount { get => remoteBranchesCount; private set => SetProperty(ref remoteBranchesCount, value); }
+
+        private bool isLoading;
+        public bool IsLoading { get => isLoading; private set => SetProperty(ref isLoading, value); }
 
         private bool isLoaded;
         public bool IsLoaded { get => isLoaded; private set => SetProperty(ref isLoaded, value); }
@@ -59,6 +62,8 @@
         }
 
         private void LoadRepository() {
+            IsLoading = true;
+
             repo?.Dispose();
             repo = new Repository(Directory);
 
@@ -67,11 +72,13 @@
             Branches = repo
                 .Branches
                 .Where(b => !b.IsRemote)
-                .OrderBy(b => b.FriendlyName, Comparer<string>.Create(GitFlowOrder))
+                .Select(b => new BranchViewModel(b))
+                .OrderBy(b => b.Name, Comparer<string>.Create(GitFlowOrder))
                 .ToArray();
             LocalBranchesCount = Branches.Length;
             RemoteBranchesCount = repo.Branches.Count(b => b.IsRemote);
 
+            IsLoading = false;
             IsLoaded = true;
         }
 

@@ -105,9 +105,9 @@
       </ScrollViewer.IsEnabled>
       <ItemsControl ItemsSource="{Binding Branches}">
         <ItemsControl.ItemTemplate>
-          <DataTemplate DataType="{x:Type git:Branch}">
+          <DataTemplate DataType="{x:Type local:BranchViewModel}">
             <mat:Card Margin="16" Padding="64">
-              <TextBlock Style="{DynamicResource MaterialDesignHeadline6TextBlock}" Text="{Binding FriendlyName}" />
+              <TextBlock Style="{DynamicResource MaterialDesignHeadline6TextBlock}" Text="{Binding Name}" />
             </mat:Card>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
