@@ -124,6 +124,7 @@
                 <Grid.RowDefinitions>
                   <RowDefinition Height="auto" />
                   <RowDefinition Height="200" />
+                  <RowDefinition />
                 </Grid.RowDefinitions>
 
                 <TextBlock
@@ -136,7 +137,8 @@
                   Margin="0,8,0,0"
                   BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
                   BorderThickness="2"
-                  ItemsSource="{Binding CurrentTree}">
+                  ItemsSource="{Binding CurrentTree}"
+                  SelectedItem="{Binding Selected}">
                   <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type git:TreeEntry}">
                       <ContentControl Content="{Binding}">
@@ -154,6 +156,10 @@
                     </DataTemplate>
                   </ListBox.ItemTemplate>
                 </ListBox>
+                <TextBox
+                  Grid.Row="2"
+                  MinLines="10"
+                  Text="{Binding SelectedContent.Content}" />
               </Grid>
             </mat:Card>
           </DataTemplate>
