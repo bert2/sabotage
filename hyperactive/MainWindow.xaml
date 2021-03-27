@@ -23,6 +23,8 @@
   <Window.Resources>
     <local:AndConverter x:Key="AndConverter" />
 
+    <local:BoolToColorConverter x:Key="BoolToColorConverter" />
+
     <DataTemplate x:Key="DirectoryTemplate" DataType="{x:Type git:TreeEntry}">
       <StackPanel Orientation="Horizontal">
         <mat:PackIcon Kind="Folder" />
@@ -96,7 +98,10 @@
           <TextBlock Margin="32,0,0,0" Text="remote branches:" />
           <TextBlock Margin="8,0,0,0" Text="{Binding RemoteBranchesCount}" />
           <TextBlock Margin="32,0,0,0" Text="status:" />
-          <TextBlock Margin="8,0,0,0" FontFamily="Consolas">
+          <TextBlock
+            Margin="8,0,0,0"
+            FontFamily="Consolas"
+            Foreground="{Binding Status.IsClean, Converter={StaticResource BoolToColorConverter}, Mode=OneWay}">
             <Run Text="{Binding Status.Head, Mode=OneWay}" />
             +<Run Text="{Binding Status.IdxAdd, Mode=OneWay}" />
             ~<Run Text="{Binding Status.IdxMod, Mode=OneWay}" />

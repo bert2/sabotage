@@ -4,7 +4,9 @@
     using MoreLinq;
 
     public class StatusViewModel {
-        public string? Head { get; private set; }
+        public string? Head { get; }
+
+        public bool IsClean { get; }
 
         public int WdirAdd { get; private set; }
 
@@ -26,8 +28,9 @@
 
         public StatusViewModel(Repository repo) {
             Head = repo.Head.FriendlyName;
-
-            repo.RetrieveStatus().ForEach(x => {
+            var statusEntries = repo.RetrieveStatus();
+            IsClean = !statusEntries.IsDirty;
+            statusEntries.ForEach(x => {
                 switch (x.State) {
                     case FileStatus.NewInWorkdir:       WdirAdd++; break;
                     case FileStatus.ModifiedInWorkdir:  WdirMod++; break;
