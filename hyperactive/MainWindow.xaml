@@ -46,6 +46,7 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
           </Grid.ColumnDefinitions>
+
           <TextBox
             Name="txtDirectory"
             Grid.Column="0"
@@ -53,6 +54,7 @@
             mat:TextFieldAssist.HasClearButton="True"
             mat:TextFieldAssist.HasLeadingIcon="True"
             mat:TextFieldAssist.LeadingIcon="Git"
+            CaretBrush="{DynamicResource PrimaryHueLightBrush}"
             FontSize="16">
             <TextBox.Text>
               <Binding Path="Directory" UpdateSourceTrigger="PropertyChanged">
@@ -62,12 +64,14 @@
               </Binding>
             </TextBox.Text>
           </TextBox>
+
           <Button
             Grid.Column="1"
             Margin="8,0,0,0"
             Command="{Binding SelectDirectoryCmd}"
             Content="{mat:PackIcon FolderOpen}"
             ToolTip="open git repository" />
+
           <Button
             Grid.Column="2"
             Margin="8,0,0,0"
@@ -85,6 +89,7 @@
             </Button.IsEnabled>
           </Button>
         </Grid>
+
         <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
           <TextBlock Text="local branches:" />
           <TextBlock Margin="8,0,0,0" Text="{Binding LocalBranchesCount}" />
@@ -132,9 +137,10 @@
                   Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
                   Text="{Binding Name}"
                   TextAlignment="Center" />
+
                 <ListBox
                   Grid.Row="1"
-                  Margin="0,8,0,0"
+                  Margin="0,16,0,0"
                   BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
                   BorderThickness="2"
                   ItemsSource="{Binding CurrentTree}"
@@ -156,10 +162,21 @@
                     </DataTemplate>
                   </ListBox.ItemTemplate>
                 </ListBox>
+
                 <TextBox
                   Grid.Row="2"
+                  Margin="0,16,0,0"
+                  AcceptsReturn="True"
+                  AcceptsTab="False"
+                  BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
+                  BorderThickness="2"
+                  CaretBrush="{DynamicResource PrimaryHueLightBrush}"
+                  FontFamily="Consolas"
+                  HorizontalScrollBarVisibility="Auto"
                   MinLines="10"
-                  Text="{Binding SelectedContent.Content}" />
+                  Text="{Binding SelectedContent.Content}"
+                  TextWrapping="NoWrap"
+                  VerticalScrollBarVisibility="Visible" />
               </Grid>
             </mat:Card>
           </DataTemplate>
