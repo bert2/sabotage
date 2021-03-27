@@ -26,6 +26,7 @@
 
         public StatusViewModel(Repository repo) {
             Head = repo.Head.FriendlyName;
+
             repo.RetrieveStatus().ForEach(x => {
                 switch (x.State) {
                     case FileStatus.NewInWorkdir:       WdirAdd++; break;
