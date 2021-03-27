@@ -105,8 +105,31 @@
       <ItemsControl ItemsSource="{Binding Branches}">
         <ItemsControl.ItemTemplate>
           <DataTemplate DataType="{x:Type local:BranchViewModel}">
-            <mat:Card Margin="16" Padding="64">
-              <TextBlock Style="{DynamicResource MaterialDesignHeadline6TextBlock}" Text="{Binding Name}" />
+            <mat:Card Margin="16" Padding="16">
+              <Grid>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="auto" />
+                  <RowDefinition Height="200" />
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                  Grid.Row="0"
+                  Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
+                  Text="{Binding Name}"
+                  TextAlignment="Center" />
+                <ListBox
+                  Grid.Row="1"
+                  Margin="0,8,0,0"
+                  BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
+                  BorderThickness="2"
+                  ItemsSource="{Binding CurrentTree}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type git:TreeEntry}">
+                      <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </Grid>
             </mat:Card>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
