@@ -10,7 +10,7 @@
   Title="hyperactive"
   Width="1024"
   Height="576"
-  d:DataContext="{d:DesignInstance Type=local:MainViewModel,
+  d:DataContext="{d:DesignInstance Type=local:RepoViewModel,
                                    IsDesignTimeCreatable=True}"
   Background="{DynamicResource MaterialDesignPaper}"
   FontFamily="{DynamicResource MaterialDesignFont}"

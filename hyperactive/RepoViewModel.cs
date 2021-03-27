@@ -8,7 +8,7 @@
 
     using LibGit2Sharp;
 
-    public class MainViewModel: ViewModelBase {
+    public class RepoViewModel: ViewModelBase {
         private string? directory = @"D:\DEV\git-conflicts"; // TODO: remove test value
         public string? Directory {
             get => directory;
@@ -32,7 +32,7 @@
         private bool isLoaded;
         public bool IsLoaded { get => isLoaded; private set => SetProperty(ref isLoaded, value); }
 
-        public MainViewModel() {
+        public RepoViewModel() {
             SelectDirectoryCmd = new Command(SelectDirectory);
             LoadRepositoryCmd = new Command(LoadRepository);
             LoadRepository(); // TODO: remove test code
