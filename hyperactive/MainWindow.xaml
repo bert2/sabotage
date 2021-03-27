@@ -22,6 +22,20 @@
   mc:Ignorable="d">
   <Window.Resources>
     <local:AndConverter x:Key="AndConverter" />
+
+    <DataTemplate x:Key="DirectoryTemplate" DataType="{x:Type git:TreeEntry}">
+      <StackPanel Orientation="Horizontal">
+        <mat:PackIcon Kind="Folder" />
+        <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
+      </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="FileTemplate" DataType="{x:Type git:TreeEntry}">
+      <StackPanel Orientation="Horizontal">
+        <mat:PackIcon Kind="File" />
+        <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
+      </StackPanel>
+    </DataTemplate>
   </Window.Resources>
   <StackPanel>
     <mat:Card Margin="16" Padding="8">
@@ -125,7 +139,18 @@
                   ItemsSource="{Binding CurrentTree}">
                   <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type git:TreeEntry}">
-                      <TextBlock Text="{Binding Name}" />
+                      <ContentControl Content="{Binding}">
+                        <ContentControl.Style>
+                          <Style TargetType="{x:Type ContentControl}">
+                            <Setter Property="ContentTemplate" Value="{StaticResource FileTemplate}" />
+                            <Style.Triggers>
+                              <DataTrigger Binding="{Binding Path=Mode}" Value="{x:Static git:Mode.Directory}">
+                                <Setter Property="ContentTemplate" Value="{StaticResource DirectoryTemplate}" />
+                              </DataTrigger>
+                            </Style.Triggers>
+                          </Style>
+                        </ContentControl.Style>
+                      </ContentControl>
                     </DataTemplate>
                   </ListBox.ItemTemplate>
                 </ListBox>
