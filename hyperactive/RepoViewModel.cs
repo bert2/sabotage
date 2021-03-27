@@ -8,7 +8,7 @@
 
     using LibGit2Sharp;
 
-    public class RepoViewModel: ViewModelBase {
+    public class RepoViewModel: ViewModel {
         private string? directory = @"D:\DEV\git-conflicts"; // TODO: remove test value
         public string? Directory {
             get => directory;
@@ -19,6 +19,9 @@
         }
 
         private Repository? repo;
+
+        private StatusViewModel status = new();
+        public StatusViewModel Status { get => status; private set => SetProperty(ref status, value); }
 
         private Branch[]? branches;
         public Branch[]? Branches { get => branches; private set => SetProperty(ref branches, value); }
@@ -58,6 +61,8 @@
         private void LoadRepository() {
             repo?.Dispose();
             repo = new Repository(Directory);
+
+            Status = new(repo.RetrieveStatus());
 
             Branches = repo
                 .Branches

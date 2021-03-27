@@ -3,7 +3,7 @@
     using System.ComponentModel;
     using System.Runtime.CompilerServices;
 
-    public abstract class ViewModelBase : INotifyPropertyChanged {
+    public abstract class ViewModel : INotifyPropertyChanged {
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
