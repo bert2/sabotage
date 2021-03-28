@@ -17,7 +17,7 @@
         public ObjDbDirectoryItem(TreeEntry treeEntry) => this.treeEntry = treeEntry;
 
         public IFileContent ToFileContent() => Type == DirectoryItemType.File
-            ? new ObjDbFileContent(Name, Path, treeEntry.Target.Peel<Blob>())
+            ? new ObjDbFileContent(treeEntry.Target.Peel<Blob>())
             : throw new InvalidOperationException($"Cannot get content of {Type}.");
     }
 }

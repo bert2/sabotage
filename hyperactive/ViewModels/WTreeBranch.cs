@@ -1,10 +1,11 @@
 ﻿namespace hyperactive {
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
 
     using LibGit2Sharp;
 
-    public class ObjDbBranch : ViewModel, IBranch {
+    public class WTreeBranch : ViewModel, IBranch {
         private string name;
         public string Name { get => name; private set => SetProperty(ref name, value); }
 
@@ -23,11 +24,13 @@
         private IFileContent? selectedContent;
         public IFileContent? SelectedContent { get => selectedContent; private set => SetProperty(ref selectedContent, value); }
 
-        public ObjDbBranch(Branch branch) {
+        public WTreeBranch(string repoDirectory, Branch branch) {
             Name = branch.FriendlyName;
-            CurrentDirectory = branch.Tip.Tree
-                .OrderBy(x => x, Comparer<TreeEntry>.Create(DirectoriesFirst))
-                .Select(x => new ObjDbDirectoryItem(x))
+            CurrentDirectory = new DirectoryInfo(repoDirectory)
+                .EnumerateFileSystemInfos()
+                .Where(x => x.Name != ".git")
+                .OrderBy(x => x, Comparer<FileSystemInfo>.Create(DirectoriesFirst))
+                .Select(x => new WTreeDirectoryItem(x))
                 .ToArray();
         }
 
@@ -35,11 +38,16 @@
             ? SelectedItem.ToFileContent()
             : null;
 
-        private int DirectoriesFirst(TreeEntry a, TreeEntry b) => (a.Mode, b.Mode) switch {
-            (Mode.Directory, Mode.Directory) => a.Name.CompareTo(b.Name),
-            (Mode.Directory, _             ) => -1,
-            (_             , Mode.Directory) => 1,
-            (_             , _             ) => a.Name.CompareTo(b.Name)
-        };
+        private int DirectoriesFirst(FileSystemInfo a, FileSystemInfo b) {
+            var aIsDir = (a.Attributes & FileAttributes.Directory) != 0;
+            var bIsDir = (b.Attributes & FileAttributes.Directory) != 0;
+
+            return (aIsDir, bIsDir) switch {
+                (true , true ) => a.Name.CompareTo(b.Name),
+                (true , false) => -1,
+                (false, true ) => 1,
+                (false, false) => a.Name.CompareTo(b.Name)
+            };
+        }
     }
 }

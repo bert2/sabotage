@@ -73,9 +73,12 @@
             Branches = repo
                 .Branches
                 .Where(b => !b.IsRemote)
-                .Select(b => new ObjDbBranch(b)) // TODO: choose appropriate impl
+                .Select(b => b.IsCurrentRepositoryHead
+                    ? new WTreeBranch(Directory!, b)
+                    : (IBranch)new ObjDbBranch(b))
                 .OrderBy(b => b.Name, Comparer<string>.Create(GitFlowOrder))
                 .ToArray();
+
             LocalBranchesCount = Branches.Length;
             RemoteBranchesCount = repo.Branches.Count(b => b.IsRemote);
 
