@@ -196,6 +196,7 @@
                 CaretBrush="{DynamicResource PrimaryHueLightBrush}"
                 FontFamily="Consolas"
                 HorizontalScrollBarVisibility="Auto"
+                IsReadOnly="{Binding SelectedContent.ReadOnly}"
                 Text="{Binding SelectedContent.Content}"
                 TextWrapping="NoWrap"
                 VerticalScrollBarVisibility="Auto" />
