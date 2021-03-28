@@ -10,7 +10,7 @@
   Title="hyperactive"
   Width="1024"
   Height="768"
-  d:DataContext="{d:DesignInstance Type=local:RepoViewModel,
+  d:DataContext="{d:DesignInstance Type=local:Repo,
                                    IsDesignTimeCreatable=True}"
   Background="{DynamicResource MaterialDesignPaper}"
   FontFamily="{DynamicResource MaterialDesignFont}"
@@ -25,14 +25,14 @@
 
     <local:BoolToColorConverter x:Key="BoolToColorConverter" />
 
-    <DataTemplate x:Key="DirectoryTemplate" DataType="{x:Type git:TreeEntry}">
+    <DataTemplate x:Key="FolderTemplate" DataType="{x:Type local:IDirectoryItem}">
       <StackPanel Orientation="Horizontal">
         <mat:PackIcon Kind="Folder" />
         <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
       </StackPanel>
     </DataTemplate>
 
-    <DataTemplate x:Key="FileTemplate" DataType="{x:Type git:TreeEntry}">
+    <DataTemplate x:Key="FileTemplate" DataType="{x:Type local:IDirectoryItem}">
       <StackPanel Orientation="Horizontal">
         <mat:PackIcon Kind="File" />
         <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
@@ -145,7 +145,7 @@
         </MultiBinding>
       </ItemsControl.IsEnabled>
       <ItemsControl.ItemTemplate>
-        <DataTemplate DataType="{x:Type local:BranchViewModel}">
+        <DataTemplate DataType="{x:Type local:IBranch}">
           <mat:Card Margin="16" Padding="16">
             <Grid>
               <Grid.RowDefinitions>
@@ -165,17 +165,17 @@
                 Margin="0,16,0,0"
                 BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
                 BorderThickness="2"
-                ItemsSource="{Binding CurrentTree}"
-                SelectedItem="{Binding Selected}">
+                ItemsSource="{Binding CurrentDirectory}"
+                SelectedItem="{Binding SelectedItem}">
                 <ListBox.ItemTemplate>
-                  <DataTemplate DataType="{x:Type git:TreeEntry}">
+                  <DataTemplate DataType="{x:Type local:IDirectoryItem}">
                     <ContentControl Content="{Binding}">
                       <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
                           <Setter Property="ContentTemplate" Value="{StaticResource FileTemplate}" />
                           <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=Mode}" Value="{x:Static git:Mode.Directory}">
-                              <Setter Property="ContentTemplate" Value="{StaticResource DirectoryTemplate}" />
+                            <DataTrigger Binding="{Binding Path=Type}" Value="{x:Static local:DirectoryItemType.Folder}">
+                              <Setter Property="ContentTemplate" Value="{StaticResource FolderTemplate}" />
                             </DataTrigger>
                           </Style.Triggers>
                         </Style>

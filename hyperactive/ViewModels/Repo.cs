@@ -8,7 +8,7 @@
 
     using LibGit2Sharp;
 
-    public class RepoViewModel: ViewModel {
+    public class Repo: ViewModel {
         private string? directory = @"D:\DEV\git-conflicts"; // TODO: remove test value
         public string? Directory {
             get => directory;
@@ -20,11 +20,11 @@
 
         private Repository? repo;
 
-        private StatusViewModel status = new();
-        public StatusViewModel Status { get => status; private set => SetProperty(ref status, value); }
+        private RepoStatus status = new();
+        public RepoStatus Status { get => status; private set => SetProperty(ref status, value); }
 
-        private BranchViewModel[]? branches;
-        public BranchViewModel[]? Branches { get => branches; private set => SetProperty(ref branches, value); }
+        private IBranch[]? branches;
+        public IBranch[]? Branches { get => branches; private set => SetProperty(ref branches, value); }
 
         private int? localBranchesCount;
         public int? LocalBranchesCount { get => localBranchesCount; private set => SetProperty(ref localBranchesCount, value); }
@@ -38,7 +38,7 @@
         private bool isLoaded;
         public bool IsLoaded { get => isLoaded; private set => SetProperty(ref isLoaded, value); }
 
-        public RepoViewModel() {
+        public Repo() {
             SelectDirectoryCmd = new Command(SelectDirectory);
             LoadRepositoryCmd = new Command(LoadRepository);
             LoadRepository(); // TODO: remove test code
@@ -73,7 +73,7 @@
             Branches = repo
                 .Branches
                 .Where(b => !b.IsRemote)
-                .Select(b => new BranchViewModel(b))
+                .Select(b => new ObjDbBranch(b)) // TODO: choose appropriate impl
                 .OrderBy(b => b.Name, Comparer<string>.Create(GitFlowOrder))
                 .ToArray();
             LocalBranchesCount = Branches.Length;
@@ -93,7 +93,7 @@
 
         private void Cleanup() {
             Status = new();
-            Branches = Array.Empty<BranchViewModel>();
+            Branches = Array.Empty<IBranch>();
             LocalBranchesCount = null;
             RemoteBranchesCount = null;
             repo?.Dispose();

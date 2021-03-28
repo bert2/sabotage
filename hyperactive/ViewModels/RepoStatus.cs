@@ -3,7 +3,7 @@
 
     using MoreLinq;
 
-    public class StatusViewModel {
+    public class RepoStatus {
         public string? Head { get; }
 
         public bool IsClean { get; }
@@ -24,9 +24,9 @@
 
         public int IdxCon { get; private set; }
 
-        public StatusViewModel() { }
+        public RepoStatus() { }
 
-        public StatusViewModel(Repository repo) {
+        public RepoStatus(Repository repo) {
             Head = repo.Head.FriendlyName;
             var statusEntries = repo.RetrieveStatus();
             IsClean = !statusEntries.IsDirty;
