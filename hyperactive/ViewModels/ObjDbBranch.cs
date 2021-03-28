@@ -5,11 +5,9 @@
     using LibGit2Sharp;
 
     public class ObjDbBranch : ViewModel, IBranch {
-        private string name;
-        public string Name { get => name; private set => SetProperty(ref name, value); }
+        public string Name { get; }
 
-        private bool isHead;
-        public bool IsHead { get => isHead; private set => SetProperty(ref isHead, value); }
+        public bool IsHead { get; }
 
         private IDirectoryItem[] currentDirectory;
         public IDirectoryItem[] CurrentDirectory { get => currentDirectory; private set => SetProperty(ref currentDirectory, value); }
