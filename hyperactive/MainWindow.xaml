@@ -125,7 +125,7 @@
           </Button>
         </Grid>
 
-        <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
+        <StackPanel Margin="0,16,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
           <StackPanel.IsEnabled>
             <MultiBinding Converter="{StaticResource AndConv}">
               <Binding
