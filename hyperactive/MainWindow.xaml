@@ -21,9 +21,24 @@
   TextOptions.TextRenderingMode="Auto"
   mc:Ignorable="d">
   <Window.Resources>
-    <local:AndConverter x:Key="AndConverter" />
+    <local:AndConverter x:Key="AndConv" />
 
-    <local:BoolToColorConverter x:Key="BoolToColorConverter" />
+    <local:BoolToColorConverter x:Key="BoolToColorConv" />
+
+    <local:BoolToBrushConverter
+      x:Key="IsHeadToHeaderBrushConv"
+      FalseBrush="#DDFFFFFF"
+      TrueBrush="{StaticResource PrimaryHueMidBrush}" />
+
+    <local:BoolToBrushConverter
+      x:Key="IsHeadToBorderBrushConv"
+      FalseBrush="{StaticResource MaterialDesignLightSeparatorBackground}"
+      TrueBrush="{StaticResource PrimaryHueMidBrush}" />
+
+    <local:BoolToBrushConverter
+      x:Key="IsHeadToCardBgBrushConv"
+      FalseBrush="{StaticResource MaterialDesignCardBackground}"
+      TrueBrush="{StaticResource MaterialDesignLightSeparatorBackground}" />
 
     <DataTemplate x:Key="FolderTemplate" DataType="{x:Type local:IDirectoryItem}">
       <StackPanel Orientation="Horizontal">
@@ -89,7 +104,7 @@
             Content="{mat:PackIcon Reload}"
             ToolTip="reload git repository">
             <Button.IsEnabled>
-              <MultiBinding Converter="{StaticResource AndConverter}">
+              <MultiBinding Converter="{StaticResource AndConv}">
                 <Binding
                   Converter="{StaticResource NotConverter}"
                   ElementName="txtDirectory"
@@ -102,7 +117,7 @@
 
         <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
           <StackPanel.IsEnabled>
-            <MultiBinding Converter="{StaticResource AndConverter}">
+            <MultiBinding Converter="{StaticResource AndConv}">
               <Binding
                 Converter="{StaticResource NotConverter}"
                 ElementName="txtDirectory"
@@ -118,7 +133,7 @@
           <TextBlock
             Margin="8,0,0,0"
             FontFamily="Consolas"
-            Foreground="{Binding Status.IsClean, Converter={StaticResource BoolToColorConverter}, Mode=OneWay}">
+            Foreground="{Binding Status.IsClean, Converter={StaticResource BoolToColorConv}, Mode=OneWay}">
             <Run Text="{Binding Status.Head, Mode=OneWay}" />
             +<Run Text="{Binding Status.IdxAdd, Mode=OneWay}" />
             ~<Run Text="{Binding Status.IdxMod, Mode=OneWay}" />
@@ -136,7 +151,7 @@
 
     <ItemsControl Grid.Row="1" ItemsSource="{Binding Branches}">
       <ItemsControl.IsEnabled>
-        <MultiBinding Converter="{StaticResource AndConverter}">
+        <MultiBinding Converter="{StaticResource AndConv}">
           <Binding
             Converter="{StaticResource NotConverter}"
             ElementName="txtDirectory"
@@ -163,7 +178,7 @@
               <ListBox
                 Grid.Row="1"
                 Margin="0,16,0,0"
-                BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
+                BorderBrush="{StaticResource MaterialDesignLightSeparatorBackground}"
                 BorderThickness="2"
                 ItemsSource="{Binding CurrentDirectory}"
                 SelectedItem="{Binding SelectedItem}">
@@ -191,7 +206,7 @@
                 VerticalContentAlignment="Stretch"
                 AcceptsReturn="True"
                 AcceptsTab="False"
-                BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
+                BorderBrush="{StaticResource MaterialDesignLightSeparatorBackground}"
                 BorderThickness="2"
                 CaretBrush="{DynamicResource PrimaryHueLightBrush}"
                 FontFamily="Consolas"

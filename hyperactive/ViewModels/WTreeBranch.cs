@@ -9,6 +9,9 @@
         private string name;
         public string Name { get => name; private set => SetProperty(ref name, value); }
 
+        private bool isHead;
+        public bool IsHead { get => isHead; private set => SetProperty(ref isHead, value); }
+
         private IDirectoryItem[] currentDirectory;
         public IDirectoryItem[] CurrentDirectory { get => currentDirectory; private set => SetProperty(ref currentDirectory, value); }
 
@@ -26,6 +29,7 @@
 
         public WTreeBranch(string repoDirectory, Branch branch) {
             Name = branch.FriendlyName;
+            IsHead = branch.IsCurrentRepositoryHead;
             CurrentDirectory = new DirectoryInfo(repoDirectory)
                 .EnumerateFileSystemInfos()
                 .Where(x => x.Name != ".git")

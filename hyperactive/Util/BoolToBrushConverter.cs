@@ -4,37 +4,16 @@
     using System.Windows.Data;
     using System.Windows.Media;
 
-    [ValueConversion(typeof(bool), typeof(SolidColorBrush))]
-    public class BoolToColorConverter : IValueConverter {
-        /// <summary>Converts a boolean to a SolidColorBrush.</summary>
-        /// <param name="value">Bolean value controlling wether to apply color change.</param>
-        /// <param name="targetType"></param>
-        /// <param name="parameter">Optional CSV string specifying the color names for both cases. Default is "DarkGreen;DarkRed".</param>
-        /// <param name="culture"></param>
-        /// <returns>A SolidColorBrush.</returns>
-        public object Convert(object value, Type targetType, object? parameter, CultureInfo culture) {
-            var colorIfTrue = Colors.Green;
-            var colorIfFalse = Colors.Red;
+    [ValueConversion(typeof(bool), typeof(Brush))]
+    public class BoolToBrushConverter : IValueConverter {
+        public Brush? TrueBrush { get; set; }
 
-            var names = parameter?.ToString()?.Split(';');
+        public Brush? FalseBrush { get; set; }
 
-            if (names?.Length > 0 && !string.IsNullOrEmpty(names[0])) {
-                colorIfTrue = ColorFromName(names[0]);
-            }
-
-            if (names?.Length > 1 && !string.IsNullOrEmpty(names[1])) {
-                colorIfFalse = ColorFromName(names[1]);
-            }
-
-            return new SolidColorBrush((bool)value ? colorIfTrue : colorIfFalse);
-        }
+        public object? Convert(object? value, Type targetType, object parameter, CultureInfo culture)
+            => value is bool b && b ? TrueBrush : FalseBrush;
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => throw new InvalidOperationException($"{nameof(BoolToColorConverter)} only works with OneWay bindings.");
-
-        private static Color ColorFromName(string name) {
-            var c = System.Drawing.Color.FromName(name);
-            return Color.FromArgb(c.A, c.R, c.G, c.B);
-        }
+            => throw new InvalidOperationException($"{nameof(BoolToBrushConverter)} only works with OneWay bindings.");
     }
 }
