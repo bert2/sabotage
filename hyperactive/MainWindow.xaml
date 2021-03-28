@@ -25,6 +25,8 @@
 
     <local:BoolToColorConverter x:Key="BoolToColorConv" />
 
+    <local:NullableToBoolConverter x:Key="NullToFalseConv" />
+
     <local:BoolToBrushConverter
       x:Key="IsHeadToHeaderBrushConv"
       FalseBrush="#DDFFFFFF"
@@ -176,6 +178,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock
                   Grid.Column="0"
+                  Margin="8,0,0,0"
                   VerticalAlignment="Center"
                   Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
                   Text="{Binding Name}" />
@@ -226,6 +229,7 @@
                 CaretBrush="{DynamicResource PrimaryHueLightBrush}"
                 FontFamily="Consolas"
                 HorizontalScrollBarVisibility="Auto"
+                IsEnabled="{Binding SelectedContent, Converter={StaticResource NullToFalseConv}}"
                 IsReadOnly="{Binding SelectedContent.ReadOnly}"
                 Text="{Binding SelectedContent.Content, UpdateSourceTrigger=PropertyChanged, Delay=3000}"
                 TextWrapping="NoWrap"
