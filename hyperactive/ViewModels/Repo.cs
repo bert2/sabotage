@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Windows;
     using System.Windows.Forms;
     using System.Windows.Input;
 
@@ -41,6 +42,7 @@
         public Repo() {
             SelectDirectoryCmd = new Command(SelectDirectory);
             LoadRepositoryCmd = new Command(LoadRepository);
+            WeakEventManager<Events, EventArgs>.AddHandler(Events.Instance, nameof(Events.WorkingTreeChanged), RefreshStatus);
             LoadRepository(); // TODO: remove test code
         }
 
@@ -76,7 +78,7 @@
                 .Select(b => b.IsCurrentRepositoryHead
                     ? new WTreeBranch(Directory!, b)
                     : (IBranch)new ObjDbBranch(b))
-                .OrderBy(b => b.Name, Comparer<string>.Create(GitFlowOrder))
+                .OrderBy(b => b.Name, Comparer<string>.Create(DevelopFirstMainLast))
                 .ToArray();
 
             LocalBranchesCount = Branches.Length;
@@ -86,11 +88,17 @@
             IsLoaded = true;
         }
 
-        private int GitFlowOrder(string branch1, string branch2) => (branch1, branch2) switch {
+        private void RefreshStatus(object? sender, EventArgs args) => Status = new(repo!);
+
+        private int DevelopFirstMainLast(string branch1, string branch2) => (branch1, branch2) switch {
+            ("main"   , _        ) =>  1,
+            (_        , "main"   ) => -1,
             ("master" , _        ) =>  1,
             (_        , "master" ) => -1,
+
             ("develop", _        ) => -1,
             (_        , "develop") =>  1,
+
             (_        , _        ) => branch1.CompareTo(branch2)
         };
 

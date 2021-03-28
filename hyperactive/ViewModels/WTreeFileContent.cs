@@ -10,8 +10,10 @@
         public string? Content {
             get => content;
             set {
-                _ = SetProperty(ref content, value);
-                File.WriteAllText(fullPath, value);
+                if (SetProperty(ref content, value)) {
+                    File.WriteAllText(fullPath, value);
+                    Events.RaiseWorkingTreeChanged();
+                }
             }
         }
 
