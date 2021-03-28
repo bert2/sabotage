@@ -197,7 +197,7 @@
                 FontFamily="Consolas"
                 HorizontalScrollBarVisibility="Auto"
                 IsReadOnly="{Binding SelectedContent.ReadOnly}"
-                Text="{Binding SelectedContent.Content}"
+                Text="{Binding SelectedContent.Content, UpdateSourceTrigger=PropertyChanged, Delay=3000}"
                 TextWrapping="NoWrap"
                 VerticalScrollBarVisibility="Auto" />
             </Grid>
