@@ -12,7 +12,7 @@
   Height="768"
   d:DataContext="{d:DesignInstance Type=local:Repo,
                                    IsDesignTimeCreatable=True}"
-  Background="{DynamicResource MaterialDesignPaper}"
+  Background="{DynamicResource MaterialDesignToolBarBackground}"
   FontFamily="{DynamicResource MaterialDesignFont}"
   TextElement.FontSize="13"
   TextElement.FontWeight="Regular"
@@ -65,7 +65,8 @@
     <mat:Card
       Grid.Row="0"
       Margin="16"
-      Padding="8">
+      Padding="8"
+      Background="{DynamicResource MaterialDesignPaper}">
       <StackPanel>
         <Grid>
           <Grid.ColumnDefinitions>
@@ -81,8 +82,8 @@
             mat:TextFieldAssist.HasClearButton="True"
             mat:TextFieldAssist.HasLeadingIcon="True"
             mat:TextFieldAssist.LeadingIcon="Git"
-            CaretBrush="{DynamicResource PrimaryHueLightBrush}"
-            FontSize="16">
+            FontSize="16"
+            Style="{StaticResource MaterialDesignFloatingHintTextBox}">
             <TextBox.Text>
               <Binding Path="Directory" UpdateSourceTrigger="PropertyChanged">
                 <Binding.ValidationRules>
@@ -96,14 +97,16 @@
             Grid.Column="1"
             Margin="8,0,0,0"
             Command="{Binding SelectDirectoryCmd}"
-            Content="{mat:PackIcon FolderOpen}"
+            Content="{mat:PackIcon FolderOpen,
+                                   Size=20}"
             ToolTip="open git repository" />
 
           <Button
             Grid.Column="2"
             Margin="8,0,0,0"
             Command="{Binding LoadRepositoryCmd}"
-            Content="{mat:PackIcon Reload}"
+            Content="{mat:PackIcon Reload,
+                                   Size=20}"
             ToolTip="reload git repository">
             <Button.IsEnabled>
               <MultiBinding Converter="{StaticResource AndConv}">
@@ -163,7 +166,10 @@
       </ItemsControl.IsEnabled>
       <ItemsControl.ItemTemplate>
         <DataTemplate DataType="{x:Type local:IBranch}">
-          <mat:Card Margin="16" Padding="16">
+          <mat:Card
+            Margin="16"
+            Padding="16"
+            Background="{DynamicResource MaterialDesignPaper}">
             <Grid>
               <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
@@ -187,9 +193,17 @@
                   <Button
                     Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                     CommandParameter="{Binding}"
-                    Content="{mat:PackIcon TrayArrowDown}"
-                    Style="{DynamicResource MaterialDesignFloatingActionMiniButton}"
+                    Content="{mat:PackIcon TrayArrowDown,
+                                           Size=20}"
+                    Style="{DynamicResource MaterialDesignIconButton}"
                     ToolTip="checkout this branch (discards all local changes)" />
+                  <Button
+                    Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                    CommandParameter="{Binding}"
+                    Content="{mat:PackIcon SourceMerge,
+                                           Size=20}"
+                    Style="{DynamicResource MaterialDesignIconButton}"
+                    ToolTip="merge this branch into another..." />
                 </StackPanel>
               </Grid>
 
@@ -197,7 +211,7 @@
                 Grid.Row="1"
                 Margin="0,16,0,0"
                 BorderBrush="{StaticResource MaterialDesignLightSeparatorBackground}"
-                BorderThickness="2"
+                BorderThickness="1"
                 ItemsSource="{Binding CurrentDirectory}"
                 SelectedItem="{Binding SelectedItem}">
                 <ListBox.ItemTemplate>
@@ -224,14 +238,12 @@
                 VerticalContentAlignment="Stretch"
                 AcceptsReturn="True"
                 AcceptsTab="False"
-                BorderBrush="{StaticResource MaterialDesignLightSeparatorBackground}"
-                BorderThickness="2"
-                CaretBrush="{DynamicResource PrimaryHueLightBrush}"
                 FontFamily="Consolas"
                 HorizontalScrollBarVisibility="Auto"
                 IsEnabled="{Binding SelectedContent, Converter={StaticResource NullToFalseConv}}"
                 IsReadOnly="{Binding SelectedContent.ReadOnly}"
-                Text="{Binding SelectedContent.Content, UpdateSourceTrigger=PropertyChanged, Delay=3000}"
+                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                Text="{Binding SelectedContent.Content, UpdateSourceTrigger=PropertyChanged, Delay=1000}"
                 TextWrapping="NoWrap"
                 VerticalScrollBarVisibility="Auto" />
             </Grid>
