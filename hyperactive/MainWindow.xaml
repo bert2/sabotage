@@ -33,6 +33,11 @@
       TrueBrush="{StaticResource PrimaryHueMidBrush}" />
 
     <local:BoolToBrushConverter
+      x:Key="IsCleanToStatusBrushConv"
+      FalseBrush="#F44336"
+      TrueBrush="{StaticResource SecondaryHueDarkBrush}" />
+
+    <local:BoolToBrushConverter
       x:Key="IsHeadToBorderBrushConv"
       FalseBrush="{StaticResource MaterialDesignLightSeparatorBackground}"
       TrueBrush="{StaticResource PrimaryHueMidBrush}" />
@@ -138,7 +143,7 @@
           <TextBlock
             Margin="8,0,0,0"
             FontFamily="Consolas"
-            Foreground="{Binding Status.IsClean, Converter={StaticResource BoolToColorConv}, Mode=OneWay}">
+            Foreground="{Binding Status.IsClean, Converter={StaticResource IsCleanToStatusBrushConv}, Mode=OneWay}">
             <Run Text="{Binding Status.Head, Mode=OneWay}" />
             +<Run Text="{Binding Status.IdxAdd, Mode=OneWay}" />
             ~<Run Text="{Binding Status.IdxMod, Mode=OneWay}" />
