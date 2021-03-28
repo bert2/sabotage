@@ -1,6 +1,7 @@
 ﻿namespace hyperactive {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Windows;
@@ -33,15 +34,13 @@
         private int? remoteBranchesCount;
         public int? RemoteBranchesCount { get => remoteBranchesCount; private set => SetProperty(ref remoteBranchesCount, value); }
 
-        private bool isLoading;
-        public bool IsLoading { get => isLoading; private set => SetProperty(ref isLoading, value); }
-
         private bool isLoaded;
         public bool IsLoaded { get => isLoaded; private set => SetProperty(ref isLoaded, value); }
 
         public Repo() {
             SelectDirectoryCmd = new Command(SelectDirectory);
             LoadRepositoryCmd = new Command(LoadRepository);
+            CheckoutBranchCmd = new Command<IBranch>(CheckoutBranch);
             WeakEventManager<Events, EventArgs>.AddHandler(Events.Instance, nameof(Events.WorkingTreeChanged), RefreshStatus);
             LoadRepository(); // TODO: remove test code
         }
@@ -49,6 +48,8 @@
         public ICommand SelectDirectoryCmd { get; }
 
         public ICommand LoadRepositoryCmd { get; }
+
+        public ICommand CheckoutBranchCmd { get; }
 
         private void SelectDirectory() {
             using var dialog = new FolderBrowserDialog {
@@ -64,11 +65,23 @@
         }
 
         private void LoadRepository() {
-            IsLoading = true;
-
             Cleanup();
-
             repo = new Repository(Directory);
+            LoadRepositoryData();
+        }
+
+        private void CheckoutBranch(IBranch branch) {
+            Debug.Assert(repo is not null);
+
+            repo.Reset(ResetMode.Hard);
+            repo.RemoveUntrackedFiles();
+            Commands.Checkout(repo, branch.Name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
+
+            LoadRepositoryData();
+        }
+
+        private void LoadRepositoryData() {
+            Debug.Assert(repo is not null);
 
             Status = new(repo);
 
@@ -84,7 +97,6 @@
             LocalBranchesCount = Branches.Length;
             RemoteBranchesCount = repo.Branches.Count(b => b.IsRemote);
 
-            IsLoading = false;
             IsLoaded = true;
         }
 

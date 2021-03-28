@@ -13,4 +13,18 @@
 
         public void Execute(object? parameter) => execute();
     }
+
+    public class Command<T> : ICommand {
+        private readonly Action<T> execute;
+
+        public event EventHandler? CanExecuteChanged;
+
+        public Command(Action<T> execute) => this.execute = execute;
+
+        public bool CanExecute(object? parameter) => true;
+
+        public void Execute(object? parameter) => execute(parameter is T t
+            ? t
+            : throw new InvalidOperationException($"Command parameter {parameter} must be of type {typeof(T).Name} and cannot be null."));
+    }
 }

@@ -169,11 +169,26 @@
                 <RowDefinition Height="*" />
               </Grid.RowDefinitions>
 
-              <TextBlock
-                Grid.Row="0"
-                Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
-                Text="{Binding Name}"
-                TextAlignment="Center" />
+              <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                  Grid.Column="0"
+                  VerticalAlignment="Center"
+                  Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
+                  Text="{Binding Name}" />
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                  <Button
+                    Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                    CommandParameter="{Binding}"
+                    Content="{mat:PackIcon TrayArrowDown}"
+                    Style="{DynamicResource MaterialDesignFloatingActionMiniButton}"
+                    ToolTip="checkout this branch (discards all local changes)" />
+                </StackPanel>
+              </Grid>
 
               <ListBox
                 Grid.Row="1"
