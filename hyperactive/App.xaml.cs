@@ -1,15 +1,26 @@
 ﻿namespace hyperactive {
     using System;
-    using System.Collections.Generic;
-    using System.Configuration;
-    using System.Data;
-    using System.Linq;
     using System.Threading.Tasks;
     using System.Windows;
 
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application {
+        protected override void OnStartup(StartupEventArgs e) {
+            base.OnStartup(e);
+
+            AppDomain.CurrentDomain.UnhandledException += (_, e) => HandleException((Exception)e.ExceptionObject);
+
+            TaskScheduler.UnobservedTaskException += (_, e) => {
+                HandleException(e.Exception);
+                e.SetObserved();
+            };
+
+            DispatcherUnhandledException += (_, e) => {
+                HandleException(e.Exception);
+                e.Handled = true;
+            };
+        }
+
+        private static void HandleException(Exception ex)
+            => MessageBox.Show(ex.ToString(), ex.GetType().Name, MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }
