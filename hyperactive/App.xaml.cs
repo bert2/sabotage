@@ -21,6 +21,6 @@
         }
 
         private static void HandleException(Exception ex)
-            => MessageBox.Show(ex.ToString(), ex.GetType().Name, MessageBoxButton.OK, MessageBoxImage.Error);
+            => MessageBox.Show(ex.ToString(), $"{ex.GetType().Name}: {ex.Message}", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }

@@ -218,8 +218,7 @@
                     ToolTip="checkout this branch (discards all local changes)" />
 
                   <Button
-                    Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
-                    CommandParameter="{Binding}"
+                    Command="{Binding DataContext.CommitCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                     Content="{mat:PackIcon ContentSave,
                                            Size=20}"
                     IsEnabled="{Binding IsHead}"

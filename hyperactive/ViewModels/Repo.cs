@@ -37,19 +37,22 @@
         private bool isLoaded;
         public bool IsLoaded { get => isLoaded; private set => SetProperty(ref isLoaded, value); }
 
-        public Repo() {
-            SelectDirectoryCmd = new Command(SelectDirectory);
-            LoadRepositoryCmd = new Command(LoadRepository);
-            CheckoutBranchCmd = new Command<IBranch>(CheckoutBranch);
-            WeakEventManager<Events, EventArgs>.AddHandler(Events.Instance, nameof(Events.WorkingTreeChanged), RefreshStatus);
-            LoadRepository(); // TODO: remove test code
-        }
-
         public ICommand SelectDirectoryCmd { get; }
 
         public ICommand LoadRepositoryCmd { get; }
 
         public ICommand CheckoutBranchCmd { get; }
+
+        public ICommand CommitCmd { get; }
+
+        public Repo() {
+            SelectDirectoryCmd = new Command(SelectDirectory);
+            LoadRepositoryCmd = new Command(LoadRepository);
+            CheckoutBranchCmd = new Command<IBranch>(CheckoutBranch);
+            CommitCmd = new Command(Commit);
+            WeakEventManager<Events, EventArgs>.AddHandler(Events.Instance, nameof(Events.WorkingTreeChanged), RefreshStatus);
+            LoadRepository(); // TODO: remove test code
+        }
 
         private void SelectDirectory() {
             using var dialog = new FolderBrowserDialog {
@@ -100,7 +103,21 @@
             IsLoaded = true;
         }
 
-        private void RefreshStatus(object? sender, EventArgs args) => Status = new(repo!);
+        private void Commit() {
+            Debug.Assert(repo is not null);
+
+            Commands.Stage(repo, "*");
+
+            var sig = repo.Config.BuildSignature(DateTime.Now)
+                ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
+            repo.Commit("some changes", sig, sig, new CommitOptions { AllowEmptyCommit = true });
+
+            RefreshStatus();
+        }
+
+        private void RefreshStatus(object? sender, EventArgs args) => RefreshStatus();
+
+        private void RefreshStatus() => Status = new(repo!);
 
         private int DevelopFirstMainLast(string branch1, string branch2) => (branch1, branch2) switch {
             ("main"   , _        ) =>  1,
