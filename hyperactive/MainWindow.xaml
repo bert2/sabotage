@@ -222,6 +222,7 @@
                     CommandParameter="{Binding}"
                     Content="{mat:PackIcon ContentSave,
                                            Size=20}"
+                    IsEnabled="{Binding IsHead}"
                     Style="{StaticResource MaterialDesignIconButton}"
                     ToolTip="stage and commit all local changes" />
 
