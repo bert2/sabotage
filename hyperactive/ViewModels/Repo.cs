@@ -110,7 +110,7 @@
 
             var sig = repo.Config.BuildSignature(DateTime.Now)
                 ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
-            repo.Commit("some changes", sig, sig, new CommitOptions { AllowEmptyCommit = true });
+            repo.Commit("some changes", sig, sig);
 
             RefreshStatus();
         }
