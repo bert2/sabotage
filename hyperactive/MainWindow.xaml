@@ -29,8 +29,8 @@
 
     <local:BoolToBrushConverter
       x:Key="IsHeadToHeaderBrushConv"
-      FalseBrush="#DDFFFFFF"
-      TrueBrush="{StaticResource PrimaryHueMidBrush}" />
+      FalseBrush="{StaticResource MaterialDesignBody}"
+      TrueBrush="{StaticResource SecondaryHueLightBrush}" />
 
     <local:BoolToBrushConverter
       x:Key="IsCleanToStatusBrushConv"
@@ -190,12 +190,23 @@
                   <ColumnDefinition Width="*" />
                   <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock
+                <StackPanel
                   Grid.Column="0"
                   Margin="8,0,0,0"
                   VerticalAlignment="Center"
-                  Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
-                  Text="{Binding Name}" />
+                  Orientation="Horizontal">
+                  <TextBlock
+                    Foreground="{Binding IsHead, Converter={StaticResource IsHeadToHeaderBrushConv}}"
+                    Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
+                    Text="* "
+                    Visibility="{Binding IsHead, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                  <TextBlock
+                    Foreground="{Binding IsHead, Converter={StaticResource IsHeadToHeaderBrushConv}}"
+                    Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
+                    Text="{Binding Name}" />
+                </StackPanel>
+
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                   <Button
