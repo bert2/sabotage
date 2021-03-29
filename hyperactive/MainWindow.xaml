@@ -125,7 +125,10 @@
           </Button>
         </Grid>
 
-        <StackPanel Margin="0,16,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel
+          Margin="0,16,0,0"
+          HorizontalAlignment="Center"
+          Orientation="Horizontal">
           <StackPanel.IsEnabled>
             <MultiBinding Converter="{StaticResource AndConv}">
               <Binding
@@ -200,15 +203,88 @@
                     CommandParameter="{Binding}"
                     Content="{mat:PackIcon TrayArrowDown,
                                            Size=20}"
-                    Style="{DynamicResource MaterialDesignIconButton}"
+                    Style="{StaticResource MaterialDesignIconButton}"
                     ToolTip="checkout this branch (discards all local changes)" />
+
                   <Button
                     Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                     CommandParameter="{Binding}"
-                    Content="{mat:PackIcon SourceMerge,
+                    Content="{mat:PackIcon ContentSave,
                                            Size=20}"
-                    Style="{DynamicResource MaterialDesignIconButton}"
-                    ToolTip="merge this branch into another..." />
+                    Style="{StaticResource MaterialDesignIconButton}"
+                    ToolTip="stage and commit all local changes" />
+
+                  <mat:PopupBox
+                    Padding="2,0,2,0"
+                    Foreground="{DynamicResource PrimaryHueMidBrush}"
+                    PlacementMode="BottomAndAlignLeftEdges"
+                    Style="{StaticResource MaterialDesignPopupBox}">
+                    <StackPanel>
+                      <Button
+                        HorizontalContentAlignment="Left"
+                        Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                        CommandParameter="{Binding}"
+                        Foreground="{DynamicResource PrimaryHueLightBrush}"
+                        Style="{DynamicResource MaterialDesignFlatButton}"
+                        ToolTip="create a new branch from here...">
+                        <StackPanel Orientation="Horizontal">
+                          <mat:PackIcon Kind="SourceBranchPlus" />
+                          <TextBlock
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="branch" />
+                        </StackPanel>
+                      </Button>
+
+                      <Button
+                        HorizontalContentAlignment="Left"
+                        Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                        CommandParameter="{Binding}"
+                        Foreground="{DynamicResource PrimaryHueLightBrush}"
+                        Style="{DynamicResource MaterialDesignFlatButton}"
+                        ToolTip="merge this branch into another...">
+                        <StackPanel Orientation="Horizontal">
+                          <mat:PackIcon Kind="SourceMerge" />
+                          <TextBlock
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="merge" />
+                        </StackPanel>
+                      </Button>
+
+                      <Button
+                        HorizontalContentAlignment="Left"
+                        Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                        CommandParameter="{Binding}"
+                        Foreground="{DynamicResource PrimaryHueLightBrush}"
+                        Style="{DynamicResource MaterialDesignFlatButton}"
+                        ToolTip="cherry-pick a commit into this branch...">
+                        <StackPanel Orientation="Horizontal">
+                          <mat:PackIcon Kind="SourceCommit" />
+                          <TextBlock
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="cherry-pick" />
+                        </StackPanel>
+                      </Button>
+
+                      <Button
+                        HorizontalContentAlignment="Left"
+                        Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                        CommandParameter="{Binding}"
+                        Foreground="{DynamicResource PrimaryHueLightBrush}"
+                        Style="{DynamicResource MaterialDesignFlatButton}"
+                        ToolTip="delete this branch locally">
+                        <StackPanel Orientation="Horizontal">
+                          <mat:PackIcon Kind="TrashCan" />
+                          <TextBlock
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="delete" />
+                        </StackPanel>
+                      </Button>
+                    </StackPanel>
+                  </mat:PopupBox>
                 </StackPanel>
               </Grid>
 
