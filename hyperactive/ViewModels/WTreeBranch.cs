@@ -8,7 +8,11 @@
 
     using LibGit2Sharp;
 
+    using MoreLinq;
+
     public class WTreeBranch : ViewModel, IBranch {
+        private readonly string repoRootPath;
+
         private string name;
         public string Name { get => name; private set => SetProperty(ref name, value); }
 
@@ -33,9 +37,10 @@
         public ICommand NavigateCmd { get; }
 
         public WTreeBranch(string repoDirectory, Branch branch) {
+            repoRootPath = Path.TrimEndingDirectorySeparator(repoDirectory);
             Name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
-            CurrentDirectory = OpenFolder(new DirectoryInfo(repoDirectory));
+            CurrentDirectory = OpenFolder(new DirectoryInfo(repoRootPath));
             NavigateCmd = new Command(Navigate);
         }
 
@@ -57,7 +62,11 @@
             .Where(x => x.Name != ".git")
             .OrderBy(x => x, Comparer<FileSystemInfo>.Create(DirectoriesFirst))
             .Select(x => new WTreeDirectoryItem(x))
-            .Prepend(new WTreeDirectoryItem("[ .. ]", (folder.Parent ?? folder).FullName, ItemType.Folder))
+            .Insert(
+                folder.FullName.IsSubPathOf(repoRootPath)
+                    ? new[] { new WTreeDirectoryItem("[ .. ]", folder.Parent!.FullName, ItemType.Folder) }
+                    : Enumerable.Empty<WTreeDirectoryItem>(),
+                index: 0)
             .ToArray();
 
         private static void RenameFile() {
