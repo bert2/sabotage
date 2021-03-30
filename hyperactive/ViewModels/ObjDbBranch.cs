@@ -1,6 +1,7 @@
 ﻿namespace hyperactive {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Windows.Input;
 
     using LibGit2Sharp;
 
@@ -24,6 +25,8 @@
         private IFileContent? selectedContent;
         public IFileContent? SelectedContent { get => selectedContent; private set => SetProperty(ref selectedContent, value); }
 
+        public ICommand FooCmd { get; }
+
         public ObjDbBranch(Branch branch) {
             Name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
@@ -31,6 +34,7 @@
                 .OrderBy(x => x, Comparer<TreeEntry>.Create(DirectoriesFirst))
                 .Select(x => new ObjDbDirectoryItem(x))
                 .ToArray();
+            FooCmd = new Command(() => { });
         }
 
         private void UpdateContent() => SelectedContent = SelectedItem?.Type == DirectoryItemType.File

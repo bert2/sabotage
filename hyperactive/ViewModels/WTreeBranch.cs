@@ -2,6 +2,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Windows.Input;
 
     using LibGit2Sharp;
 
@@ -27,6 +28,8 @@
         private IFileContent? selectedContent;
         public IFileContent? SelectedContent { get => selectedContent; private set => SetProperty(ref selectedContent, value); }
 
+        public ICommand FooCmd { get; }
+
         public WTreeBranch(string repoDirectory, Branch branch) {
             Name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
@@ -36,6 +39,7 @@
                 .OrderBy(x => x, Comparer<FileSystemInfo>.Create(DirectoriesFirst))
                 .Select(x => new WTreeDirectoryItem(x))
                 .ToArray();
+            FooCmd = new Command(() => { });
         }
 
         private void UpdateContent() => SelectedContent = SelectedItem?.Type == DirectoryItemType.File

@@ -207,7 +207,6 @@
                     Text="{Binding Name}" />
                 </StackPanel>
 
-
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                   <Button
                     Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
@@ -319,6 +318,9 @@
                           </Style.Triggers>
                         </Style>
                       </ContentControl.Style>
+                      <ContentControl.InputBindings>
+                        <MouseBinding Command="{Binding DataContext.FooCmd, RelativeSource={RelativeSource AncestorType=ItemsControl}}" MouseAction="LeftDoubleClick" />
+                      </ContentControl.InputBindings>
                     </ContentControl>
                   </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -348,6 +350,5 @@
         </ItemsPanelTemplate>
       </ItemsControl.ItemsPanel>
     </ItemsControl>
-
   </Grid>
 </Window>
