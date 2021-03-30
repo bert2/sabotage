@@ -37,7 +37,7 @@
             NavigateCmd = new Command(() => { });
         }
 
-        private void UpdateContent() => SelectedContent = SelectedItem?.Type == DirectoryItemType.File
+        private void UpdateContent() => SelectedContent = SelectedItem?.Type == ItemType.File
             ? SelectedItem.ToFileContent()
             : null;
 

@@ -1,12 +1,12 @@
 ﻿namespace hyperactive {
-    public enum DirectoryItemType { Folder, File }
+    public enum ItemType { Folder, File }
 
     public interface IDirectoryItem {
         public string Name { get; }
 
         public string Path { get; }
 
-        public DirectoryItemType Type { get; }
+        public ItemType Type { get; }
 
         IFileContent ToFileContent();
     }

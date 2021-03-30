@@ -3,20 +3,25 @@
     using System.IO;
 
     public class WTreeDirectoryItem: IDirectoryItem {
-        private readonly FileSystemInfo fsi;
+        public string Name { get; }
 
-        public string Name => fsi.Name;
+        public string Path { get; }
 
-        public string Path => fsi.FullName;
+        public ItemType Type { get; }
 
-        public DirectoryItemType Type => (fsi.Attributes & FileAttributes.Directory) != 0
-            ? DirectoryItemType.Folder
-            : DirectoryItemType.File;
+        public WTreeDirectoryItem(FileSystemInfo fsi)
+            : this(fsi.Name, fsi.FullName, ItemType(fsi)) { }
 
-        public WTreeDirectoryItem(FileSystemInfo fsi) => this.fsi = fsi;
+        public WTreeDirectoryItem(string name, string path, ItemType type)
+            => (Name, Path, Type) = (name, path, type);
 
-        public IFileContent ToFileContent() => Type == DirectoryItemType.File
+        public IFileContent ToFileContent() => Type == hyperactive.ItemType.File
             ? new WTreeFileContent(Path)
             : throw new InvalidOperationException($"Cannot get content of {Type}.");
+
+        private static ItemType ItemType(FileSystemInfo fsi)
+            => (fsi.Attributes & FileAttributes.Directory) != 0
+                ? hyperactive.ItemType.Folder
+                : hyperactive.ItemType.File;
     }
 }

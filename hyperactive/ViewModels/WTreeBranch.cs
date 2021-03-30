@@ -35,28 +35,29 @@
         public WTreeBranch(string repoDirectory, Branch branch) {
             Name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
-            CurrentDirectory = OpenFolder(repoDirectory);
+            CurrentDirectory = OpenFolder(new DirectoryInfo(repoDirectory));
             NavigateCmd = new Command(Navigate);
         }
 
-        private void UpdateContent() => SelectedContent = SelectedItem?.Type == DirectoryItemType.File
+        private void UpdateContent() => SelectedContent = SelectedItem?.Type == ItemType.File
             ? SelectedItem.ToFileContent()
             : null;
 
         private void Navigate() {
             Debug.Assert(SelectedItem is not null);
 
-            if (SelectedItem.Type == DirectoryItemType.Folder)
-                CurrentDirectory = OpenFolder(SelectedItem.Path);
-            else if (SelectedItem.Type == DirectoryItemType.File)
+            if (SelectedItem.Type == ItemType.Folder)
+                CurrentDirectory = OpenFolder(new DirectoryInfo(SelectedItem.Path));
+            else if (SelectedItem.Type == ItemType.File)
                 RenameFile();
         }
 
-        private WTreeDirectoryItem[] OpenFolder(string path) => new DirectoryInfo(path)
+        private WTreeDirectoryItem[] OpenFolder(DirectoryInfo folder) => folder
             .EnumerateFileSystemInfos()
             .Where(x => x.Name != ".git")
             .OrderBy(x => x, Comparer<FileSystemInfo>.Create(DirectoriesFirst))
             .Select(x => new WTreeDirectoryItem(x))
+            .Prepend(new WTreeDirectoryItem("[ .. ]", (folder.Parent ?? folder).FullName, ItemType.Folder))
             .ToArray();
 
         private static void RenameFile() {

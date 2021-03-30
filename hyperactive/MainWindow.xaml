@@ -307,7 +307,7 @@
                             </Setter.Value>
                           </Setter>
                           <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=Type}" Value="{x:Static local:DirectoryItemType.Folder}">
+                            <DataTrigger Binding="{Binding Path=Type}" Value="{x:Static local:ItemType.Folder}">
                               <Setter Property="ContentTemplate">
                                 <Setter.Value>
                                   <DataTemplate DataType="{x:Type local:IDirectoryItem}">

@@ -10,13 +10,13 @@
 
         public string Path => treeEntry.Path;
 
-        public DirectoryItemType Type => treeEntry.Mode == Mode.Directory
-            ? DirectoryItemType.Folder
-            : DirectoryItemType.File;
+        public ItemType Type => treeEntry.Mode == Mode.Directory
+            ? ItemType.Folder
+            : ItemType.File;
 
         public ObjDbDirectoryItem(TreeEntry treeEntry) => this.treeEntry = treeEntry;
 
-        public IFileContent ToFileContent() => Type == DirectoryItemType.File
+        public IFileContent ToFileContent() => Type == ItemType.File
             ? new ObjDbFileContent(treeEntry.Target.Peel<Blob>())
             : throw new InvalidOperationException($"Cannot get content of {Type}.");
     }
