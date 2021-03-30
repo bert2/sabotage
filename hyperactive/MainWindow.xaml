@@ -300,7 +300,7 @@
                             <Setter.Value>
                               <DataTemplate DataType="{x:Type local:IDirectoryItem}">
                                 <StackPanel Orientation="Horizontal">
-                                  <mat:PackIcon Kind="File" />
+                                  <mat:PackIcon Kind="FileOutline" />
                                   <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
                                 </StackPanel>
                               </DataTemplate>
