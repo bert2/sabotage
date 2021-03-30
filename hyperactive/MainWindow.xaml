@@ -323,7 +323,7 @@
                         </Style>
                       </ContentControl.Style>
                       <ContentControl.InputBindings>
-                        <MouseBinding Command="{Binding DataContext.FooCmd, RelativeSource={RelativeSource AncestorType=ItemsControl}}" MouseAction="LeftDoubleClick" />
+                        <MouseBinding Command="{Binding DataContext.NavigateCmd, RelativeSource={RelativeSource AncestorType=ItemsControl}}" MouseAction="LeftDoubleClick" />
                       </ContentControl.InputBindings>
                     </ContentControl>
                   </DataTemplate>

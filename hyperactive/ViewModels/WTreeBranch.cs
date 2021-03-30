@@ -1,7 +1,9 @@
 ﻿namespace hyperactive {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Windows;
     using System.Windows.Input;
 
     using LibGit2Sharp;
@@ -28,23 +30,38 @@
         private IFileContent? selectedContent;
         public IFileContent? SelectedContent { get => selectedContent; private set => SetProperty(ref selectedContent, value); }
 
-        public ICommand FooCmd { get; }
+        public ICommand NavigateCmd { get; }
 
         public WTreeBranch(string repoDirectory, Branch branch) {
             Name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
-            CurrentDirectory = new DirectoryInfo(repoDirectory)
-                .EnumerateFileSystemInfos()
-                .Where(x => x.Name != ".git")
-                .OrderBy(x => x, Comparer<FileSystemInfo>.Create(DirectoriesFirst))
-                .Select(x => new WTreeDirectoryItem(x))
-                .ToArray();
-            FooCmd = new Command(() => { });
+            CurrentDirectory = OpenFolder(repoDirectory);
+            NavigateCmd = new Command(Navigate);
         }
 
         private void UpdateContent() => SelectedContent = SelectedItem?.Type == DirectoryItemType.File
             ? SelectedItem.ToFileContent()
             : null;
+
+        private void Navigate() {
+            Debug.Assert(SelectedItem is not null);
+
+            if (SelectedItem.Type == DirectoryItemType.Folder)
+                CurrentDirectory = OpenFolder(SelectedItem.Path);
+            else if (SelectedItem.Type == DirectoryItemType.File)
+                RenameFile();
+        }
+
+        private WTreeDirectoryItem[] OpenFolder(string path) => new DirectoryInfo(path)
+            .EnumerateFileSystemInfos()
+            .Where(x => x.Name != ".git")
+            .OrderBy(x => x, Comparer<FileSystemInfo>.Create(DirectoriesFirst))
+            .Select(x => new WTreeDirectoryItem(x))
+            .ToArray();
+
+        private static void RenameFile() {
+            MessageBox.Show("TODO: rename file dialog");
+        }
 
         private int DirectoriesFirst(FileSystemInfo a, FileSystemInfo b) {
             var aIsDir = (a.Attributes & FileAttributes.Directory) != 0;

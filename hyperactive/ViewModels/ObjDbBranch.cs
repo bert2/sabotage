@@ -25,7 +25,7 @@
         private IFileContent? selectedContent;
         public IFileContent? SelectedContent { get => selectedContent; private set => SetProperty(ref selectedContent, value); }
 
-        public ICommand FooCmd { get; }
+        public ICommand NavigateCmd { get; }
 
         public ObjDbBranch(Branch branch) {
             Name = branch.FriendlyName;
@@ -34,7 +34,7 @@
                 .OrderBy(x => x, Comparer<TreeEntry>.Create(DirectoriesFirst))
                 .Select(x => new ObjDbDirectoryItem(x))
                 .ToArray();
-            FooCmd = new Command(() => { });
+            NavigateCmd = new Command(() => { });
         }
 
         private void UpdateContent() => SelectedContent = SelectedItem?.Type == DirectoryItemType.File

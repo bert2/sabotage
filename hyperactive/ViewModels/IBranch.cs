@@ -7,6 +7,6 @@
         public IDirectoryItem[] CurrentDirectory { get; }
         public IDirectoryItem? SelectedItem { get; set; }
         public IFileContent? SelectedContent { get; }
-        public ICommand FooCmd { get; }
+        public ICommand NavigateCmd { get; }
     }
 }
