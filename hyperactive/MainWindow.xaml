@@ -46,20 +46,6 @@
       x:Key="IsHeadToCardBgBrushConv"
       FalseBrush="{StaticResource MaterialDesignCardBackground}"
       TrueBrush="{StaticResource MaterialDesignLightSeparatorBackground}" />
-
-    <DataTemplate x:Key="FolderTemplate" DataType="{x:Type local:IDirectoryItem}">
-      <StackPanel Orientation="Horizontal">
-        <mat:PackIcon Kind="Folder" />
-        <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
-      </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="FileTemplate" DataType="{x:Type local:IDirectoryItem}">
-      <StackPanel Orientation="Horizontal">
-        <mat:PackIcon Kind="File" />
-        <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
-      </StackPanel>
-    </DataTemplate>
   </Window.Resources>
   <Grid>
     <Grid.RowDefinitions>
@@ -310,10 +296,28 @@
                     <ContentControl Content="{Binding}">
                       <ContentControl.Style>
                         <Style TargetType="{x:Type ContentControl}">
-                          <Setter Property="ContentTemplate" Value="{StaticResource FileTemplate}" />
+                          <Setter Property="ContentTemplate">
+                            <Setter.Value>
+                              <DataTemplate DataType="{x:Type local:IDirectoryItem}">
+                                <StackPanel Orientation="Horizontal">
+                                  <mat:PackIcon Kind="File" />
+                                  <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
+                                </StackPanel>
+                              </DataTemplate>
+                            </Setter.Value>
+                          </Setter>
                           <Style.Triggers>
                             <DataTrigger Binding="{Binding Path=Type}" Value="{x:Static local:DirectoryItemType.Folder}">
-                              <Setter Property="ContentTemplate" Value="{StaticResource FolderTemplate}" />
+                              <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                  <DataTemplate DataType="{x:Type local:IDirectoryItem}">
+                                    <StackPanel Orientation="Horizontal">
+                                      <mat:PackIcon Kind="Folder" />
+                                      <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
+                                    </StackPanel>
+                                  </DataTemplate>
+                                </Setter.Value>
+                              </Setter>
                             </DataTrigger>
                           </Style.Triggers>
                         </Style>
