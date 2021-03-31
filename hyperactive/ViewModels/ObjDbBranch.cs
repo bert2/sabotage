@@ -11,7 +11,6 @@
 
     public class ObjDbBranch : ViewModel, IBranch {
         private readonly Tree repoRoot;
-        private readonly Stack<Tree> parents = new();
 
         public string Name { get; }
 
@@ -36,11 +35,9 @@
 
         public ObjDbBranch(Branch branch) {
             repoRoot = branch.Tip.Tree;
-            parents.Push(repoRoot);
-            Trace.WriteLine(string.Join(',', parents.Select(x => x.Sha.Substring(0, 6))));
             Name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
-            CurrentDirectory = OpenFolder(repoRoot, parents);
+            CurrentDirectory = OpenFolder(repoRoot, current: new ObjDbDirectoryItem("(root)", repoRoot, ItemType.Folder, null));
             NavigateCmd = new Command(Navigate);
         }
 
@@ -53,28 +50,17 @@
 
             if (SelectedItem.Type == ItemType.Folder) {
                 var treeToOpen = ((ObjDbDirectoryItem)SelectedItem).GitObject.Peel<Tree>();
-
-                var back = SelectedItem.Name == "[ .. ]";
-                if (back)
-                    parents.Pop();
-
-                Trace.WriteLine(string.Join(',', parents.Select(x => x.Sha.Substring(0, 6))));
-
-                CurrentDirectory = OpenFolder(treeToOpen, parents);
-
-                if (!back)
-                    parents.Push(treeToOpen);
-
-                Trace.WriteLine(string.Join(',', parents.Select(x => x.Sha.Substring(0, 6))));
+                var current = ((ObjDbDirectoryItem)SelectedItem);
+                CurrentDirectory = OpenFolder(treeToOpen, current);
             }
         }
 
-        private ObjDbDirectoryItem[] OpenFolder(Tree folder, Stack<Tree> parents) => folder
+        private ObjDbDirectoryItem[] OpenFolder(Tree folder, ObjDbDirectoryItem current) => folder
             .OrderBy(x => x, Comparer<TreeEntry>.Create(DirectoriesFirst))
-            .Select(x => new ObjDbDirectoryItem(x))
+            .Select(x => new ObjDbDirectoryItem(x, current))
             .Insert(
                 folder != repoRoot
-                    ? new[] { new ObjDbDirectoryItem("[ .. ]", parents.Peek(), ItemType.Folder) }
+                    ? new[] { new ObjDbDirectoryItem("[ .. ]", current.Parent.GitObject, ItemType.Folder, current.Parent.Parent) }
                     : Enumerable.Empty<ObjDbDirectoryItem>(),
                 index: 0)
             .ToArray();
@@ -85,5 +71,14 @@
             (_             , Mode.Directory) => 1,
             (_             , _             ) => a.Name.CompareTo(b.Name)
         };
+
+        //private static Tree FindParent(Tree child, Tree start) {
+        //    return start.Any(x => x.Target.Id == child.Id)
+        //        ? start
+        //        : start
+        //            .Where(x => x.TargetType == TreeEntryTargetType.Tree)
+        //            .Select(x => FindParent(child, x.Target.Peel<Tree>()))
+
+        //}
     }
 }
