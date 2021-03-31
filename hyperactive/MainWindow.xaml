@@ -313,7 +313,7 @@
                                   <DataTemplate DataType="{x:Type local:IDirectoryItem}">
                                     <StackPanel Orientation="Horizontal">
                                       <mat:PackIcon Kind="Folder" />
-                                      <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
+                                      <TextBlock Margin="8,0,0,0" Text="{Binding GitObject.Sha}" />
                                     </StackPanel>
                                   </DataTemplate>
                                 </Setter.Value>

@@ -11,7 +11,10 @@
         public ItemType Type { get; }
 
         public ObjDbDirectoryItem(TreeEntry entry)
-            => (Name, GitObject, Type) = (entry.Name, entry.Target, GetItemType(entry));
+            : this(entry.Name, entry.Target, GetItemType(entry)) { }
+
+        public ObjDbDirectoryItem(string name, GitObject gitObject, ItemType type)
+            => (Name, GitObject, Type) = (name, gitObject, type);
 
         public IFileContent ToFileContent() => Type == ItemType.File
             ? new ObjDbFileContent(GitObject.Peel<Blob>())
