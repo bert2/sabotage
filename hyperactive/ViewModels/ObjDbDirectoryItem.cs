@@ -4,20 +4,23 @@
     using LibGit2Sharp;
 
     public class ObjDbDirectoryItem: IDirectoryItem {
-        private readonly TreeEntry treeEntry;
+        public string Name { get; }
 
-        public string Name => treeEntry.Name;
+        public GitObject GitObject { get; }
 
-        public string Path => treeEntry.Path;
+        public ItemType Type { get; }
 
-        public ItemType Type => treeEntry.Mode == Mode.Directory
-            ? ItemType.Folder
-            : ItemType.File;
-
-        public ObjDbDirectoryItem(TreeEntry treeEntry) => this.treeEntry = treeEntry;
+        public ObjDbDirectoryItem(TreeEntry entry)
+            => (Name, GitObject, Type) = (entry.Name, entry.Target, GetItemType(entry));
 
         public IFileContent ToFileContent() => Type == ItemType.File
-            ? new ObjDbFileContent(treeEntry.Target.Peel<Blob>())
+            ? new ObjDbFileContent(GitObject.Peel<Blob>())
             : throw new InvalidOperationException($"Cannot get content of {Type}.");
+
+        private static ItemType GetItemType(TreeEntry entry) => entry.TargetType switch {
+            TreeEntryTargetType.Tree => ItemType.Folder,
+            TreeEntryTargetType.Blob => ItemType.File,
+            _ => throw new InvalidOperationException($"{entry.TargetType}s are not supported.")
+        };
     }
 }

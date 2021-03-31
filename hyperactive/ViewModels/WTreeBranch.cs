@@ -52,7 +52,7 @@
             Debug.Assert(SelectedItem is not null);
 
             if (SelectedItem.Type == ItemType.Folder)
-                CurrentDirectory = OpenFolder(new DirectoryInfo(SelectedItem.Path));
+                CurrentDirectory = OpenFolder(new DirectoryInfo(((WTreeDirectoryItem)SelectedItem).Path));
             else if (SelectedItem.Type == ItemType.File)
                 RenameFile();
         }
