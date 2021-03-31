@@ -37,19 +37,15 @@
         private bool isLoaded;
         public bool IsLoaded { get => isLoaded; private set => SetProperty(ref isLoaded, value); }
 
-        public ICommand SelectDirectoryCmd { get; }
+        public ICommand SelectDirectoryCmd => new Command(SelectDirectory);
 
-        public ICommand LoadRepositoryCmd { get; }
+        public ICommand LoadRepositoryCmd => new Command(LoadRepository);
 
-        public ICommand CheckoutBranchCmd { get; }
+        public ICommand CheckoutBranchCmd => new Command<IBranch>(CheckoutBranch);
 
-        public ICommand CommitCmd { get; }
+        public ICommand CommitCmd => new Command(Commit);
 
         public Repo() {
-            SelectDirectoryCmd = new Command(SelectDirectory);
-            LoadRepositoryCmd = new Command(LoadRepository);
-            CheckoutBranchCmd = new Command<IBranch>(CheckoutBranch);
-            CommitCmd = new Command(Commit);
             WeakEventManager<Events, EventArgs>.AddHandler(Events.Instance, nameof(Events.WorkingTreeChanged), RefreshStatus);
             LoadRepository(); // TODO: remove test code
         }

@@ -30,14 +30,13 @@
         private IFileContent? selectedContent;
         public IFileContent? SelectedContent { get => selectedContent; private set => SetProperty(ref selectedContent, value); }
 
-        public ICommand NavigateCmd { get; }
+        public ICommand NavigateCmd => new Command(Navigate);
 
         public ObjDbBranch(Branch branch) {
             repoRoot = branch.Tip.Tree;
             Name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
             CurrentDirectory = OpenRootFolder(repoRoot);
-            NavigateCmd = new Command(Navigate);
         }
 
         private void UpdateContent() => SelectedContent = SelectedItem?.Type == ItemType.File

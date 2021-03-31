@@ -34,14 +34,13 @@
         private IFileContent? selectedContent;
         public IFileContent? SelectedContent { get => selectedContent; private set => SetProperty(ref selectedContent, value); }
 
-        public ICommand NavigateCmd { get; }
+        public ICommand NavigateCmd => new Command(Navigate);
 
         public WTreeBranch(string repoDirectory, Branch branch) {
             repoRootPath = Path.TrimEndingDirectorySeparator(repoDirectory);
             Name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
             CurrentDirectory = OpenFolder(new DirectoryInfo(repoRootPath));
-            NavigateCmd = new Command(Navigate);
         }
 
         private void UpdateContent() => SelectedContent = SelectedItem?.Type == ItemType.File
