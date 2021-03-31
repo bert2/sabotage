@@ -59,9 +59,9 @@
 
         private WTreeDirectoryItem[] OpenFolder(DirectoryInfo folder) => folder
             .EnumerateFileSystemInfos()
-            .Where(x => x.Name != ".git")
-            .OrderBy(x => x, Comparer<FileSystemInfo>.Create(DirectoriesFirst))
-            .Select(x => new WTreeDirectoryItem(x))
+            .Where(item => item.Name != ".git")
+            .OrderBy(item => item, Comparer<FileSystemInfo>.Create(DirectoriesFirst))
+            .Select(item => new WTreeDirectoryItem(item))
             .Insert(
                 folder.FullName.IsSubPathOf(repoRootPath)
                     ? new[] { new WTreeDirectoryItem("[ .. ]", folder.Parent!.FullName, ItemType.Folder) }
@@ -73,7 +73,7 @@
             MessageBox.Show("TODO: rename file dialog");
         }
 
-        private int DirectoriesFirst(FileSystemInfo a, FileSystemInfo b) {
+        private static int DirectoriesFirst(FileSystemInfo a, FileSystemInfo b) {
             var aIsDir = (a.Attributes & FileAttributes.Directory) != 0;
             var bIsDir = (b.Attributes & FileAttributes.Directory) != 0;
 

@@ -1,5 +1,4 @@
 ﻿namespace hyperactive {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
@@ -37,7 +36,7 @@
             repoRoot = branch.Tip.Tree;
             Name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
-            CurrentDirectory = OpenFolder(repoRoot, current: new ObjDbDirectoryItem("(root)", repoRoot, ItemType.Folder, null));
+            CurrentDirectory = OpenRootFolder(repoRoot);
             NavigateCmd = new Command(Navigate);
         }
 
@@ -48,37 +47,30 @@
         private void Navigate() {
             Debug.Assert(SelectedItem is not null);
 
-            if (SelectedItem.Type == ItemType.Folder) {
-                var treeToOpen = ((ObjDbDirectoryItem)SelectedItem).GitObject.Peel<Tree>();
-                var current = ((ObjDbDirectoryItem)SelectedItem);
-                CurrentDirectory = OpenFolder(treeToOpen, current);
-            }
+            if (SelectedItem.Type == ItemType.Folder)
+                CurrentDirectory = OpenFolder((ObjDbDirectoryItem)SelectedItem);
         }
 
-        private ObjDbDirectoryItem[] OpenFolder(Tree folder, ObjDbDirectoryItem current) => folder
-            .OrderBy(x => x, Comparer<TreeEntry>.Create(DirectoriesFirst))
-            .Select(x => new ObjDbDirectoryItem(x, current))
+        private static ObjDbDirectoryItem[] OpenRootFolder(Tree root)
+            => OpenFolder(new ObjDbDirectoryItem(name: "(root)", gitObject: root, type: ItemType.Folder, parent: null));
+
+        private static ObjDbDirectoryItem[] OpenFolder(ObjDbDirectoryItem folder) => folder
+            .GitObject
+            .Peel<Tree>()
+            .OrderBy(item => item, Comparer<TreeEntry>.Create(DirectoriesFirst))
+            .Select(item => new ObjDbDirectoryItem(item, parent: folder))
             .Insert(
-                folder != repoRoot
-                    ? new[] { new ObjDbDirectoryItem("[ .. ]", current.Parent.GitObject, ItemType.Folder, current.Parent.Parent) }
-                    : Enumerable.Empty<ObjDbDirectoryItem>(),
+                folder.IsRoot
+                    ? Enumerable.Empty<ObjDbDirectoryItem>()
+                    : new[] { new ObjDbDirectoryItem("[ .. ]", folder.Parent.GitObject, ItemType.Folder, folder.Parent.Parent) },
                 index: 0)
             .ToArray();
 
-        private int DirectoriesFirst(TreeEntry a, TreeEntry b) => (a.Mode, b.Mode) switch {
+        private static int DirectoriesFirst(TreeEntry a, TreeEntry b) => (a.Mode, b.Mode) switch {
             (Mode.Directory, Mode.Directory) => a.Name.CompareTo(b.Name),
             (Mode.Directory, _             ) => -1,
             (_             , Mode.Directory) => 1,
             (_             , _             ) => a.Name.CompareTo(b.Name)
         };
-
-        //private static Tree FindParent(Tree child, Tree start) {
-        //    return start.Any(x => x.Target.Id == child.Id)
-        //        ? start
-        //        : start
-        //            .Where(x => x.TargetType == TreeEntryTargetType.Tree)
-        //            .Select(x => FindParent(child, x.Target.Peel<Tree>()))
-
-        //}
     }
 }

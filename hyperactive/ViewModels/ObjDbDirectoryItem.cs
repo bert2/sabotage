@@ -1,5 +1,6 @@
 ﻿namespace hyperactive {
     using System;
+    using System.Diagnostics.CodeAnalysis;
 
     using LibGit2Sharp;
 
@@ -10,12 +11,15 @@
 
         public ItemType Type { get; }
 
-        public ObjDbDirectoryItem Parent { get; }
+        public ObjDbDirectoryItem? Parent { get; }
 
-        public ObjDbDirectoryItem(TreeEntry entry, ObjDbDirectoryItem parent)
+        [MemberNotNullWhen(false, nameof(Parent))]
+        public bool IsRoot => Parent is null;
+
+        public ObjDbDirectoryItem(TreeEntry entry, ObjDbDirectoryItem? parent)
             : this(entry.Name, entry.Target, GetItemType(entry), parent) { }
 
-        public ObjDbDirectoryItem(string name, GitObject gitObject, ItemType type, ObjDbDirectoryItem parent)
+        public ObjDbDirectoryItem(string name, GitObject gitObject, ItemType type, ObjDbDirectoryItem? parent)
             => (Name, GitObject, Type, Parent) = (name, gitObject, type, parent);
 
         public IFileContent ToFileContent() => Type == ItemType.File
