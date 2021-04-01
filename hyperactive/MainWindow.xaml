@@ -226,20 +226,20 @@
                           <TextBox
                             x:Name="txtMessage"
                             Grid.Row="0"
-                            Margin="32"
+                            Width="200"
+                            Margin="16"
                             mat:HintAssist.Hint="commit message"
                             mat:TextFieldAssist.HasClearButton="True"
                             Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
 
-                          <Grid Grid.Row="1" Margin="32,0,32,32">
+                          <Grid Grid.Row="1" Margin="16">
                             <Grid.ColumnDefinitions>
                               <ColumnDefinition Width="auto" />
-                              <ColumnDefinition Width="auto" />
+                              <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
                             <Button
                               Grid.Column="0"
-                              HorizontalAlignment="Left"
                               Background="{DynamicResource SecondaryHueDarkBrush}"
                               Command="{Binding DataContext.CommitCmd, Source={x:Reference mainWindow}}"
                               CommandParameter="{Binding Source={x:Reference rootDialog}}"
