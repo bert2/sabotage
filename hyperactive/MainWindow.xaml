@@ -218,13 +218,13 @@
                       <Button.CommandParameter>
                         <Grid Margin="32">
                           <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
                           </Grid.RowDefinitions>
 
                           <TextBox
                             x:Name="txtMessage"
-                            Grid.Column="0"
+                            Grid.Row="0"
                             mat:HintAssist.Hint="path to git repository"
                             mat:TextFieldAssist.HasClearButton="True"
                             Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
