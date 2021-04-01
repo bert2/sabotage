@@ -51,6 +51,7 @@
   <mat:DialogHost
     x:Name="rootDialog"
     CloseOnClickAway="True"
+    DialogTheme="Inherit"
     Identifier="rootDialog">
     <Grid>
       <Grid.RowDefinitions>
@@ -216,7 +217,7 @@
                       Style="{StaticResource MaterialDesignIconButton}"
                       ToolTip="stage and commit all local changes">
                       <Button.CommandParameter>
-                        <Grid Margin="32">
+                        <Grid Background="{DynamicResource MaterialDesignPaper}">
                           <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="auto" />
@@ -225,26 +226,30 @@
                           <TextBox
                             x:Name="txtMessage"
                             Grid.Row="0"
-                            mat:HintAssist.Hint="path to git repository"
+                            Margin="32"
+                            mat:HintAssist.Hint="commit message"
                             mat:TextFieldAssist.HasClearButton="True"
                             Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
 
-                          <Grid Grid.Row="1">
+                          <Grid Grid.Row="1" Margin="32,0,32,32">
                             <Grid.ColumnDefinitions>
                               <ColumnDefinition Width="auto" />
-                              <ColumnDefinition Width="Auto" />
+                              <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
 
                             <Button
                               Grid.Column="0"
+                              HorizontalAlignment="Left"
                               Background="{DynamicResource SecondaryHueDarkBrush}"
                               Command="{Binding DataContext.CommitCmd, Source={x:Reference mainWindow}}"
                               CommandParameter="{Binding Source={x:Reference rootDialog}}"
                               Content="{mat:PackIcon CheckBold,
                                                      Size=20}"
                               IsDefault="True" />
+
                             <Button
                               Grid.Column="1"
+                              HorizontalAlignment="Right"
                               Background="{DynamicResource PrimaryHueMidBrush}"
                               Command="{x:Static mat:DialogHost.CloseDialogCommand}"
                               Content="{mat:PackIcon CloseThick,
