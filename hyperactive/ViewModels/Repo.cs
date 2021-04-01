@@ -10,6 +10,8 @@
 
     using LibGit2Sharp;
 
+    using MaterialDesignThemes.Wpf;
+
     public class Repo: ViewModel {
         private string? directory = @"D:\DEV\git-conflicts"; // TODO: remove test value
         public string? Directory {
@@ -43,7 +45,7 @@
 
         public ICommand CheckoutBranchCmd => new Command<IBranch>(CheckoutBranch);
 
-        public ICommand CommitCmd => new Command(Commit);
+        public ICommand CommitCmd => new Command<DialogHost>(Commit);
 
         public Repo() {
             WeakEventManager<Events, EventArgs>.AddHandler(Events.Instance, nameof(Events.WorkingTreeChanged), RefreshStatus);
@@ -99,16 +101,20 @@
             IsLoaded = true;
         }
 
-        private void Commit() {
-            Debug.Assert(repo is not null);
+        private void Commit(DialogHost dialog) {
+            try {
+                Debug.Assert(repo is not null);
 
-            Commands.Stage(repo, "*");
+                Commands.Stage(repo, "*");
 
-            var sig = repo.Config.BuildSignature(DateTime.Now)
-                ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
-            repo.Commit("some changes", sig, sig);
+                var sig = repo.Config.BuildSignature(DateTime.Now)
+                    ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
+                repo.Commit("some changes", sig, sig);
 
-            RefreshStatus();
+                RefreshStatus();
+            } finally {
+                dialog.IsOpen = false;
+            }
         }
 
         private void RefreshStatus(object? sender, EventArgs args) => RefreshStatus();

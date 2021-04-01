@@ -7,6 +7,7 @@
   xmlns:local="clr-namespace:hyperactive"
   xmlns:mat="http://materialdesigninxaml.net/winfx/xaml/themes"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  x:Name="mainWindow"
   Title="hyperactive"
   Width="1024"
   Height="768"
@@ -47,59 +48,79 @@
       FalseBrush="{StaticResource MaterialDesignCardBackground}"
       TrueBrush="{StaticResource MaterialDesignLightSeparatorBackground}" />
   </Window.Resources>
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="auto" />
-      <RowDefinition Height="*" />
-    </Grid.RowDefinitions>
+  <mat:DialogHost
+    x:Name="rootDialog"
+    CloseOnClickAway="True"
+    Identifier="rootDialog">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
 
-    <mat:Card
-      Grid.Row="0"
-      Margin="16"
-      Padding="8"
-      Background="{DynamicResource MaterialDesignPaper}">
-      <StackPanel>
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-          </Grid.ColumnDefinitions>
+      <mat:Card
+        Grid.Row="0"
+        Margin="16"
+        Padding="8"
+        Background="{DynamicResource MaterialDesignPaper}">
+        <StackPanel>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-          <TextBox
-            Name="txtDirectory"
-            Grid.Column="0"
-            mat:HintAssist.Hint="path to git repository"
-            mat:TextFieldAssist.HasClearButton="True"
-            mat:TextFieldAssist.HasLeadingIcon="True"
-            mat:TextFieldAssist.LeadingIcon="Git"
-            FontSize="16"
-            Style="{StaticResource MaterialDesignFloatingHintTextBox}">
-            <TextBox.Text>
-              <Binding Path="Directory" UpdateSourceTrigger="PropertyChanged">
-                <Binding.ValidationRules>
-                  <local:ValidateGitDirectory />
-                </Binding.ValidationRules>
-              </Binding>
-            </TextBox.Text>
-          </TextBox>
+            <TextBox
+              x:Name="txtDirectory"
+              Grid.Column="0"
+              mat:HintAssist.Hint="path to git repository"
+              mat:TextFieldAssist.HasClearButton="True"
+              mat:TextFieldAssist.HasLeadingIcon="True"
+              mat:TextFieldAssist.LeadingIcon="Git"
+              FontSize="16"
+              Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+              <TextBox.Text>
+                <Binding Path="Directory" UpdateSourceTrigger="PropertyChanged">
+                  <Binding.ValidationRules>
+                    <local:ValidateGitDirectory />
+                  </Binding.ValidationRules>
+                </Binding>
+              </TextBox.Text>
+            </TextBox>
 
-          <Button
-            Grid.Column="1"
-            Margin="8,0,0,0"
-            Command="{Binding SelectDirectoryCmd}"
-            Content="{mat:PackIcon FolderOpen,
-                                   Size=20}"
-            ToolTip="open git repository" />
+            <Button
+              Grid.Column="1"
+              Margin="8,0,0,0"
+              Command="{Binding SelectDirectoryCmd}"
+              Content="{mat:PackIcon FolderOpen,
+                                     Size=20}"
+              ToolTip="open git repository" />
 
-          <Button
-            Grid.Column="2"
-            Margin="8,0,0,0"
-            Command="{Binding LoadRepositoryCmd}"
-            Content="{mat:PackIcon Reload,
-                                   Size=20}"
-            ToolTip="reload git repository">
-            <Button.IsEnabled>
+            <Button
+              Grid.Column="2"
+              Margin="8,0,0,0"
+              Command="{Binding LoadRepositoryCmd}"
+              Content="{mat:PackIcon Reload,
+                                     Size=20}"
+              ToolTip="reload git repository">
+              <Button.IsEnabled>
+                <MultiBinding Converter="{StaticResource AndConv}">
+                  <Binding
+                    Converter="{StaticResource NotConverter}"
+                    ElementName="txtDirectory"
+                    Path="(Validation.HasError)" />
+                  <Binding Path="IsLoaded" />
+                </MultiBinding>
+              </Button.IsEnabled>
+            </Button>
+          </Grid>
+
+          <StackPanel
+            Margin="0,16,0,0"
+            HorizontalAlignment="Center"
+            Orientation="Horizontal">
+            <StackPanel.IsEnabled>
               <MultiBinding Converter="{StaticResource AndConv}">
                 <Binding
                   Converter="{StaticResource NotConverter}"
@@ -107,252 +128,277 @@
                   Path="(Validation.HasError)" />
                 <Binding Path="IsLoaded" />
               </MultiBinding>
-            </Button.IsEnabled>
-          </Button>
-        </Grid>
-
-        <StackPanel
-          Margin="0,16,0,0"
-          HorizontalAlignment="Center"
-          Orientation="Horizontal">
-          <StackPanel.IsEnabled>
-            <MultiBinding Converter="{StaticResource AndConv}">
-              <Binding
-                Converter="{StaticResource NotConverter}"
-                ElementName="txtDirectory"
-                Path="(Validation.HasError)" />
-              <Binding Path="IsLoaded" />
-            </MultiBinding>
-          </StackPanel.IsEnabled>
-          <TextBlock Text="local branches:" />
-          <TextBlock Margin="8,0,0,0" Text="{Binding LocalBranchesCount}" />
-          <TextBlock Margin="32,0,0,0" Text="remote branches:" />
-          <TextBlock Margin="8,0,0,0" Text="{Binding RemoteBranchesCount}" />
-          <TextBlock Margin="32,0,0,0" Text="status:" />
-          <TextBlock
-            Margin="8,0,0,0"
-            FontFamily="Consolas"
-            Foreground="{Binding Status.IsClean, Converter={StaticResource IsCleanToStatusBrushConv}, Mode=OneWay}">
-            <Run Text="{Binding Status.Head, Mode=OneWay}" />
-            +<Run Text="{Binding Status.IdxAdd, Mode=OneWay}" />
-            ~<Run Text="{Binding Status.IdxMod, Mode=OneWay}" />
-            -<Run Text="{Binding Status.IdxDel, Mode=OneWay}" />
-            !<Run Text="{Binding Status.IdxCon, Mode=OneWay}" />
-            |
-            +<Run Text="{Binding Status.WdirAdd, Mode=OneWay}" />
-            ~<Run Text="{Binding Status.WdirMod, Mode=OneWay}" />
-            -<Run Text="{Binding Status.WdirDel, Mode=OneWay}" />
-            !<Run Text="{Binding Status.WdirCon, Mode=OneWay}" />
-          </TextBlock>
+            </StackPanel.IsEnabled>
+            <TextBlock Text="local branches:" />
+            <TextBlock Margin="8,0,0,0" Text="{Binding LocalBranchesCount}" />
+            <TextBlock Margin="32,0,0,0" Text="remote branches:" />
+            <TextBlock Margin="8,0,0,0" Text="{Binding RemoteBranchesCount}" />
+            <TextBlock Margin="32,0,0,0" Text="status:" />
+            <TextBlock
+              Margin="8,0,0,0"
+              FontFamily="Consolas"
+              Foreground="{Binding Status.IsClean, Converter={StaticResource IsCleanToStatusBrushConv}, Mode=OneWay}">
+              <Run Text="{Binding Status.Head, Mode=OneWay}" />
+              +<Run Text="{Binding Status.IdxAdd, Mode=OneWay}" />
+              ~<Run Text="{Binding Status.IdxMod, Mode=OneWay}" />
+              -<Run Text="{Binding Status.IdxDel, Mode=OneWay}" />
+              !<Run Text="{Binding Status.IdxCon, Mode=OneWay}" />
+              |
+              +<Run Text="{Binding Status.WdirAdd, Mode=OneWay}" />
+              ~<Run Text="{Binding Status.WdirMod, Mode=OneWay}" />
+              -<Run Text="{Binding Status.WdirDel, Mode=OneWay}" />
+              !<Run Text="{Binding Status.WdirCon, Mode=OneWay}" />
+            </TextBlock>
+          </StackPanel>
         </StackPanel>
-      </StackPanel>
-    </mat:Card>
+      </mat:Card>
 
-    <ItemsControl Grid.Row="1" ItemsSource="{Binding Branches}">
-      <ItemsControl.IsEnabled>
-        <MultiBinding Converter="{StaticResource AndConv}">
-          <Binding
-            Converter="{StaticResource NotConverter}"
-            ElementName="txtDirectory"
-            Path="(Validation.HasError)" />
-          <Binding Path="IsLoaded" />
-        </MultiBinding>
-      </ItemsControl.IsEnabled>
-      <ItemsControl.ItemTemplate>
-        <DataTemplate DataType="{x:Type local:IBranch}">
-          <mat:Card
-            Margin="16"
-            Padding="16"
-            Background="{DynamicResource MaterialDesignPaper}">
-            <Grid>
-              <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="200" />
-                <RowDefinition Height="*" />
-              </Grid.RowDefinitions>
+      <ItemsControl Grid.Row="1" ItemsSource="{Binding Branches}">
+        <ItemsControl.IsEnabled>
+          <MultiBinding Converter="{StaticResource AndConv}">
+            <Binding
+              Converter="{StaticResource NotConverter}"
+              ElementName="txtDirectory"
+              Path="(Validation.HasError)" />
+            <Binding Path="IsLoaded" />
+          </MultiBinding>
+        </ItemsControl.IsEnabled>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="{x:Type local:IBranch}">
+            <mat:Card
+              Margin="16"
+              Padding="16"
+              Background="{DynamicResource MaterialDesignPaper}">
+              <Grid>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="auto" />
+                  <RowDefinition Height="200" />
+                  <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-              <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="*" />
-                  <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel
-                  Grid.Column="0"
-                  Margin="8,0,0,0"
-                  VerticalAlignment="Center"
-                  Orientation="Horizontal">
-                  <TextBlock
-                    Foreground="{Binding IsHead, Converter={StaticResource IsHeadToHeaderBrushConv}}"
-                    Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
-                    Text="* "
-                    Visibility="{Binding IsHead, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <Grid Grid.Row="0">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
 
-                  <TextBlock
-                    Foreground="{Binding IsHead, Converter={StaticResource IsHeadToHeaderBrushConv}}"
-                    Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
-                    Text="{Binding Name}" />
-                </StackPanel>
+                  <StackPanel
+                    Grid.Column="0"
+                    Margin="8,0,0,0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <TextBlock
+                      Foreground="{Binding IsHead, Converter={StaticResource IsHeadToHeaderBrushConv}}"
+                      Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
+                      Text="* "
+                      Visibility="{Binding IsHead, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                  <Button
-                    Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
-                    CommandParameter="{Binding}"
-                    Content="{mat:PackIcon TrayArrowDown,
-                                           Size=20}"
-                    Style="{StaticResource MaterialDesignIconButton}"
-                    ToolTip="checkout this branch (discards all local changes)" />
+                    <TextBlock
+                      Foreground="{Binding IsHead, Converter={StaticResource IsHeadToHeaderBrushConv}}"
+                      Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
+                      Text="{Binding Name}" />
+                  </StackPanel>
 
-                  <Button
-                    Command="{Binding DataContext.CommitCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
-                    Content="{mat:PackIcon ContentSave,
-                                           Size=20}"
-                    IsEnabled="{Binding IsHead}"
-                    Style="{StaticResource MaterialDesignIconButton}"
-                    ToolTip="stage and commit all local changes" />
+                  <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button
+                      Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                      CommandParameter="{Binding}"
+                      Content="{mat:PackIcon TrayArrowDown,
+                                             Size=20}"
+                      Style="{StaticResource MaterialDesignIconButton}"
+                      ToolTip="checkout this branch (discards all local changes)" />
 
-                  <mat:PopupBox
-                    Padding="2,0,2,0"
-                    Foreground="{DynamicResource PrimaryHueMidBrush}"
-                    PlacementMode="BottomAndAlignLeftEdges"
-                    Style="{StaticResource MaterialDesignPopupBox}">
-                    <StackPanel>
-                      <Button
-                        HorizontalContentAlignment="Left"
-                        Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
-                        CommandParameter="{Binding}"
-                        Foreground="{DynamicResource PrimaryHueLightBrush}"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
-                        ToolTip="create a new branch from here...">
-                        <StackPanel Orientation="Horizontal">
-                          <mat:PackIcon Kind="SourceBranchPlus" />
-                          <TextBlock
-                            Margin="8,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="branch" />
-                        </StackPanel>
-                      </Button>
+                    <Button
+                      Command="{x:Static mat:DialogHost.OpenDialogCommand}"
+                      Content="{mat:PackIcon ContentSave,
+                                             Size=20}"
+                      IsEnabled="{Binding IsHead}"
+                      Style="{StaticResource MaterialDesignIconButton}"
+                      ToolTip="stage and commit all local changes">
+                      <Button.CommandParameter>
+                        <Grid Margin="32">
+                          <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                          </Grid.RowDefinitions>
 
-                      <Button
-                        HorizontalContentAlignment="Left"
-                        Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
-                        CommandParameter="{Binding}"
-                        Foreground="{DynamicResource PrimaryHueLightBrush}"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
-                        ToolTip="merge this branch into another...">
-                        <StackPanel Orientation="Horizontal">
-                          <mat:PackIcon Kind="SourceMerge" />
-                          <TextBlock
-                            Margin="8,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="merge" />
-                        </StackPanel>
-                      </Button>
+                          <TextBox
+                            x:Name="txtMessage"
+                            Grid.Column="0"
+                            mat:HintAssist.Hint="path to git repository"
+                            mat:TextFieldAssist.HasClearButton="True"
+                            Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
 
-                      <Button
-                        HorizontalContentAlignment="Left"
-                        Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
-                        CommandParameter="{Binding}"
-                        Foreground="{DynamicResource PrimaryHueLightBrush}"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
-                        ToolTip="cherry-pick a commit into this branch...">
-                        <StackPanel Orientation="Horizontal">
-                          <mat:PackIcon Kind="SourceCommit" />
-                          <TextBlock
-                            Margin="8,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="cherry-pick" />
-                        </StackPanel>
-                      </Button>
+                          <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="auto" />
+                              <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
 
-                      <Button
-                        HorizontalContentAlignment="Left"
-                        Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
-                        CommandParameter="{Binding}"
-                        Foreground="{DynamicResource PrimaryHueLightBrush}"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
-                        ToolTip="delete this branch locally">
-                        <StackPanel Orientation="Horizontal">
-                          <mat:PackIcon Kind="TrashCan" />
-                          <TextBlock
-                            Margin="8,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="delete" />
-                        </StackPanel>
-                      </Button>
-                    </StackPanel>
-                  </mat:PopupBox>
-                </StackPanel>
+                            <Button
+                              Grid.Column="0"
+                              Background="{DynamicResource SecondaryHueDarkBrush}"
+                              Command="{Binding DataContext.CommitCmd, Source={x:Reference mainWindow}}"
+                              CommandParameter="{Binding Source={x:Reference rootDialog}}"
+                              Content="{mat:PackIcon CheckBold,
+                                                     Size=20}"
+                              IsDefault="True" />
+                            <Button
+                              Grid.Column="1"
+                              Background="{DynamicResource PrimaryHueMidBrush}"
+                              Command="{x:Static mat:DialogHost.CloseDialogCommand}"
+                              Content="{mat:PackIcon CloseThick,
+                                                     Size=20}"
+                              IsCancel="True" />
+                          </Grid>
+                        </Grid>
+                      </Button.CommandParameter>
+                    </Button>
+
+                    <mat:PopupBox
+                      Padding="2,0,2,0"
+                      Foreground="{DynamicResource PrimaryHueMidBrush}"
+                      PlacementMode="BottomAndAlignLeftEdges"
+                      Style="{StaticResource MaterialDesignPopupBox}">
+                      <StackPanel>
+                        <Button
+                          HorizontalContentAlignment="Left"
+                          Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          CommandParameter="{Binding}"
+                          Foreground="{DynamicResource PrimaryHueLightBrush}"
+                          Style="{DynamicResource MaterialDesignFlatButton}"
+                          ToolTip="create a new branch from here...">
+                          <StackPanel Orientation="Horizontal">
+                            <mat:PackIcon Kind="SourceBranchPlus" />
+                            <TextBlock
+                              Margin="8,0,0,0"
+                              VerticalAlignment="Center"
+                              Text="branch" />
+                          </StackPanel>
+                        </Button>
+
+                        <Button
+                          HorizontalContentAlignment="Left"
+                          Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          CommandParameter="{Binding}"
+                          Foreground="{DynamicResource PrimaryHueLightBrush}"
+                          Style="{DynamicResource MaterialDesignFlatButton}"
+                          ToolTip="merge this branch into another...">
+                          <StackPanel Orientation="Horizontal">
+                            <mat:PackIcon Kind="SourceMerge" />
+                            <TextBlock
+                              Margin="8,0,0,0"
+                              VerticalAlignment="Center"
+                              Text="merge" />
+                          </StackPanel>
+                        </Button>
+
+                        <Button
+                          HorizontalContentAlignment="Left"
+                          Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          CommandParameter="{Binding}"
+                          Foreground="{DynamicResource PrimaryHueLightBrush}"
+                          Style="{DynamicResource MaterialDesignFlatButton}"
+                          ToolTip="cherry-pick a commit into this branch...">
+                          <StackPanel Orientation="Horizontal">
+                            <mat:PackIcon Kind="SourceCommit" />
+                            <TextBlock
+                              Margin="8,0,0,0"
+                              VerticalAlignment="Center"
+                              Text="cherry-pick" />
+                          </StackPanel>
+                        </Button>
+
+                        <Button
+                          HorizontalContentAlignment="Left"
+                          Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          CommandParameter="{Binding}"
+                          Foreground="{DynamicResource PrimaryHueLightBrush}"
+                          Style="{DynamicResource MaterialDesignFlatButton}"
+                          ToolTip="delete this branch locally">
+                          <StackPanel Orientation="Horizontal">
+                            <mat:PackIcon Kind="TrashCan" />
+                            <TextBlock
+                              Margin="8,0,0,0"
+                              VerticalAlignment="Center"
+                              Text="delete" />
+                          </StackPanel>
+                        </Button>
+                      </StackPanel>
+                    </mat:PopupBox>
+                  </StackPanel>
+                </Grid>
+
+                <ListBox
+                  Grid.Row="1"
+                  Margin="0,16,0,0"
+                  BorderBrush="{StaticResource MaterialDesignLightSeparatorBackground}"
+                  BorderThickness="1"
+                  ItemsSource="{Binding CurrentDirectory}"
+                  SelectedItem="{Binding SelectedItem}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:IDirectoryItem}">
+                      <ContentControl Content="{Binding}">
+                        <ContentControl.Style>
+                          <Style TargetType="{x:Type ContentControl}">
+                            <Setter Property="ContentTemplate">
+                              <Setter.Value>
+                                <DataTemplate DataType="{x:Type local:IDirectoryItem}">
+                                  <StackPanel Orientation="Horizontal">
+                                    <mat:PackIcon Kind="FileOutline" />
+                                    <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
+                                  </StackPanel>
+                                </DataTemplate>
+                              </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                              <DataTrigger Binding="{Binding Path=Type}" Value="{x:Static local:ItemType.Folder}">
+                                <Setter Property="ContentTemplate">
+                                  <Setter.Value>
+                                    <DataTemplate DataType="{x:Type local:IDirectoryItem}">
+                                      <StackPanel Orientation="Horizontal">
+                                        <mat:PackIcon Kind="Folder" />
+                                        <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
+                                      </StackPanel>
+                                    </DataTemplate>
+                                  </Setter.Value>
+                                </Setter>
+                              </DataTrigger>
+                            </Style.Triggers>
+                          </Style>
+                        </ContentControl.Style>
+                        <ContentControl.InputBindings>
+                          <MouseBinding Command="{Binding DataContext.NavigateCmd, RelativeSource={RelativeSource AncestorType=ItemsControl}}" MouseAction="LeftDoubleClick" />
+                        </ContentControl.InputBindings>
+                      </ContentControl>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBox
+                  Grid.Row="2"
+                  Margin="0,16,0,0"
+                  VerticalContentAlignment="Stretch"
+                  AcceptsReturn="True"
+                  AcceptsTab="False"
+                  FontFamily="Consolas"
+                  HorizontalScrollBarVisibility="Auto"
+                  IsEnabled="{Binding SelectedContent, Converter={StaticResource NullToFalseConv}}"
+                  IsReadOnly="{Binding SelectedContent.ReadOnly}"
+                  Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                  Text="{Binding SelectedContent.Content, UpdateSourceTrigger=PropertyChanged, Delay=1000}"
+                  TextWrapping="NoWrap"
+                  VerticalScrollBarVisibility="Auto" />
               </Grid>
-
-              <ListBox
-                Grid.Row="1"
-                Margin="0,16,0,0"
-                BorderBrush="{StaticResource MaterialDesignLightSeparatorBackground}"
-                BorderThickness="1"
-                ItemsSource="{Binding CurrentDirectory}"
-                SelectedItem="{Binding SelectedItem}">
-                <ListBox.ItemTemplate>
-                  <DataTemplate DataType="{x:Type local:IDirectoryItem}">
-                    <ContentControl Content="{Binding}">
-                      <ContentControl.Style>
-                        <Style TargetType="{x:Type ContentControl}">
-                          <Setter Property="ContentTemplate">
-                            <Setter.Value>
-                              <DataTemplate DataType="{x:Type local:IDirectoryItem}">
-                                <StackPanel Orientation="Horizontal">
-                                  <mat:PackIcon Kind="FileOutline" />
-                                  <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
-                                </StackPanel>
-                              </DataTemplate>
-                            </Setter.Value>
-                          </Setter>
-                          <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=Type}" Value="{x:Static local:ItemType.Folder}">
-                              <Setter Property="ContentTemplate">
-                                <Setter.Value>
-                                  <DataTemplate DataType="{x:Type local:IDirectoryItem}">
-                                    <StackPanel Orientation="Horizontal">
-                                      <mat:PackIcon Kind="Folder" />
-                                      <TextBlock Margin="8,0,0,0" Text="{Binding Name}" />
-                                    </StackPanel>
-                                  </DataTemplate>
-                                </Setter.Value>
-                              </Setter>
-                            </DataTrigger>
-                          </Style.Triggers>
-                        </Style>
-                      </ContentControl.Style>
-                      <ContentControl.InputBindings>
-                        <MouseBinding Command="{Binding DataContext.NavigateCmd, RelativeSource={RelativeSource AncestorType=ItemsControl}}" MouseAction="LeftDoubleClick" />
-                      </ContentControl.InputBindings>
-                    </ContentControl>
-                  </DataTemplate>
-                </ListBox.ItemTemplate>
-              </ListBox>
-
-              <TextBox
-                Grid.Row="2"
-                Margin="0,16,0,0"
-                VerticalContentAlignment="Stretch"
-                AcceptsReturn="True"
-                AcceptsTab="False"
-                FontFamily="Consolas"
-                HorizontalScrollBarVisibility="Auto"
-                IsEnabled="{Binding SelectedContent, Converter={StaticResource NullToFalseConv}}"
-                IsReadOnly="{Binding SelectedContent.ReadOnly}"
-                Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                Text="{Binding SelectedContent.Content, UpdateSourceTrigger=PropertyChanged, Delay=1000}"
-                TextWrapping="NoWrap"
-                VerticalScrollBarVisibility="Auto" />
-            </Grid>
-          </mat:Card>
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-      <ItemsControl.ItemsPanel>
-        <ItemsPanelTemplate>
-          <UniformGrid Rows="1" />
-        </ItemsPanelTemplate>
-      </ItemsControl.ItemsPanel>
-    </ItemsControl>
-  </Grid>
+            </mat:Card>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <UniformGrid Rows="1" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
+    </Grid>
+  </mat:DialogHost>
 </Window>
