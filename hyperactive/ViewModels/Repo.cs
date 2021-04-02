@@ -105,15 +105,14 @@
         private async void Commit() {
             Debug.Assert(repo is not null);
 
-            var enterCommitMessage = new EnterCommitMessage();
-            var result = (bool?)await DialogHost.Show(enterCommitMessage);
-            if (result != true) return;
+            var (ok, message) = await Dialog.Show(new EnterCommitMessage(), vm => vm.CommitMessage);
+            if (!ok) return;
 
             Commands.Stage(repo, "*");
 
             var sig = repo.Config.BuildSignature(DateTime.Now)
                 ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
-            repo.Commit(enterCommitMessage.CommitMessage, sig, sig);
+            repo.Commit(message, sig, sig);
 
             await RefreshStatus();
         }
