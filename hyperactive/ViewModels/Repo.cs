@@ -132,7 +132,7 @@
             var sig = CreateSignature(repo);
             var merge = repo.Merge(source!.Name, sig);
 
-            Snackbar.Show(merge.Status switch {
+            Snackbar.ShowImportant(merge.Status switch {
                 MergeStatus.NonFastForward => "merge succeeded",
                 MergeStatus.FastForward => "merge succeeded (fast forward)",
                 MergeStatus.UpToDate => "target branch was up-to-date",
