@@ -4,6 +4,7 @@
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Forms;
     using System.Windows.Input;
@@ -12,7 +13,7 @@
 
     using MaterialDesignThemes.Wpf;
 
-    public class Repo: ViewModel {
+    public class Repo : ViewModel {
         private string? directory = @"D:\DEV\git-conflicts"; // TODO: remove test value
         public string? Directory {
             get => directory;
@@ -45,7 +46,7 @@
 
         public ICommand CheckoutBranchCmd => new Command<IBranch>(CheckoutBranch);
 
-        public ICommand CommitCmd => new Command<DialogHost>(Commit);
+        public ICommand CommitCmd => new Command(Commit);
 
         public Repo() {
             WeakEventManager<Events, EventArgs>.AddHandler(Events.Instance, nameof(Events.WorkingTreeChanged), RefreshStatus);
@@ -65,10 +66,10 @@
             }
         }
 
-        private void LoadRepository() {
+        private async void LoadRepository() {
             Cleanup();
             repo = new Repository(Directory);
-            LoadRepositoryData();
+            await LoadRepositoryData();
         }
 
         private void CheckoutBranch(IBranch branch) {
@@ -81,10 +82,10 @@
             LoadRepositoryData();
         }
 
-        private void LoadRepositoryData() {
+        private async Task LoadRepositoryData() {
             Debug.Assert(repo is not null);
 
-            Status = new(repo);
+            await RefreshStatus();
 
             Branches = repo
                 .Branches
@@ -101,25 +102,25 @@
             IsLoaded = true;
         }
 
-        private void Commit(DialogHost dialog) {
-            try {
-                Debug.Assert(repo is not null);
+        private async void Commit() {
+            Debug.Assert(repo is not null);
 
-                Commands.Stage(repo, "*");
+            var enterCommitMessage = new EnterCommitMessage();
+            var result = (bool?)await DialogHost.Show(enterCommitMessage);
+            if (result != true) return;
 
-                var sig = repo.Config.BuildSignature(DateTime.Now)
-                    ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
-                repo.Commit("some changes", sig, sig);
+            Commands.Stage(repo, "*");
 
-                RefreshStatus();
-            } finally {
-                dialog.IsOpen = false;
-            }
+            var sig = repo.Config.BuildSignature(DateTime.Now)
+                ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
+            repo.Commit(enterCommitMessage.CommitMessage, sig, sig);
+
+            await RefreshStatus();
         }
 
-        private void RefreshStatus(object? sender, EventArgs args) => RefreshStatus();
+        private async void RefreshStatus(object? sender, EventArgs args) => await RefreshStatus();
 
-        private void RefreshStatus() => Status = new(repo!);
+        private async Task RefreshStatus() => await Task.Run(() => Status = new(repo!));
 
         private int DevelopFirstMainLast(string branch1, string branch2) => (branch1, branch2) switch {
             ("main"   , _        ) =>  1,
