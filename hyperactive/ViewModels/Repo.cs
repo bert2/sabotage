@@ -115,6 +115,8 @@
             var sig = CreateSignature(repo);
             repo.Commit(message, sig, sig);
 
+            Snackbar.Show("local changes committed");
+
             await RefreshStatus();
         }
 
@@ -129,7 +131,14 @@
 
             var sig = CreateSignature(repo);
             var merge = repo.Merge(source!.Name, sig);
-            // TODO: snackbar for merge.Status
+
+            Snackbar.Show(merge.Status switch {
+                MergeStatus.NonFastForward => "merge succeeded",
+                MergeStatus.FastForward => "merge succeeded (fast forward)",
+                MergeStatus.UpToDate => "target branch was up-to-date",
+                MergeStatus.Conflicts => "merge failed with conflicts",
+                _ => $"merge result: {merge.Status}"
+            });
 
             await LoadRepositoryData();
         }

@@ -166,7 +166,7 @@
       </Grid>
     </DataTemplate>
   </Window.Resources>
-  <mat:DialogHost CloseOnClickAway="True">
+  <mat:DialogHost CloseOnClickAway="True" SnackbarMessageQueue="{x:Static local:Snackbar.Queue}">
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="auto" />
@@ -472,12 +472,15 @@
             </mat:Card>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
+
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>
             <UniformGrid Rows="1" />
           </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
       </ItemsControl>
+
+      <mat:Snackbar Grid.Row="1" MessageQueue="{x:Static local:Snackbar.Queue}" />
     </Grid>
   </mat:DialogHost>
 </Window>
