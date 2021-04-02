@@ -112,8 +112,7 @@
 
             Commands.Stage(repo, "*");
 
-            var sig = repo.Config.BuildSignature(DateTime.Now)
-                ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
+            var sig = CreateSignature(repo);
             repo.Commit(message, sig, sig);
 
             await RefreshStatus();
@@ -128,15 +127,11 @@
                 vm => vm.SelectedSource);
             if (!ok) return;
 
-            //var merge = repo.Merge(source!.Name, null);
+            var sig = CreateSignature(repo);
+            var merge = repo.Merge(source!.Name, sig);
+            // TODO: snackbar for merge.Status
 
-            //Commands.Stage(repo, "*");
-
-            //var sig = repo.Config.BuildSignature(DateTime.Now)
-            //    ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
-            //repo.Commit(message, sig, sig);
-
-            await RefreshStatus();
+            await LoadRepositoryData();
         }
 
         private async void RefreshStatus(object? sender, EventArgs args) => await RefreshStatus();
@@ -162,5 +157,9 @@
             RemoteBranchesCount = null;
             repo?.Dispose();
         }
+
+        private static Signature CreateSignature(Repository repo) => repo
+            .Config.BuildSignature(DateTime.Now)
+            ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
     }
 }
