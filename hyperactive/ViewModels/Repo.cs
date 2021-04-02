@@ -48,6 +48,8 @@
 
         public ICommand CommitCmd => new Command(Commit);
 
+        public ICommand MergeBranchCmd => new Command<IBranch>(MergeBranch);
+
         public Repo() {
             WeakEventManager<Events, EventArgs>.AddHandler(Events.Instance, nameof(Events.WorkingTreeChanged), RefreshStatus);
             LoadRepository(); // TODO: remove test code
@@ -72,14 +74,14 @@
             await LoadRepositoryData();
         }
 
-        private void CheckoutBranch(IBranch branch) {
+        private async void CheckoutBranch(IBranch branch) {
             Debug.Assert(repo is not null);
 
             repo.Reset(ResetMode.Hard);
             repo.RemoveUntrackedFiles();
             Commands.Checkout(repo, branch.Name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
 
-            LoadRepositoryData();
+            await LoadRepositoryData();
         }
 
         private async Task LoadRepositoryData() {
@@ -113,6 +115,26 @@
             var sig = repo.Config.BuildSignature(DateTime.Now)
                 ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
             repo.Commit(message, sig, sig);
+
+            await RefreshStatus();
+        }
+
+        private async void MergeBranch(IBranch target) {
+            Debug.Assert(repo is not null);
+            Debug.Assert(Branches is not null);
+
+            var (ok, source) = await Dialog.Show(
+                new SelectMergeSource(target, sources: Branches.Where(b => b.Name != target.Name)),
+                vm => vm.SelectedSource);
+            if (!ok) return;
+
+            //var merge = repo.Merge(source!.Name, null);
+
+            //Commands.Stage(repo, "*");
+
+            //var sig = repo.Config.BuildSignature(DateTime.Now)
+            //    ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
+            //repo.Commit(message, sig, sig);
 
             await RefreshStatus();
         }

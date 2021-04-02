@@ -83,5 +83,7 @@
                 (false, false) => a.Name.CompareTo(b.Name)
             };
         }
+
+        public override string ToString() => Name;
     }
 }
