@@ -22,8 +22,6 @@
 
         public int IdxDel { get; private set; }
 
-        public int IdxCon { get; private set; }
-
         public RepoStatus() { }
 
         public RepoStatus(Repository repo) {

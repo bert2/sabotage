@@ -257,7 +257,6 @@
               +<Run Text="{Binding Status.IdxAdd, Mode=OneWay}" />
               ~<Run Text="{Binding Status.IdxMod, Mode=OneWay}" />
               -<Run Text="{Binding Status.IdxDel, Mode=OneWay}" />
-              !<Run Text="{Binding Status.IdxCon, Mode=OneWay}" />
               |
               +<Run Text="{Binding Status.WdirAdd, Mode=OneWay}" />
               ~<Run Text="{Binding Status.WdirMod, Mode=OneWay}" />
