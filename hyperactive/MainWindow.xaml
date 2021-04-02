@@ -77,13 +77,10 @@
               Grid.Column="0"
               Background="{DynamicResource SecondaryHueDarkBrush}"
               Command="{x:Static mat:DialogHost.CloseDialogCommand}"
+              CommandParameter="OK"
               Content="{mat:PackIcon CheckBold,
                                      Size=20}"
-              IsDefault="True">
-              <Button.CommandParameter>
-                <sys:Boolean>True</sys:Boolean>
-              </Button.CommandParameter>
-            </Button>
+              IsDefault="True" />
 
             <Button
               Grid.Column="1"
@@ -92,11 +89,7 @@
               Command="{x:Static mat:DialogHost.CloseDialogCommand}"
               Content="{mat:PackIcon CloseThick,
                                      Size=20}"
-              IsCancel="True">
-              <Button.CommandParameter>
-                <sys:Boolean>False</sys:Boolean>
-              </Button.CommandParameter>
-            </Button>
+              IsCancel="True" />
           </Grid>
         </Grid>
       </DataTemplate>
