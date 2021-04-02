@@ -406,6 +406,7 @@
                   HorizontalScrollBarVisibility="Auto"
                   IsEnabled="{Binding SelectedContent, Converter={StaticResource NullToFalseConv}}"
                   IsReadOnly="{Binding SelectedContent.ReadOnly}"
+                  LostFocus="FileEditorLeft"
                   Style="{StaticResource MaterialDesignOutlinedTextBox}"
                   Text="{Binding SelectedContent.Content, UpdateSourceTrigger=PropertyChanged, Delay=1000}"
                   TextWrapping="NoWrap"
