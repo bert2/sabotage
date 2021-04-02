@@ -59,13 +59,21 @@
           </Grid.RowDefinitions>
 
           <TextBox
+            x:Name="txtCommitMessage"
             Grid.Row="0"
             Width="200"
             Margin="16"
             mat:HintAssist.Hint="commit message"
             mat:TextFieldAssist.HasClearButton="True"
-            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-            Text="{Binding CommitMessage, UpdateSourceTrigger=PropertyChanged}" />
+            Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+            <TextBox.Text>
+              <Binding Path="CommitMessage" UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                  <local:ValidateNotEmpty />
+                </Binding.ValidationRules>
+              </Binding>
+            </TextBox.Text>
+          </TextBox>
 
           <Grid Grid.Row="1" Margin="16">
             <Grid.ColumnDefinitions>
@@ -80,7 +88,17 @@
               CommandParameter="OK"
               Content="{mat:PackIcon CheckBold,
                                      Size=20}"
-              IsDefault="True" />
+              IsDefault="True">
+              <Button.IsEnabled>
+                <MultiBinding Converter="{StaticResource AndConv}">
+                  <Binding
+                    Converter="{StaticResource NotConverter}"
+                    ElementName="txtCommitMessage"
+                    Path="(Validation.HasError)" />
+                  <Binding Path="Touched" />
+                </MultiBinding>
+              </Button.IsEnabled>
+            </Button>
 
             <Button
               Grid.Column="1"
