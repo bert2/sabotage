@@ -50,6 +50,8 @@
 
         public ICommand MergeBranchCmd => new Command<IBranch>(MergeBranch);
 
+        public ICommand CreateBranchCmd => new Command<IBranch>(CreateBranch);
+
         public Repo() {
             WeakEventManager<Events, EventArgs>.AddHandler(Events.Instance, nameof(Events.WorkingTreeChanged), RefreshStatus);
             LoadRepository(); // TODO: remove test code
@@ -139,6 +141,20 @@
                 MergeStatus.Conflicts => "merge failed with conflicts",
                 _ => $"merge result: {merge.Status}"
             });
+
+            await LoadRepositoryData();
+        }
+
+        private async void CreateBranch(IBranch source) {
+            Debug.Assert(repo is not null);
+            Debug.Assert(Branches is not null);
+
+            var (ok, target) = await Dialog.Show(new EnterNewBranchName(), vm => vm.BranchName);
+            if (!ok) return;
+
+            _ = repo.CreateBranch(branchName: target, source.Name);
+
+            Snackbar.Show("branch created");
 
             await LoadRepositoryData();
         }

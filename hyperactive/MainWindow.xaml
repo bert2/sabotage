@@ -57,7 +57,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Margin="16">
-          <TextBlock HorizontalAlignment="Center" Text="Enter commit message:" />
+          <TextBlock HorizontalAlignment="Center" Text="enter commit message:" />
 
           <TextBox
             x:Name="txtCommitMessage"
@@ -114,6 +114,71 @@
       </Grid>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type local:EnterNewBranchName}">
+      <Grid Background="{DynamicResource MaterialDesignPaper}">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="auto" />
+          <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="16">
+          <TextBlock HorizontalAlignment="Center" Text="enter new branch name:" />
+
+          <TextBox
+            x:Name="txtBranchName"
+            Grid.Row="0"
+            Width="200"
+            Margin="0,16,0,0"
+            mat:HintAssist.Hint="branch name"
+            mat:TextFieldAssist.HasClearButton="True"
+            Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+            <TextBox.Text>
+              <Binding Path="BranchName" UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                  <local:ValidateNotEmpty />
+                </Binding.ValidationRules>
+              </Binding>
+            </TextBox.Text>
+          </TextBox>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="16">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+
+          <Button
+            Grid.Column="0"
+            Background="{DynamicResource SecondaryHueDarkBrush}"
+            Command="{x:Static mat:DialogHost.CloseDialogCommand}"
+            CommandParameter="OK"
+            Content="{mat:PackIcon CheckBold,
+                                   Size=20}"
+            IsDefault="True">
+            <Button.IsEnabled>
+              <MultiBinding Converter="{StaticResource AndConv}">
+                <Binding
+                  Converter="{StaticResource NotConverter}"
+                  ElementName="txtBranchName"
+                  Path="(Validation.HasError)" />
+                <Binding Path="Touched" />
+              </MultiBinding>
+            </Button.IsEnabled>
+          </Button>
+
+          <Button
+            Grid.Column="1"
+            HorizontalAlignment="Right"
+            Background="{DynamicResource PrimaryHueMidBrush}"
+            Command="{x:Static mat:DialogHost.CloseDialogCommand}"
+            Content="{mat:PackIcon CloseThick,
+                                   Size=20}"
+            IsCancel="True" />
+        </Grid>
+      </Grid>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type local:SelectMergeSource}">
       <Grid Background="{DynamicResource MaterialDesignPaper}">
         <Grid.RowDefinitions>
@@ -123,7 +188,7 @@
 
         <StackPanel Grid.Row="0" Margin="16">
           <TextBlock HorizontalAlignment="Center">
-            <Run Text="Select branch to merge into " /><Run
+            <Run Text="select branch to merge into " /><Run
               FontFamily="Consolas"
               Foreground="{DynamicResource SecondaryHueMidBrush}"
               Text="{Binding Target.Name, Mode=OneWay}" /><Run Text=":" />
@@ -338,7 +403,7 @@
                       <StackPanel>
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          Command="{Binding DataContext.CreateBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           Style="{DynamicResource MaterialDesignFlatButton}"
