@@ -50,9 +50,11 @@
 
         public ICommand CommitCmd => new Command(Commit);
 
+        public ICommand CreateBranchCmd => new Command<IBranch>(CreateBranch);
+
         public ICommand MergeBranchCmd => new Command<IBranch>(MergeBranch);
 
-        public ICommand CreateBranchCmd => new Command<IBranch>(CreateBranch);
+        public ICommand CherryPickCmd => new Command<IBranch>(CherryPick);
 
         public ICommand DeleteBranchCmd => new Command<IBranch>(DeleteBranch);
 
@@ -127,6 +129,19 @@
             await RefreshStatus();
         }
 
+        private async void CreateBranch(IBranch source) {
+            Debug.Assert(repo is not null);
+
+            var (ok, target) = await Dialog.Show(new EnterNewBranchName(), vm => vm.BranchName);
+            if (!ok) return;
+
+            _ = repo.CreateBranch(branchName: target, source.Name);
+
+            Snackbar.Show("branch created");
+
+            await LoadRepositoryData();
+        }
+
         private async void MergeBranch(IBranch target) {
             Debug.Assert(repo is not null);
             Debug.Assert(Branches is not null);
@@ -141,24 +156,31 @@
 
             Snackbar.ShowImportant(merge.Status switch {
                 MergeStatus.NonFastForward => "merge succeeded",
-                MergeStatus.FastForward => "merge succeeded (fast forward)",
-                MergeStatus.UpToDate => "target branch was up-to-date",
-                MergeStatus.Conflicts => "merge failed with conflicts",
-                _ => $"merge result: {merge.Status}"
+                MergeStatus.FastForward    => "merge succeeded (fast forward)",
+                MergeStatus.UpToDate       => "target branch was up-to-date",
+                MergeStatus.Conflicts      => "merge failed with conflicts",
+                _                          => $"merge result: {merge.Status}"
             });
 
             await LoadRepositoryData();
         }
 
-        private async void CreateBranch(IBranch source) {
+        private async void CherryPick(IBranch mergeTarget) {
             Debug.Assert(repo is not null);
 
-            var (ok, target) = await Dialog.Show(new EnterNewBranchName(), vm => vm.BranchName);
+            var (ok, commit) = await Dialog.Show(
+                new SelectCommit(mergeTarget, commits: null),
+                vm => vm.SelectedCommit);
             if (!ok) return;
 
-            _ = repo.CreateBranch(branchName: target, source.Name);
+            //var sig = CreateSignature(repo);
+            //var cherryPick = repo.CherryPick(commit, sig);
 
-            Snackbar.Show("branch created");
+            //Snackbar.ShowImportant(cherryPick.Status switch {
+            //    CherryPickStatus.CherryPicked => "cherry-pick succeeded",
+            //    CherryPickStatus.Conflicts    => "cherry-pick failed with conflicts",
+            //    _                             => $"cherry-pick result: {cherryPick.Status}"
+            //});
 
             await LoadRepositoryData();
         }
@@ -181,15 +203,15 @@
         private async Task RefreshStatus() => await Task.Run(() => Status = new(repo!));
 
         private int DevelopFirstMainLast(string branch1, string branch2) => (branch1, branch2) switch {
-            ("main"   , _        ) =>  1,
-            (_        , "main"   ) => -1,
-            ("master" , _        ) =>  1,
-            (_        , "master" ) => -1,
+            ("main", _) => 1,
+            (_, "main") => -1,
+            ("master", _) => 1,
+            (_, "master") => -1,
 
-            ("develop", _        ) => -1,
-            (_        , "develop") =>  1,
+            ("develop", _) => -1,
+            (_, "develop") => 1,
 
-            (_        , _        ) => branch1.CompareTo(branch2)
+            (_, _) => branch1.CompareTo(branch2)
         };
 
         private void Cleanup() {
