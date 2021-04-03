@@ -90,6 +90,8 @@
             repo.RemoveUntrackedFiles();
             Commands.Checkout(repo, branch.Name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
 
+            Snackbar.Show("branch switched");
+
             await LoadRepositoryData();
         }
 
@@ -151,8 +153,9 @@
                 vm => vm.SelectedSource);
             if (!ok) return;
 
+            Debug.Assert(source is not null);
             var sig = CreateSignature(repo);
-            var merge = repo.Merge(source!.Name, sig);
+            var merge = repo.Merge(source.Name, sig);
 
             Snackbar.ShowImportant(merge.Status switch {
                 MergeStatus.NonFastForward => "merge succeeded",
@@ -168,19 +171,28 @@
         private async void CherryPick(IBranch mergeTarget) {
             Debug.Assert(repo is not null);
 
-            var (ok, commit) = await Dialog.Show(
-                new SelectCommit(mergeTarget, commits: null),
-                vm => vm.SelectedCommit);
+            var commits = repo
+                .Commits
+                .QueryBy(new CommitFilter {
+                    ExcludeReachableFrom = mergeTarget.Name,
+                    IncludeReachableFrom = repo.Branches.Where(b => b.FriendlyName != mergeTarget.Name),
+                    SortBy = CommitSortStrategies.Time
+                })
+                .Select(c => new Commit_(c))
+                .ToArray();
+
+            var (ok, commit) = await Dialog.Show(new SelectCommit(mergeTarget, commits), vm => vm.SelectedCommit);
             if (!ok) return;
 
-            //var sig = CreateSignature(repo);
-            //var cherryPick = repo.CherryPick(commit, sig);
+            Debug.Assert(commit is not null);
+            var sig = CreateSignature(repo);
+            var cherryPick = repo.CherryPick(commit.GitObject, sig);
 
-            //Snackbar.ShowImportant(cherryPick.Status switch {
-            //    CherryPickStatus.CherryPicked => "cherry-pick succeeded",
-            //    CherryPickStatus.Conflicts    => "cherry-pick failed with conflicts",
-            //    _                             => $"cherry-pick result: {cherryPick.Status}"
-            //});
+            Snackbar.ShowImportant(cherryPick.Status switch {
+                CherryPickStatus.CherryPicked => "cherry-pick succeeded",
+                CherryPickStatus.Conflicts => "cherry-pick failed with conflicts",
+                _ => $"cherry-pick result: {cherryPick.Status}"
+            });
 
             await LoadRepositoryData();
         }
@@ -219,6 +231,7 @@
             Branches = Array.Empty<IBranch>();
             LocalBranchesCount = null;
             RemoteBranchesCount = null;
+            Current = null;
             repo?.Dispose();
         }
 

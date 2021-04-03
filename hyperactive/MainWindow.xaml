@@ -295,7 +295,7 @@
           <ComboBox
             Margin="0,16,0,0"
             HorizontalAlignment="Center"
-            mat:HintAssist.Hint="source branch"
+            mat:HintAssist.Hint="commit"
             ItemsSource="{Binding Commits}"
             SelectedItem="{Binding SelectedCommit}"
             Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
