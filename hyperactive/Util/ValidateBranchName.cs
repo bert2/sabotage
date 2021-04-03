@@ -17,7 +17,7 @@
             Debug.Assert(Repo.Current is not null);
             return value is string branchName && Repo.Current.Branches.All(b => b.FriendlyName != branchName)
                 ? ValidationResult.ValidResult
-                : new ValidationResult(false, "already taken");
+                : new ValidationResult(false, "already exists");
         }
     }
 }

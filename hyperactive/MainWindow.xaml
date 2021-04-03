@@ -180,6 +180,51 @@
       </Grid>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type local:Confirm}">
+      <Grid Background="{DynamicResource MaterialDesignPaper}">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="auto" />
+          <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock
+          Grid.Row="0"
+          Margin="16"
+          HorizontalAlignment="Center">
+          <Run Text="{Binding Action, Mode=OneWay}" />
+          <Run
+            FontFamily="Consolas"
+            Foreground="{DynamicResource SecondaryHueMidBrush}"
+            Text="{Binding Subject, Mode=OneWay}" /><Run Text="?" />
+        </TextBlock>
+
+        <Grid Grid.Row="1" Margin="16">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+
+          <Button
+            Grid.Column="0"
+            Background="{DynamicResource SecondaryHueDarkBrush}"
+            Command="{x:Static mat:DialogHost.CloseDialogCommand}"
+            CommandParameter="OK"
+            Content="{mat:PackIcon CheckBold,
+                                   Size=20}"
+            IsDefault="True" />
+
+          <Button
+            Grid.Column="1"
+            HorizontalAlignment="Right"
+            Background="{DynamicResource PrimaryHueMidBrush}"
+            Command="{x:Static mat:DialogHost.CloseDialogCommand}"
+            Content="{mat:PackIcon CloseThick,
+                                   Size=20}"
+            IsCancel="True" />
+        </Grid>
+      </Grid>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type local:SelectMergeSource}">
       <Grid Background="{DynamicResource MaterialDesignPaper}">
         <Grid.RowDefinitions>
@@ -454,7 +499,7 @@
 
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          Command="{Binding DataContext.DeleteBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           Style="{DynamicResource MaterialDesignFlatButton}"
