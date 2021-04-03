@@ -136,6 +136,7 @@
               <Binding Path="BranchName" UpdateSourceTrigger="PropertyChanged">
                 <Binding.ValidationRules>
                   <local:ValidateNotEmpty />
+                  <local:ValidateBranchName />
                 </Binding.ValidationRules>
               </Binding>
             </TextBox.Text>

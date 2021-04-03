@@ -25,6 +25,8 @@
 
         private Repository? repo;
 
+        public static Repository? Current { get; private set; }
+
         private RepoStatus status = new();
         public RepoStatus Status { get => status; private set => SetProperty(ref status, value); }
 
@@ -73,6 +75,7 @@
         private async void LoadRepository() {
             Cleanup();
             repo = new Repository(Directory);
+            Current = repo;
             await LoadRepositoryData();
         }
 
