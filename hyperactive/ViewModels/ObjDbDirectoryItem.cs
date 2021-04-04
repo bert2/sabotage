@@ -11,6 +11,8 @@
 
         public ItemType Type { get; }
 
+        public ItemStatus Status { get; } = ItemStatus.Unchanged;
+
         public ObjDbDirectoryItem? Parent { get; }
 
         [MemberNotNullWhen(false, nameof(Parent))]

@@ -30,21 +30,26 @@
             IsClean = !statusEntries.IsDirty;
             statusEntries.ForEach(x => {
                 switch (x.State) {
-                    case FileStatus.NewInWorkdir:       WdirAdd++; break;
-                    case FileStatus.ModifiedInWorkdir:  WdirMod++; break;
-                    case FileStatus.DeletedFromWorkdir: WdirDel++; break;
-                    case FileStatus.Conflicted:         WdirCon++; break;
+                    case FileStatus.NewInWorkdir:        WdirAdd++; break;
 
-                    case FileStatus.NewInIndex:         IdxAdd++; break;
-                    case FileStatus.ModifiedInIndex:    IdxMod++; break;
-                    case FileStatus.DeletedFromIndex:   IdxDel++; break;
+                    case FileStatus.ModifiedInWorkdir:
+                    case FileStatus.RenamedInWorkdir:
+                    case FileStatus.TypeChangeInWorkdir: WdirMod++; break;
+
+                    case FileStatus.DeletedFromWorkdir:  WdirDel++; break;
+
+                    case FileStatus.Conflicted:          WdirCon++; break;
+
+                    case FileStatus.NewInIndex:          IdxAdd++; break;
+
+                    case FileStatus.ModifiedInIndex:
+                    case FileStatus.RenamedInIndex:
+                    case FileStatus.TypeChangeInIndex:   IdxMod++; break;
+
+                    case FileStatus.DeletedFromIndex:    IdxDel++; break;
 
                     case FileStatus.Ignored:
                     case FileStatus.Nonexistent:
-                    case FileStatus.RenamedInWorkdir:
-                    case FileStatus.RenamedInIndex:
-                    case FileStatus.TypeChangeInWorkdir:
-                    case FileStatus.TypeChangeInIndex:
                     case FileStatus.Unaltered:
                     case FileStatus.Unreadable:
                         break;

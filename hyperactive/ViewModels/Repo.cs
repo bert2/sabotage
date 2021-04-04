@@ -18,14 +18,18 @@
         public string? Directory {
             get => directory;
             set {
-                SetProperty(ref directory, value);
-                LoadRepository();
+                if (SetProperty(ref directory, value)) {
+                    CurrentDirectory = directory;
+                    LoadRepository();
+                }
             }
         }
 
         private Repository? repo;
 
         public static Repository? Current { get; private set; }
+
+        public static string? CurrentDirectory { get; private set; } = @"D:\DEV\git-conflicts"; // TODO: remove test value
 
         private RepoStatus status = new();
         public RepoStatus Status { get => status; private set => SetProperty(ref status, value); }
