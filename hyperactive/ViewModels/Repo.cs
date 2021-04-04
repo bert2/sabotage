@@ -56,6 +56,8 @@
 
         public ICommand CherryPickCmd => new Command<IBranch>(CherryPick);
 
+        public ICommand RenameBranchCmd => new Command<IBranch>(RenameBranch);
+
         public ICommand DeleteBranchCmd => new Command<IBranch>(DeleteBranch);
 
         public Repo() {
@@ -193,6 +195,19 @@
                 CherryPickStatus.Conflicts => "cherry-pick failed with conflicts",
                 _ => $"cherry-pick result: {cherryPick.Status}"
             });
+
+            await LoadRepositoryData();
+        }
+
+        private async void RenameBranch(IBranch branch) {
+            Debug.Assert(repo is not null);
+
+            var (ok, newName) = await Dialog.Show(new EnterNewBranchName(), vm => vm.BranchName);
+            if (!ok) return;
+
+            _ = repo.Branches.Rename(branch.Name, newName);
+
+            Snackbar.Show("branch renamed");
 
             await LoadRepositoryData();
         }

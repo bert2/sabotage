@@ -534,6 +534,8 @@
                           </StackPanel>
                         </Button>
 
+                        <Separator />
+
                         <Button
                           HorizontalContentAlignment="Left"
                           Command="{Binding DataContext.MergeBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
@@ -565,6 +567,24 @@
                               Margin="8,0,0,0"
                               VerticalAlignment="Center"
                               Text="cherry-pick" />
+                          </StackPanel>
+                        </Button>
+
+                        <Separator />
+
+                        <Button
+                          HorizontalContentAlignment="Left"
+                          Command="{Binding DataContext.RenameBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          CommandParameter="{Binding}"
+                          Foreground="{DynamicResource PrimaryHueLightBrush}"
+                          Style="{DynamicResource MaterialDesignFlatButton}"
+                          ToolTip="rename this branch...">
+                          <StackPanel Orientation="Horizontal">
+                            <mat:PackIcon Kind="Pencil" />
+                            <TextBlock
+                              Margin="8,0,0,0"
+                              VerticalAlignment="Center"
+                              Text="rename" />
                           </StackPanel>
                         </Button>
 
