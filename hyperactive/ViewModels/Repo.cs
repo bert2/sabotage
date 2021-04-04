@@ -234,15 +234,15 @@
         private async Task RefreshStatus() => await Task.Run(() => Status = new(repo!));
 
         private int DevelopFirstMainLast(string branch1, string branch2) => (branch1, branch2) switch {
-            ("main", _) => 1,
-            (_, "main") => -1,
-            ("master", _) => 1,
-            (_, "master") => -1,
+            ("main", _)    => 1,
+            (_, "main")    => -1,
+            ("master", _)  => 1,
+            (_, "master")  => -1,
 
             ("develop", _) => -1,
             (_, "develop") => 1,
 
-            (_, _) => branch1.CompareTo(branch2)
+            (_, _)         => branch1.CompareTo(branch2)
         };
 
         private void Cleanup() {
