@@ -6,6 +6,7 @@
   xmlns:git="clr-namespace:LibGit2Sharp;assembly=LibGit2Sharp"
   xmlns:local="clr-namespace:hyperactive"
   xmlns:mat="http://materialdesigninxaml.net/winfx/xaml/themes"
+  xmlns:matex="https://spiegelp.github.io/MaterialDesignExtensions/winfx/xaml"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:sys="clr-namespace:System;assembly=mscorlib"
   x:Name="mainWindow"
@@ -299,6 +300,24 @@
             ItemsSource="{Binding Commits}"
             SelectedItem="{Binding SelectedCommit}"
             Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+
+          <matex:Autocomplete
+            Margin="0,16,0,0"
+            AutocompleteSource="{Binding}"
+            Background="{DynamicResource MaterialDesignPaper}"
+            Hint="commit"
+            SearchOnInitialFocus="True"
+            SelectedItem="{Binding SelectedCommit, Mode=TwoWay}"
+            Style="{StaticResource MaterialDesignAutocompleteDense}">
+            <matex:Autocomplete.ItemTemplate>
+              <DataTemplate DataType="{x:Type local:Commit_}">
+                <TextBlock VerticalAlignment="Center">
+                  <Run FontFamily="Consolas" Text="{Binding ShortSha, Mode=OneWay}" />
+                  <Run Text="{Binding ShortMessage, Mode=OneWay}" />
+                </TextBlock>
+              </DataTemplate>
+            </matex:Autocomplete.ItemTemplate>
+          </matex:Autocomplete>
         </StackPanel>
 
         <Grid Grid.Row="1" Margin="16">

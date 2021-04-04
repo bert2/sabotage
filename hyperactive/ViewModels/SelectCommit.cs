@@ -1,7 +1,11 @@
 ﻿namespace hyperactive {
+    using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
 
-    public class SelectCommit : ViewModel {
+    using MaterialDesignExtensions.Model;
+
+    public class SelectCommit : ViewModel, IAutocompleteSource {
         public IBranch MergeTarget { get; }
 
         private IEnumerable<Commit_> commits;
@@ -12,5 +16,7 @@
 
         public SelectCommit(IBranch target, IEnumerable<Commit_> commits)
             => (MergeTarget, this.commits) = (target, commits);
+
+        public IEnumerable Search(string searchTerm) => Commits.Where(c => c.Matches(searchTerm));
     }
 }
