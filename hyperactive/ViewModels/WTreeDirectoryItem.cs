@@ -17,7 +17,8 @@
 
         public ItemType Type { get; }
 
-        public ItemStatus Status =>
+        private ItemStatus? status;
+        public ItemStatus Status => status ??=
             isVirtual ? ItemStatus.Unchanged
             : Type == ItemType.File ? GetFileStatus(Path)
             : GetFolderStatus(Path);
