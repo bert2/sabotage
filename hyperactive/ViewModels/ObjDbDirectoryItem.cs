@@ -19,10 +19,11 @@
         public bool IsRoot => Parent is null;
 
         public ObjDbDirectoryItem(TreeEntry entry, ObjDbDirectoryItem? parent)
-            : this(entry.Name, entry.Target, GetItemType(entry), parent) { }
+            => (Name, GitObject, Type, Parent) = (entry.Name, entry.Target, GetItemType(entry), parent);
 
-        public ObjDbDirectoryItem(string name, GitObject gitObject, ItemType type, ObjDbDirectoryItem? parent)
-            => (Name, GitObject, Type, Parent) = (name, gitObject, type, parent);
+        /// <summary>Used to create the "[..]" entry that navigates backwards.</summary>
+        public ObjDbDirectoryItem(string name, GitObject gitObject, ObjDbDirectoryItem? parent)
+            => (Name, GitObject, Type, Parent) = (name, gitObject, ItemType.Folder, parent);
 
         public IFileContent ToFileContent() => Type == ItemType.File
             ? new ObjDbFileContent(GitObject.Peel<Blob>())

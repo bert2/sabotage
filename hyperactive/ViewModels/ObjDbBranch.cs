@@ -51,7 +51,7 @@
         }
 
         private static ObjDbDirectoryItem[] OpenRootFolder(Tree root)
-            => OpenFolder(new ObjDbDirectoryItem(name: "(root)", gitObject: root, type: ItemType.Folder, parent: null));
+            => OpenFolder(new ObjDbDirectoryItem(name: "(root)", gitObject: root, parent: null));
 
         private static ObjDbDirectoryItem[] OpenFolder(ObjDbDirectoryItem folder) => folder
             .GitObject
@@ -61,7 +61,7 @@
             .Insert(
                 folder.IsRoot
                     ? Enumerable.Empty<ObjDbDirectoryItem>()
-                    : new[] { new ObjDbDirectoryItem("[ .. ]", folder.Parent.GitObject, ItemType.Folder, folder.Parent.Parent) },
+                    : new[] { new ObjDbDirectoryItem("[ .. ]", folder.Parent.GitObject, folder.Parent.Parent) },
                 index: 0)
             .ToArray();
 

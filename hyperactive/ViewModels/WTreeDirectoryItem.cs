@@ -9,7 +9,7 @@
     using MoreLinq;
 
     public class WTreeDirectoryItem: ViewModel, IDirectoryItem {
-        private bool isVirtualFolder;
+        private readonly bool isVirtual;
 
         public string Name { get; }
 
@@ -18,7 +18,7 @@
         public ItemType Type { get; }
 
         public ItemStatus Status =>
-            isVirtualFolder ? ItemStatus.Unchanged
+            isVirtual ? ItemStatus.Unchanged
             : Type == ItemType.File ? GetFileStatus(Path)
             : GetFolderStatus(Path);
 
@@ -34,11 +34,11 @@
         }
 
         public WTreeDirectoryItem(FileSystemInfo fsi)
-            => (Name, Path, Type, isVirtualFolder) = (fsi.Name, fsi.FullName, GetItemType(fsi), false);
+            => (Name, Path, Type, isVirtual) = (fsi.Name, fsi.FullName, GetItemType(fsi), false);
 
         /// <summary>Used to create the "[..]" entry that navigates backwards.</summary>
-        public WTreeDirectoryItem(string name, string path, ItemType type)
-            => (Name, Path, Type, isVirtualFolder) = (name, path, type, true);
+        public WTreeDirectoryItem(string name, string path)
+            => (Name, Path, Type, isVirtual) = (name, path, ItemType.Folder, true);
 
         public IFileContent ToFileContent() => Type == ItemType.File
             ? new WTreeFileContent(Path)

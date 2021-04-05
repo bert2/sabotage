@@ -63,7 +63,7 @@
             .Select(item => new WTreeDirectoryItem(item))
             .Insert(
                 folder.FullName.IsSubPathOf(repoRootPath)
-                    ? new[] { new WTreeDirectoryItem("[ .. ]", folder.Parent!.FullName, ItemType.Folder) }
+                    ? new[] { new WTreeDirectoryItem("[ .. ]", folder.Parent!.FullName) }
                     : Enumerable.Empty<WTreeDirectoryItem>(),
                 index: 0)
             .ToArray();
