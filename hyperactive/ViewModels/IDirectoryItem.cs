@@ -10,6 +10,8 @@
 
         public ItemStatus Status { get; }
 
-        IFileContent ToFileContent();
+        public string? Content { get; set; }
+
+        public bool ReadOnly { get; }
     }
 }

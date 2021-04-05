@@ -680,13 +680,19 @@
                   AcceptsTab="False"
                   FontFamily="Consolas"
                   HorizontalScrollBarVisibility="Auto"
-                  IsEnabled="{Binding SelectedContent, Converter={StaticResource NullToFalseConv}}"
-                  IsReadOnly="{Binding SelectedContent.ReadOnly}"
+                  IsReadOnly="{Binding SelectedItem.ReadOnly}"
                   LostFocus="FileEditorLeft"
                   Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                  Text="{Binding SelectedContent.Content, UpdateSourceTrigger=PropertyChanged, Delay=1000}"
+                  Text="{Binding SelectedItem.Content, UpdateSourceTrigger=PropertyChanged, Delay=1000}"
                   TextWrapping="NoWrap"
-                  VerticalScrollBarVisibility="Auto" />
+                  VerticalScrollBarVisibility="Auto">
+                  <TextBox.IsEnabled>
+                    <MultiBinding Converter="{StaticResource AndConv}">
+                      <Binding Converter="{StaticResource NullToFalseConv}" Path="SelectedItem" />
+                      <Binding Converter="{StaticResource NullToFalseConv}" Path="SelectedItem.Content" />
+                    </MultiBinding>
+                  </TextBox.IsEnabled>
+                </TextBox>
               </Grid>
             </mat:Card>
           </DataTemplate>

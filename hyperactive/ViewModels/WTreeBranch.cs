@@ -23,16 +23,7 @@
         public IDirectoryItem[] CurrentDirectory { get => currentDirectory; private set => SetProperty(ref currentDirectory, value); }
 
         private IDirectoryItem? selectedItem;
-        public IDirectoryItem? SelectedItem {
-            get => selectedItem;
-            set {
-                SetProperty(ref selectedItem, value);
-                UpdateContent();
-            }
-        }
-
-        private IFileContent? selectedContent;
-        public IFileContent? SelectedContent { get => selectedContent; private set => SetProperty(ref selectedContent, value); }
+        public IDirectoryItem? SelectedItem { get => selectedItem; set => SetProperty(ref selectedItem, value); }
 
         public ICommand NavigateCmd => new Command(Navigate);
 
@@ -42,10 +33,6 @@
             IsHead = branch.IsCurrentRepositoryHead;
             CurrentDirectory = OpenFolder(new DirectoryInfo(repoRootPath));
         }
-
-        private void UpdateContent() => SelectedContent = SelectedItem?.Type == ItemType.File
-            ? SelectedItem.ToFileContent()
-            : null;
 
         private void Navigate() {
             Debug.Assert(SelectedItem is not null);

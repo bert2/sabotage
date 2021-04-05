@@ -25,14 +25,17 @@
 
         private string? content;
         public string? Content {
-            get => content;
+            get => content ??= Type == ItemType.File ? File.ReadAllText(Path) : null;
             set {
                 if (SetProperty(ref content, value)) {
                     File.WriteAllText(Path, value);
                     Events.RaiseWorkingTreeChanged();
+                    SetProperty(ref status, null, nameof(Status));
                 }
             }
         }
+
+        public bool ReadOnly { get; } = false;
 
         public WTreeDirectoryItem(FileSystemInfo fsi)
             => (Name, Path, Type, isVirtual) = (fsi.Name, fsi.FullName, GetItemType(fsi), false);
@@ -40,10 +43,6 @@
         /// <summary>Used to create the "[..]" entry that navigates backwards.</summary>
         public WTreeDirectoryItem(string name, string path)
             => (Name, Path, Type, isVirtual) = (name, path, ItemType.Folder, true);
-
-        public IFileContent ToFileContent() => Type == ItemType.File
-            ? new WTreeFileContent(Path)
-            : throw new InvalidOperationException($"Cannot get content of {Type}.");
 
         private static ItemType GetItemType(FileSystemInfo fsi)
             => (fsi.Attributes & FileAttributes.Directory) != 0

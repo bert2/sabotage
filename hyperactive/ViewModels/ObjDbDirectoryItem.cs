@@ -13,6 +13,14 @@
 
         public ItemStatus Status { get; } = ItemStatus.Unchanged;
 
+        private string? content;
+        public string? Content {
+            get => content ??= Type == ItemType.File ? GitObject.Peel<Blob>().GetContentText() : null;
+            set { /*noop*/ }
+        }
+
+        public bool ReadOnly { get; } = true;
+
         public ObjDbDirectoryItem? Parent { get; }
 
         [MemberNotNullWhen(false, nameof(Parent))]
@@ -24,10 +32,6 @@
         /// <summary>Used to create the "[..]" entry that navigates backwards.</summary>
         public ObjDbDirectoryItem(string name, GitObject gitObject, ObjDbDirectoryItem? parent)
             => (Name, GitObject, Type, Parent) = (name, gitObject, ItemType.Folder, parent);
-
-        public IFileContent ToFileContent() => Type == ItemType.File
-            ? new ObjDbFileContent(GitObject.Peel<Blob>())
-            : throw new InvalidOperationException($"Cannot get content of {Type}.");
 
         private static ItemType GetItemType(TreeEntry entry) => entry.TargetType switch {
             TreeEntryTargetType.Tree => ItemType.Folder,
