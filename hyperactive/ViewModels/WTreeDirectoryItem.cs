@@ -8,23 +8,37 @@
 
     using MoreLinq;
 
-    public class WTreeDirectoryItem: IDirectoryItem {
+    public class WTreeDirectoryItem: ViewModel, IDirectoryItem {
+        private bool isVirtualFolder;
+
         public string Name { get; }
 
         public string Path { get; }
 
         public ItemType Type { get; }
 
-        public ItemStatus Status { get; }
+        public ItemStatus Status =>
+            isVirtualFolder ? ItemStatus.Unchanged
+            : Type == ItemType.File ? GetFileStatus(Path)
+            : GetFolderStatus(Path);
+
+        private string? content;
+        public string? Content {
+            get => content;
+            set {
+                if (SetProperty(ref content, value)) {
+                    File.WriteAllText(Path, value);
+                    Events.RaiseWorkingTreeChanged();
+                }
+            }
+        }
 
         public WTreeDirectoryItem(FileSystemInfo fsi)
-            : this(fsi.Name, fsi.FullName, GetItemType(fsi), GetItemStatus(fsi)) { }
+            => (Name, Path, Type, isVirtualFolder) = (fsi.Name, fsi.FullName, GetItemType(fsi), false);
 
+        /// <summary>Used to create the "[..]" entry that navigates backwards.</summary>
         public WTreeDirectoryItem(string name, string path, ItemType type)
-            : this(name, path, type, ItemStatus.Unchanged) { }
-
-        public WTreeDirectoryItem(string name, string path, ItemType type, ItemStatus status)
-            => (Name, Path, Type, Status) = (name, path, type, status);
+            => (Name, Path, Type, isVirtualFolder) = (name, path, type, true);
 
         public IFileContent ToFileContent() => Type == ItemType.File
             ? new WTreeFileContent(Path)
@@ -35,12 +49,7 @@
                 ? ItemType.Folder
                 : ItemType.File;
 
-        private static ItemStatus GetItemStatus(FileSystemInfo fsi)
-            => GetItemType(fsi) == ItemType.Folder
-                ? GetFolderStatus(fsi)
-                : GetFileStatus(fsi);
-
-        private static ItemStatus GetFileStatus(FileSystemInfo fsi) => Repo.Current.NotNull().RetrieveStatus(fsi.FullName) switch {
+        private static ItemStatus GetFileStatus(string path) => Repo.Current.NotNull().RetrieveStatus(path) switch {
             FileStatus.NewInWorkdir => ItemStatus.Added,
             FileStatus.NewInIndex => ItemStatus.Added,
 
@@ -64,11 +73,11 @@
             _ => ItemStatus.Unchanged,
         };
 
-        private static ItemStatus GetFolderStatus(FileSystemInfo fsi) => Repo.Current
+        private static ItemStatus GetFolderStatus(string path) => Repo.Current
             .NotNull()
             .RetrieveStatus(new StatusOptions {
                 PathSpec = new[] {
-                    System.IO.Path.GetRelativePath(Repo.CurrentDirectory.NotNull(), fsi.FullName)
+                    System.IO.Path.GetRelativePath(Repo.CurrentDirectory.NotNull(), path)
                 },
                 IncludeUntracked = true,
                 DetectRenamesInWorkDir = false,
