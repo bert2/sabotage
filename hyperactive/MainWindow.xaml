@@ -37,13 +37,8 @@
 
     <local:BoolToBrushConverter
       x:Key="IsCleanToStatusBrushConv"
-      FalseBrush="#F44336"
-      TrueBrush="{StaticResource SecondaryHueDarkBrush}" />
-
-    <local:BoolToBrushConverter
-      x:Key="IsHeadToBorderBrushConv"
-      FalseBrush="{StaticResource MaterialDesignLightSeparatorBackground}"
-      TrueBrush="{StaticResource PrimaryHueMidBrush}" />
+      FalseBrush="{StaticResource SecondaryHueLightBrush}"
+      TrueBrush="{StaticResource MaterialDesignBody}" />
 
     <local:BoolToBrushConverter
       x:Key="IsHeadToCardBgBrushConv"
@@ -52,7 +47,7 @@
 
     <local:StatusToBrushConverter
       x:Key="StatusToBrushConv"
-      AddedBrush="{StaticResource SecondaryHueDarkBrush}"
+      AddedBrush="{StaticResource SecondaryHueMidBrush}"
       ConflictedBrush="#F44336"
       IgnoredBrush="{StaticResource MaterialDesignLightSeparatorBackground}"
       ModifiedBrush="{StaticResource SecondaryHueLightBrush}"
@@ -478,8 +473,8 @@
               <Grid>
                 <Grid.RowDefinitions>
                   <RowDefinition Height="auto" />
-                  <RowDefinition Height="200" />
-                  <RowDefinition Height="*" />
+                  <RowDefinition Height="2*" />
+                  <RowDefinition Height="3*" />
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0">
