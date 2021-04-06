@@ -76,9 +76,7 @@
         private static ItemStatus GetFolderStatus(string path) => Repo.Current
             .NotNull()
             .RetrieveStatus(new StatusOptions {
-                PathSpec = new[] {
-                    System.IO.Path.GetRelativePath(Repo.CurrentDirectory.NotNull(), path)
-                },
+                PathSpec = new[] { GetRelativeGitPath(path) },
                 IncludeUntracked = true,
                 DetectRenamesInWorkDir = false,
                 DetectRenamesInIndex = false,
@@ -116,5 +114,9 @@
             (ItemStatus.Modified, ItemStatus.Modified) => 0,
             _ => throw new InvalidOperationException($"Unexpected folder item status when comparing {a} vs {b}.")
         };
+
+        private static string GetRelativeGitPath(string path) => System.IO.Path
+            .GetRelativePath(Repo.CurrentDirectory.NotNull(), path)
+            .Replace('\\', '/');
     }
 }
