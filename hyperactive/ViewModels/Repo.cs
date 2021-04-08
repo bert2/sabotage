@@ -11,8 +11,6 @@
 
     using LibGit2Sharp;
 
-    using MaterialDesignThemes.Wpf;
-
     public class Repo : ViewModel {
         private string? directory = @"D:\DEV\git-conflicts"; // TODO: remove test value
         public string? Directory {
