@@ -3,10 +3,12 @@
 
     using MoreLinq;
 
+    public enum WTreeStatus { Clean, Dirty, Conflicted }
+
     public class RepoStatus {
         public string? Head { get; }
 
-        public bool IsClean { get; }
+        public WTreeStatus WTreeStatus { get; }
 
         public int WdirAdd { get; private set; }
 
@@ -26,9 +28,10 @@
 
         public RepoStatus(Repository repo) {
             Head = repo.Head.FriendlyName;
-            var statusEntries = repo.RetrieveStatus();
-            IsClean = !statusEntries.IsDirty;
-            statusEntries.ForEach(x => {
+
+            var entries = repo.RetrieveStatus();
+
+            entries.ForEach(x => {
                 switch (x.State) {
                     case FileStatus.NewInWorkdir:        WdirAdd++; break;
 
@@ -55,6 +58,11 @@
                         break;
                 }
             });
+
+            WTreeStatus =
+                WdirCon > 0     ? WTreeStatus.Conflicted :
+                entries.IsDirty ? WTreeStatus.Dirty :
+                                  WTreeStatus.Clean;
         }
     }
 }

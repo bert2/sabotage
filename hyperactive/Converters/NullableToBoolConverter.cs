@@ -9,6 +9,6 @@
             => value is not null;
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => throw new InvalidOperationException($"{nameof(NullableToBoolConverter)} only works with OneWay bindings.");
+            => throw new NotSupportedException();
     }
 }

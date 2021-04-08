@@ -30,7 +30,7 @@
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => throw new InvalidOperationException($"{nameof(BoolToColorConverter)} only works with OneWay bindings.");
+            => throw new NotSupportedException();
 
         private static Color ColorFromName(string name) {
             var c = System.Drawing.Color.FromName(name);

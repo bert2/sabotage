@@ -36,14 +36,15 @@
       TrueBrush="{StaticResource SecondaryHueLightBrush}" />
 
     <local:BoolToBrushConverter
-      x:Key="IsCleanToStatusBrushConv"
-      FalseBrush="{StaticResource SecondaryHueLightBrush}"
-      TrueBrush="{StaticResource MaterialDesignBody}" />
-
-    <local:BoolToBrushConverter
       x:Key="IsHeadToCardBgBrushConv"
       FalseBrush="{StaticResource MaterialDesignCardBackground}"
       TrueBrush="{StaticResource MaterialDesignLightSeparatorBackground}" />
+
+    <local:WTreeStatusToBrushConverter
+      x:Key="WTreeStatusToBrushConv"
+      CleanBrush="{StaticResource MaterialDesignBody}"
+      ConflictedBrush="#F44336"
+      DirtyBrush="{StaticResource SecondaryHueLightBrush}" />
 
     <local:StatusToBrushConverter
       x:Key="StatusToBrushConv"
@@ -439,7 +440,7 @@
             <TextBlock
               Margin="8,0,0,0"
               FontFamily="Consolas"
-              Foreground="{Binding Status.IsClean, Converter={StaticResource IsCleanToStatusBrushConv}, Mode=OneWay}">
+              Foreground="{Binding Status.WTreeStatus, Converter={StaticResource WTreeStatusToBrushConv}, Mode=OneWay}">
               <Run Text="{Binding Status.Head, Mode=OneWay}" />
               +<Run Text="{Binding Status.IdxAdd, Mode=OneWay}" />
               ~<Run Text="{Binding Status.IdxMod, Mode=OneWay}" />
