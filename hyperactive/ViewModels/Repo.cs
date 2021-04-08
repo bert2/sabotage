@@ -101,26 +101,6 @@
             await LoadRepositoryData();
         }
 
-        private async Task LoadRepositoryData() {
-            Debug.Assert(repo is not null);
-
-            await RefreshStatus();
-
-            Branches = repo
-                .Branches
-                .Where(b => !b.IsRemote)
-                .Select(b => b.IsCurrentRepositoryHead
-                    ? new WTreeBranch(Directory!, b)
-                    : (IBranch)new ObjDbBranch(b))
-                .OrderBy(b => b.Name, Comparer<string>.Create(DevelopFirstMainLast))
-                .ToArray();
-
-            LocalBranchesCount = Branches.Length;
-            RemoteBranchesCount = repo.Branches.Count(b => b.IsRemote);
-
-            IsLoaded = true;
-        }
-
         private async void Commit() {
             Debug.Assert(repo is not null);
 
@@ -134,7 +114,7 @@
 
             Snackbar.Show("local changes committed");
 
-            await RefreshStatus();
+            await LoadRepositoryData();
         }
 
         private async void CreateBranch(IBranch source) {
@@ -232,6 +212,26 @@
         private async void RefreshStatus(object? sender, EventArgs args) => await RefreshStatus();
 
         private async Task RefreshStatus() => await Task.Run(() => Status = new(repo!));
+
+        private async Task LoadRepositoryData() {
+            Debug.Assert(repo is not null);
+
+            await RefreshStatus();
+
+            Branches = repo
+                .Branches
+                .Where(b => !b.IsRemote)
+                .Select(b => b.IsCurrentRepositoryHead
+                    ? new WTreeBranch(Directory!, b)
+                    : (IBranch)new ObjDbBranch(b))
+                .OrderBy(b => b.Name, Comparer<string>.Create(DevelopFirstMainLast))
+                .ToArray();
+
+            LocalBranchesCount = Branches.Length;
+            RemoteBranchesCount = repo.Branches.Count(b => b.IsRemote);
+
+            IsLoaded = true;
+        }
 
         private int DevelopFirstMainLast(string branch1, string branch2) => (branch1, branch2) switch {
             ("main", _)    => 1,
