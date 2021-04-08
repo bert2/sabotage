@@ -93,8 +93,8 @@
             Debug.Assert(repo is not null);
 
             repo.Reset(ResetMode.Hard);
-            repo.RemoveUntrackedFiles();
             Commands.Checkout(repo, branch.Name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
+            repo.RemoveUntrackedFiles();
 
             Snackbar.Show("branch switched");
 
