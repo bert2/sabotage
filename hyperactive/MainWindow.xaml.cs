@@ -2,7 +2,9 @@
     using System.Windows;
     using System.Windows.Controls;
 
-    public partial class MainWindow : Window {
+    using MaterialDesignExtensions.Controls;
+
+    public partial class MainWindow : MaterialWindow {
         public MainWindow() {
             InitializeComponent();
             DataContext = new Repo();
