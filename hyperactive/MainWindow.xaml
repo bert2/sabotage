@@ -57,6 +57,8 @@
 
     <local:StatusToToolTipConverter x:Key="StatusToToolTipConv" />
 
+    <local:CurrentOperationToTextConverter x:Key="CurrOpToTextConv" />
+
     <DataTemplate DataType="{x:Type local:EnterCommitMessage}">
       <Grid Background="{DynamicResource MaterialDesignPaper}">
         <Grid.RowDefinitions>
@@ -412,10 +414,7 @@
             </Button>
           </Grid>
 
-          <StackPanel
-            Margin="0,16,0,0"
-            HorizontalAlignment="Center"
-            Orientation="Horizontal">
+          <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
             <StackPanel.IsEnabled>
               <MultiBinding Converter="{StaticResource AndConv}">
                 <Binding
@@ -444,6 +443,7 @@
               -<Run Text="{Binding Status.WdirDel, Mode=OneWay}" />
               !<Run Text="{Binding Status.WdirCon, Mode=OneWay}" />
             </TextBlock>
+            <TextBlock Margin="8,0,0,0" Text="{Binding Status.CurrentOperation, Mode=OneWay, Converter={StaticResource CurrOpToTextConv}}" />
           </StackPanel>
         </StackPanel>
       </mat:Card>
