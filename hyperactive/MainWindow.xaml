@@ -299,14 +299,6 @@
               Text="{Binding MergeTarget.Name, Mode=OneWay}" /><Run Text=":" />
           </TextBlock>
 
-          <ComboBox
-            Margin="0,16,0,0"
-            HorizontalAlignment="Center"
-            mat:HintAssist.Hint="commit"
-            ItemsSource="{Binding Commits}"
-            SelectedItem="{Binding SelectedCommit}"
-            Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
-
           <matex:Autocomplete
             Margin="0,16,0,0"
             AutocompleteSource="{Binding}"
