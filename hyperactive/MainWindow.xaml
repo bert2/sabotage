@@ -25,11 +25,15 @@
   TextOptions.TextRenderingMode="Auto"
   mc:Ignorable="d">
   <Window.Resources>
+    <SolidColorBrush x:Key="ErrorBrush" Color="#F44336" />
+
     <local:AndConverter x:Key="AndConv" />
 
     <local:BoolToColorConverter x:Key="BoolToColorConv" />
 
     <local:NullableToBoolConverter x:Key="NullToFalseConv" />
+
+    <local:NullableToVisibilityConverter x:Key="NullToCollapsedConv" />
 
     <local:BoolToBrushConverter
       x:Key="IsHeadToHeaderBrushConv"
@@ -41,16 +45,21 @@
       FalseBrush="{StaticResource MaterialDesignCardBackground}"
       TrueBrush="{StaticResource MaterialDesignLightSeparatorBackground}" />
 
+    <local:BoolToBrushConverter
+      x:Key="IsReadOnlyToBorderBrushConv"
+      FalseBrush="{StaticResource PrimaryHueMidBrush}"
+      TrueBrush="{StaticResource MaterialDesignBody}" />
+
     <local:WTreeStatusToBrushConverter
       x:Key="WTreeStatusToBrushConv"
       CleanBrush="{StaticResource MaterialDesignBody}"
-      ConflictedBrush="#F44336"
+      ConflictedBrush="{StaticResource ErrorBrush}"
       DirtyBrush="{StaticResource SecondaryHueLightBrush}" />
 
     <local:StatusToBrushConverter
       x:Key="StatusToBrushConv"
       AddedBrush="{StaticResource SecondaryHueMidBrush}"
-      ConflictedBrush="#F44336"
+      ConflictedBrush="{StaticResource ErrorBrush}"
       IgnoredBrush="{StaticResource MaterialDesignLightSeparatorBackground}"
       ModifiedBrush="{StaticResource SecondaryHueLightBrush}"
       UnchangedBrush="{StaticResource MaterialDesignBody}" />
@@ -348,7 +357,60 @@
         </Grid>
       </Grid>
     </DataTemplate>
+
+    <DataTemplate DataType="{x:Type local:Error}">
+      <Grid Background="{DynamicResource MaterialDesignPaper}">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="auto" />
+          <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="auto" />
+          </Grid.ColumnDefinitions>
+
+          <mat:PackIcon
+            Grid.Column="0"
+            Width="48"
+            Height="48"
+            Margin="16"
+            Foreground="{StaticResource ErrorBrush}"
+            Kind="CloseCircle" />
+
+          <StackPanel Grid.Column="1">
+            <TextBlock Margin="16" Text="{Binding Message, Mode=OneTime}" />
+
+            <TextBox
+              MaxWidth="600"
+              MaxHeight="600"
+              Margin="16"
+              VerticalContentAlignment="Stretch"
+              mat:TextFieldAssist.UnderlineBrush="{DynamicResource MaterialDesignBody}"
+              HorizontalScrollBarVisibility="Auto"
+              IsReadOnly="True"
+              Style="{StaticResource MaterialDesignOutlinedTextBox}"
+              Text="{Binding Details, Mode=OneTime}"
+              TextWrapping="NoWrap"
+              VerticalScrollBarVisibility="Auto"
+              Visibility="{Binding Details, Converter={StaticResource NullToCollapsedConv}}" />
+          </StackPanel>
+        </Grid>
+
+        <Button
+          Grid.Row="1"
+          Margin="16"
+          HorizontalAlignment="Right"
+          Background="{DynamicResource PrimaryHueMidBrush}"
+          Command="{x:Static mat:DialogHost.CloseDialogCommand}"
+          Content="{mat:PackIcon CloseThick,
+                                 Size=20}"
+          IsCancel="True" />
+      </Grid>
+    </DataTemplate>
   </Window.Resources>
+
   <mat:DialogHost CloseOnClickAway="True" SnackbarMessageQueue="{x:Static local:Snackbar.Queue}">
     <Grid>
       <Grid.RowDefinitions>
@@ -665,6 +727,7 @@
                   Grid.Row="2"
                   Margin="0,16,0,0"
                   VerticalContentAlignment="Stretch"
+                  mat:TextFieldAssist.UnderlineBrush="{Binding SelectedItem.ReadOnly, Converter={StaticResource IsReadOnlyToBorderBrushConv}}"
                   AcceptsReturn="True"
                   AcceptsTab="False"
                   FontFamily="Consolas"
