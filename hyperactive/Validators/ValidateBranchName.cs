@@ -14,10 +14,11 @@
                 : ValidationResult.ValidResult;
 
         public override ValidationResult Validate(object value, CultureInfo cultureInfo) {
-            Debug.Assert(Repo.Current is not null);
-            return value is string branchName && Repo.Current.Branches.All(b => b.FriendlyName != branchName)
-                ? ValidationResult.ValidResult
-                : new ValidationResult(false, "already exists");
+            Debug.Assert(Repo.Instance?.LibGitRepo is not null);
+            return value is string branchName
+                && Repo.Instance.LibGitRepo.Branches.All(b => b.FriendlyName != branchName)
+                    ? ValidationResult.ValidResult
+                    : new ValidationResult(false, "already exists");
         }
     }
 }

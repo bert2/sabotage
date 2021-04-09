@@ -1,6 +1,7 @@
 ﻿namespace hyperactive {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
 
@@ -49,32 +50,36 @@
                 ? ItemType.Folder
                 : ItemType.File;
 
-        private static ItemStatus GetFileStatus(string path) => Repo.Current.NotNull().RetrieveStatus(path) switch {
-            FileStatus.NewInWorkdir => ItemStatus.Added,
-            FileStatus.NewInIndex => ItemStatus.Added,
+        private static ItemStatus GetFileStatus(string path) => Repo
+            .Instance.NotNull()
+            .LibGitRepo.NotNull()
+            .RetrieveStatus(path) switch {
+                FileStatus.NewInWorkdir        => ItemStatus.Added,
+                FileStatus.NewInIndex          => ItemStatus.Added,
 
-            FileStatus.ModifiedInWorkdir => ItemStatus.Modified,
-            FileStatus.ModifiedInIndex => ItemStatus.Modified,
-            FileStatus.RenamedInWorkdir => ItemStatus.Modified,
-            FileStatus.RenamedInIndex => ItemStatus.Modified,
-            FileStatus.TypeChangeInWorkdir => ItemStatus.Modified,
-            FileStatus.TypeChangeInIndex => ItemStatus.Modified,
+                FileStatus.ModifiedInWorkdir   => ItemStatus.Modified,
+                FileStatus.ModifiedInIndex     => ItemStatus.Modified,
+                FileStatus.RenamedInWorkdir    => ItemStatus.Modified,
+                FileStatus.RenamedInIndex      => ItemStatus.Modified,
+                FileStatus.TypeChangeInWorkdir => ItemStatus.Modified,
+                FileStatus.TypeChangeInIndex   => ItemStatus.Modified,
 
-            FileStatus.Conflicted => ItemStatus.Conflicted,
+                FileStatus.Conflicted          => ItemStatus.Conflicted,
 
-            FileStatus.Ignored => ItemStatus.Ignored,
+                FileStatus.Ignored             => ItemStatus.Ignored,
 
-            FileStatus.Unaltered => ItemStatus.Unchanged,
+                FileStatus.Unaltered           => ItemStatus.Unchanged,
 
-            FileStatus.DeletedFromWorkdir => ItemStatus.Unchanged,
-            FileStatus.DeletedFromIndex => ItemStatus.Unchanged,
-            FileStatus.Nonexistent => ItemStatus.Unchanged,
-            FileStatus.Unreadable => ItemStatus.Unchanged,
-            _ => ItemStatus.Unchanged,
+                FileStatus.DeletedFromWorkdir  => ItemStatus.Unchanged,
+                FileStatus.DeletedFromIndex    => ItemStatus.Unchanged,
+                FileStatus.Nonexistent         => ItemStatus.Unchanged,
+                FileStatus.Unreadable          => ItemStatus.Unchanged,
+                _                              => ItemStatus.Unchanged,
         };
 
-        private static ItemStatus GetFolderStatus(string path) => Repo.Current
-            .NotNull()
+        private static ItemStatus GetFolderStatus(string path) => Repo
+            .Instance.NotNull()
+            .LibGitRepo.NotNull()
             .RetrieveStatus(new StatusOptions {
                 PathSpec = new[] { GetRelativeGitPath(path) },
                 IncludeUntracked = true,
@@ -83,24 +88,24 @@
                 RecurseUntrackedDirs = true
             })
             .Select(st => st.State switch {
-                FileStatus.NewInWorkdir => ItemStatus.Modified,
-                FileStatus.NewInIndex => ItemStatus.Modified,
-                FileStatus.ModifiedInWorkdir => ItemStatus.Modified,
-                FileStatus.ModifiedInIndex => ItemStatus.Modified,
-                FileStatus.RenamedInWorkdir => ItemStatus.Modified,
-                FileStatus.RenamedInIndex => ItemStatus.Modified,
+                FileStatus.NewInWorkdir        => ItemStatus.Modified,
+                FileStatus.NewInIndex          => ItemStatus.Modified,
+                FileStatus.ModifiedInWorkdir   => ItemStatus.Modified,
+                FileStatus.ModifiedInIndex     => ItemStatus.Modified,
+                FileStatus.RenamedInWorkdir    => ItemStatus.Modified,
+                FileStatus.RenamedInIndex      => ItemStatus.Modified,
                 FileStatus.TypeChangeInWorkdir => ItemStatus.Modified,
-                FileStatus.TypeChangeInIndex => ItemStatus.Modified,
-                FileStatus.DeletedFromWorkdir => ItemStatus.Modified,
-                FileStatus.DeletedFromIndex => ItemStatus.Modified,
+                FileStatus.TypeChangeInIndex   => ItemStatus.Modified,
+                FileStatus.DeletedFromWorkdir  => ItemStatus.Modified,
+                FileStatus.DeletedFromIndex    => ItemStatus.Modified,
 
-                FileStatus.Conflicted => ItemStatus.Conflicted,
+                FileStatus.Conflicted          => ItemStatus.Conflicted,
 
-                FileStatus.Unaltered => ItemStatus.Unchanged,
-                FileStatus.Ignored => ItemStatus.Unchanged,
-                FileStatus.Nonexistent => ItemStatus.Unchanged,
-                FileStatus.Unreadable => ItemStatus.Unchanged,
-                _ => ItemStatus.Unchanged,
+                FileStatus.Unaltered           => ItemStatus.Unchanged,
+                FileStatus.Ignored             => ItemStatus.Unchanged,
+                FileStatus.Nonexistent         => ItemStatus.Unchanged,
+                FileStatus.Unreadable          => ItemStatus.Unchanged,
+                _                              => ItemStatus.Unchanged,
             })
             .MaxBy(st => st, Comparer<ItemStatus>.Create(ConflictedFirstUnchangedLast))
             .DefaultIfEmpty(ItemStatus.Unchanged)
@@ -116,7 +121,7 @@
         };
 
         private static string GetRelativeGitPath(string path) => System.IO.Path
-            .GetRelativePath(Repo.CurrentDirectory.NotNull(), path)
+            .GetRelativePath(Repo.Instance.NotNull().Directory.NotNull(), path)
             .Replace('\\', '/');
     }
 }

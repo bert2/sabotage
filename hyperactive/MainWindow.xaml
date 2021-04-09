@@ -384,6 +384,7 @@
               <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
                 <Binding.ValidationRules>
                   <local:ValidateNotEmpty />
+                  <local:ValidateItemName />
                 </Binding.ValidationRules>
               </Binding>
             </TextBox.Text>

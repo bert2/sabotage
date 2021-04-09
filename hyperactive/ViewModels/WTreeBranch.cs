@@ -13,7 +13,7 @@
     public class WTreeBranch : ViewModel, IBranch {
         private readonly string repoRootPath;
 
-        private string currentPath;
+        public string CurrentPath { get; private set; }
 
         private string name = null!;
         public string Name { get => name; private set => SetProperty(ref name, value); }
@@ -39,6 +39,7 @@
 
         public WTreeBranch(string repoDirectory, Branch branch) {
             repoRootPath = Path.TrimEndingDirectorySeparator(repoDirectory);
+            CurrentPath = repoRootPath;
             Name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
             OpenFolder(repoRootPath);
@@ -55,10 +56,10 @@
 
         private void OpenFolder(string path) {
             CurrentDirectory = LoadFolder(new DirectoryInfo(path));
-            currentPath = repoRootPath;
+            CurrentPath = path;
         }
 
-        private void ReloadCurrentFolder() => CurrentDirectory = LoadFolder(new DirectoryInfo(currentPath));
+        private void ReloadCurrentFolder() => CurrentDirectory = LoadFolder(new DirectoryInfo(CurrentPath));
 
         private WTreeDirectoryItem[] LoadFolder(DirectoryInfo folder) => folder
             .EnumerateFileSystemInfos()
@@ -78,7 +79,7 @@
 
             Debug.Assert(folderName is not null);
 
-            Directory.CreateDirectory(Path.Combine(currentPath, folderName));
+            Directory.CreateDirectory(Path.Combine(CurrentPath, folderName));
 
             Snackbar.Show("folder created");
 
@@ -91,7 +92,7 @@
 
             Debug.Assert(fileName is not null);
 
-            File.Open(Path.Combine(currentPath, fileName), FileMode.CreateNew)
+            File.Open(Path.Combine(CurrentPath, fileName), FileMode.CreateNew)
                 .Dispose();
 
             Snackbar.Show("file created");

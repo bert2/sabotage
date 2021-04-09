@@ -16,18 +16,14 @@
         public string? Directory {
             get => directory;
             set {
-                if (SetProperty(ref directory, value)) {
-                    CurrentDirectory = directory;
+                if (SetProperty(ref directory, value))
                     LoadRepository();
-                }
             }
         }
 
-        private Repository? repo;
+        public Repository? LibGitRepo { get; private set; }
 
-        public static Repository? Current { get; private set; }
-
-        public static string? CurrentDirectory { get; private set; } = @"D:\DEV\git-conflicts"; // TODO: remove test value
+        public static Repo? Instance { get; private set; }
 
         private RepoStatus status = new();
         public RepoStatus Status { get => status; private set => SetProperty(ref status, value); }
@@ -43,6 +39,8 @@
 
         private bool isLoaded;
         public bool IsLoaded { get => isLoaded; private set => SetProperty(ref isLoaded, value); }
+
+        public WTreeBranch? WTree => Branches?.OfType<WTreeBranch>().Single();
 
         public ICommand SelectDirectoryCmd => new Command(SelectDirectory);
 
@@ -64,6 +62,7 @@
 
         public Repo() {
             WeakEventManager<Events, EventArgs>.AddHandler(Events.Instance, nameof(Events.WorkingTreeChanged), RefreshStatus);
+            Instance = this;
             LoadRepository(); // TODO: remove test code
         }
 
@@ -82,17 +81,16 @@
 
         private async void LoadRepository() {
             Cleanup();
-            repo = new Repository(Directory);
-            Current = repo;
+            LibGitRepo = new Repository(Directory);
             await LoadRepositoryData();
         }
 
         private async void CheckoutBranch(IBranch branch) {
-            Debug.Assert(repo is not null);
+            Debug.Assert(LibGitRepo is not null);
 
-            repo.Reset(ResetMode.Hard);
-            Commands.Checkout(repo, branch.Name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
-            repo.RemoveUntrackedFiles();
+            LibGitRepo.Reset(ResetMode.Hard);
+            Commands.Checkout(LibGitRepo, branch.Name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
+            LibGitRepo.RemoveUntrackedFiles();
 
             Snackbar.Show("branch switched");
 
@@ -100,15 +98,15 @@
         }
 
         private async void Commit() {
-            Debug.Assert(repo is not null);
+            Debug.Assert(LibGitRepo is not null);
 
             var (ok, message) = await Dialog.Show(new EnterCommitMessage(), vm => vm.CommitMessage);
             if (!ok) return;
 
-            Commands.Stage(repo, "*");
+            Commands.Stage(LibGitRepo, "*");
 
-            var sig = CreateSignature(repo);
-            repo.Commit(message, sig, sig);
+            var sig = CreateSignature(LibGitRepo);
+            LibGitRepo.Commit(message, sig, sig);
 
             Snackbar.Show("local changes committed");
 
@@ -116,12 +114,12 @@
         }
 
         private async void CreateBranch(IBranch source) {
-            Debug.Assert(repo is not null);
+            Debug.Assert(LibGitRepo is not null);
 
             var (ok, target) = await Dialog.Show(new EnterNewBranchName(), vm => vm.BranchName);
             if (!ok) return;
 
-            _ = repo.CreateBranch(branchName: target, source.Name);
+            _ = LibGitRepo.CreateBranch(branchName: target, source.Name);
 
             Snackbar.Show("branch created");
 
@@ -129,7 +127,7 @@
         }
 
         private async void MergeBranch(IBranch target) {
-            Debug.Assert(repo is not null);
+            Debug.Assert(LibGitRepo is not null);
             Debug.Assert(Branches is not null);
 
             var (ok, source) = await Dialog.Show(
@@ -138,8 +136,8 @@
             if (!ok) return;
 
             Debug.Assert(source is not null);
-            var sig = CreateSignature(repo);
-            var merge = repo.Merge(source.Name, sig);
+            var sig = CreateSignature(LibGitRepo);
+            var merge = LibGitRepo.Merge(source.Name, sig);
 
             Snackbar.ShowImportant(merge.Status switch {
                 MergeStatus.NonFastForward => "merge succeeded",
@@ -153,13 +151,13 @@
         }
 
         private async void CherryPick(IBranch mergeTarget) {
-            Debug.Assert(repo is not null);
+            Debug.Assert(LibGitRepo is not null);
 
-            var commits = repo
+            var commits = LibGitRepo
                 .Commits
                 .QueryBy(new CommitFilter {
                     ExcludeReachableFrom = mergeTarget.Name,
-                    IncludeReachableFrom = repo.Branches.Where(b => b.FriendlyName != mergeTarget.Name),
+                    IncludeReachableFrom = LibGitRepo.Branches.Where(b => b.FriendlyName != mergeTarget.Name),
                     SortBy = CommitSortStrategies.Time
                 })
                 .Select(c => new Commit_(c))
@@ -169,8 +167,8 @@
             if (!ok) return;
 
             Debug.Assert(commit is not null);
-            var sig = CreateSignature(repo);
-            var cherryPick = repo.CherryPick(commit.GitObject, sig);
+            var sig = CreateSignature(LibGitRepo);
+            var cherryPick = LibGitRepo.CherryPick(commit.GitObject, sig);
 
             Snackbar.ShowImportant(cherryPick.Status switch {
                 CherryPickStatus.CherryPicked => "cherry-pick succeeded",
@@ -182,12 +180,12 @@
         }
 
         private async void RenameBranch(IBranch branch) {
-            Debug.Assert(repo is not null);
+            Debug.Assert(LibGitRepo is not null);
 
             var (ok, newName) = await Dialog.Show(new EnterNewBranchName(), vm => vm.BranchName);
             if (!ok) return;
 
-            _ = repo.Branches.Rename(branch.Name, newName);
+            _ = LibGitRepo.Branches.Rename(branch.Name, newName);
 
             Snackbar.Show("branch renamed");
 
@@ -195,12 +193,12 @@
         }
 
         private async void DeleteBranch(IBranch branch) {
-            Debug.Assert(repo is not null);
+            Debug.Assert(LibGitRepo is not null);
 
             if (!await Dialog.Show(new Confirm(action: "delete branch", subject: branch.Name)))
                 return;
 
-            repo.Branches.Remove(branch.Name);
+            LibGitRepo.Branches.Remove(branch.Name);
 
             Snackbar.Show("branch deleted");
 
@@ -209,14 +207,14 @@
 
         private async void RefreshStatus(object? sender, EventArgs args) => await RefreshStatus();
 
-        private async Task RefreshStatus() => await Task.Run(() => Status = new(repo!));
+        private async Task RefreshStatus() => await Task.Run(() => Status = new(LibGitRepo!));
 
         private async Task LoadRepositoryData() {
-            Debug.Assert(repo is not null);
+            Debug.Assert(LibGitRepo is not null);
 
             await RefreshStatus();
 
-            Branches = repo
+            Branches = LibGitRepo
                 .Branches
                 .Where(b => !b.IsRemote)
                 .Select(b => b.IsCurrentRepositoryHead
@@ -226,7 +224,7 @@
                 .ToArray();
 
             LocalBranchesCount = Branches.Length;
-            RemoteBranchesCount = repo.Branches.Count(b => b.IsRemote);
+            RemoteBranchesCount = LibGitRepo.Branches.Count(b => b.IsRemote);
 
             IsLoaded = true;
         }
@@ -248,8 +246,7 @@
             Branches = Array.Empty<IBranch>();
             LocalBranchesCount = null;
             RemoteBranchesCount = null;
-            Current = null;
-            repo?.Dispose();
+            LibGitRepo?.Dispose();
         }
 
         private static Signature CreateSignature(Repository repo) => repo
