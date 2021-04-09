@@ -587,12 +587,13 @@
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           Style="{DynamicResource MaterialDesignFlatButton}"
-                          ToolTip="create a new branch from here...">
+                          ToolTip="create a new branch from here">
                           <StackPanel Orientation="Horizontal">
                             <mat:PackIcon Kind="SourceBranchPlus" />
                             <TextBlock
                               Margin="8,0,0,0"
                               VerticalAlignment="Center"
+                              Foreground="{DynamicResource MaterialDesignBody}"
                               Text="branch" />
                           </StackPanel>
                         </Button>
@@ -606,12 +607,13 @@
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           IsEnabled="{Binding IsHead}"
                           Style="{DynamicResource MaterialDesignFlatButton}"
-                          ToolTip="merge another branch into this one...">
+                          ToolTip="merge another branch into this one">
                           <StackPanel Orientation="Horizontal">
                             <mat:PackIcon Kind="SourceMerge" />
                             <TextBlock
                               Margin="8,0,0,0"
                               VerticalAlignment="Center"
+                              Foreground="{DynamicResource MaterialDesignBody}"
                               Text="merge" />
                           </StackPanel>
                         </Button>
@@ -623,12 +625,13 @@
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           IsEnabled="{Binding IsHead}"
                           Style="{DynamicResource MaterialDesignFlatButton}"
-                          ToolTip="cherry-pick a commit into this branch...">
+                          ToolTip="cherry-pick a commit into this branch">
                           <StackPanel Orientation="Horizontal">
                             <mat:PackIcon Kind="SourceCommit" />
                             <TextBlock
                               Margin="8,0,0,0"
                               VerticalAlignment="Center"
+                              Foreground="{DynamicResource MaterialDesignBody}"
                               Text="cherry-pick" />
                           </StackPanel>
                         </Button>
@@ -641,12 +644,13 @@
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           Style="{DynamicResource MaterialDesignFlatButton}"
-                          ToolTip="rename this branch...">
+                          ToolTip="rename this branch">
                           <StackPanel Orientation="Horizontal">
                             <mat:PackIcon Kind="Pencil" />
                             <TextBlock
                               Margin="8,0,0,0"
                               VerticalAlignment="Center"
+                              Foreground="{DynamicResource MaterialDesignBody}"
                               Text="rename" />
                           </StackPanel>
                         </Button>
@@ -663,6 +667,7 @@
                             <TextBlock
                               Margin="8,0,0,0"
                               VerticalAlignment="Center"
+                              Foreground="{DynamicResource MaterialDesignBody}"
                               Text="delete" />
                           </StackPanel>
                         </Button>
@@ -671,59 +676,116 @@
                   </StackPanel>
                 </Grid>
 
-                <ListBox
+                <Border
                   Grid.Row="1"
                   Margin="0,16,0,0"
-                  BorderBrush="{StaticResource MaterialDesignLightSeparatorBackground}"
-                  BorderThickness="1"
-                  ItemsSource="{Binding CurrentDirectory}"
-                  SelectedItem="{Binding SelectedItem}">
-                  <ListBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type local:IDirectoryItem}">
-                      <ContentControl Content="{Binding}">
-                        <ContentControl.Style>
-                          <Style TargetType="{x:Type ContentControl}">
-                            <Setter Property="ContentTemplate">
-                              <Setter.Value>
-                                <DataTemplate DataType="{x:Type local:IDirectoryItem}">
-                                  <StackPanel Orientation="Horizontal">
-                                    <mat:PackIcon Kind="FileOutline" />
-                                    <TextBlock
-                                      Margin="8,0,0,0"
-                                      Foreground="{Binding Status, Converter={StaticResource StatusToBrushConv}}"
-                                      Text="{Binding Name}"
-                                      ToolTip="{Binding Status, Converter={StaticResource StatusToToolTipConv}, ConverterParameter={x:Static local:ItemType.File}}" />
-                                  </StackPanel>
-                                </DataTemplate>
-                              </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                              <DataTrigger Binding="{Binding Type}" Value="{x:Static local:ItemType.Folder}">
+                  BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
+                  BorderThickness="1">
+                  <Grid>
+                    <Grid.RowDefinitions>
+                      <RowDefinition Height="*" />
+                      <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+
+                    <ListBox
+                      Grid.Row="0"
+                      BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
+                      BorderThickness="0,0,0,1"
+                      ItemsSource="{Binding CurrentDirectory}"
+                      SelectedItem="{Binding SelectedItem}">
+                      <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:IDirectoryItem}">
+                          <ContentControl Content="{Binding}">
+                            <ContentControl.Style>
+                              <Style TargetType="{x:Type ContentControl}">
                                 <Setter Property="ContentTemplate">
                                   <Setter.Value>
                                     <DataTemplate DataType="{x:Type local:IDirectoryItem}">
                                       <StackPanel Orientation="Horizontal">
-                                        <mat:PackIcon Kind="Folder" />
+                                        <mat:PackIcon Kind="FileOutline" />
                                         <TextBlock
                                           Margin="8,0,0,0"
                                           Foreground="{Binding Status, Converter={StaticResource StatusToBrushConv}}"
                                           Text="{Binding Name}"
-                                          ToolTip="{Binding Status, Converter={StaticResource StatusToToolTipConv}, ConverterParameter={x:Static local:ItemType.Folder}}" />
+                                          ToolTip="{Binding Status, Converter={StaticResource StatusToToolTipConv}, ConverterParameter={x:Static local:ItemType.File}}" />
                                       </StackPanel>
                                     </DataTemplate>
                                   </Setter.Value>
                                 </Setter>
-                              </DataTrigger>
-                            </Style.Triggers>
-                          </Style>
-                        </ContentControl.Style>
-                        <ContentControl.InputBindings>
-                          <MouseBinding Command="{Binding DataContext.NavigateCmd, RelativeSource={RelativeSource AncestorType=ItemsControl}}" MouseAction="LeftDoubleClick" />
-                        </ContentControl.InputBindings>
-                      </ContentControl>
-                    </DataTemplate>
-                  </ListBox.ItemTemplate>
-                </ListBox>
+                                <Style.Triggers>
+                                  <DataTrigger Binding="{Binding Type}" Value="{x:Static local:ItemType.Folder}">
+                                    <Setter Property="ContentTemplate">
+                                      <Setter.Value>
+                                        <DataTemplate DataType="{x:Type local:IDirectoryItem}">
+                                          <StackPanel Orientation="Horizontal">
+                                            <mat:PackIcon Kind="Folder" />
+                                            <TextBlock
+                                              Margin="8,0,0,0"
+                                              Foreground="{Binding Status, Converter={StaticResource StatusToBrushConv}}"
+                                              Text="{Binding Name}"
+                                              ToolTip="{Binding Status, Converter={StaticResource StatusToToolTipConv}, ConverterParameter={x:Static local:ItemType.Folder}}" />
+                                          </StackPanel>
+                                        </DataTemplate>
+                                      </Setter.Value>
+                                    </Setter>
+                                  </DataTrigger>
+                                </Style.Triggers>
+                              </Style>
+                            </ContentControl.Style>
+                            <ContentControl.InputBindings>
+                              <MouseBinding Command="{Binding DataContext.NavigateCmd, RelativeSource={RelativeSource AncestorType=ItemsControl}}" MouseAction="LeftDoubleClick" />
+                            </ContentControl.InputBindings>
+                          </ContentControl>
+                        </DataTemplate>
+                      </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <ToolBar
+                      Grid.Row="1"
+                      Background="{DynamicResource MaterialDesignPaper}"
+                      Style="{DynamicResource MaterialDesignToolBar}"
+                      ToolBarTray.IsLocked="True">
+                      <Button
+                        Content="{mat:PackIcon FolderPlus}"
+                        IsEnabled="{Binding IsHead}"
+                        Style="{StaticResource MaterialDesignToolButton}"
+                        ToolTip="create new folder" />
+
+                      <Button
+                        Content="{mat:PackIcon FilePlusOutline}"
+                        IsEnabled="{Binding IsHead}"
+                        Style="{StaticResource MaterialDesignToolButton}"
+                        ToolTip="create new file" />
+
+                      <Separator />
+
+                      <Button
+                        Content="{mat:PackIcon Pencil}"
+                        Style="{StaticResource MaterialDesignToolButton}"
+                        ToolTip="rename selected item">
+                        <Button.IsEnabled>
+                          <MultiBinding Converter="{StaticResource AndConv}">
+                            <Binding Path="IsHead" />
+                            <Binding Converter="{StaticResource NullToFalseConv}" Path="SelectedItem" />
+                          </MultiBinding>
+                        </Button.IsEnabled>
+                      </Button>
+
+                      <Button
+                        Content="{mat:PackIcon TrashCan}"
+                        Style="{StaticResource MaterialDesignToolButton}"
+                        ToolTip="delete selected item">
+                        <Button.IsEnabled>
+                          <MultiBinding Converter="{StaticResource AndConv}">
+                            <Binding Path="IsHead" />
+                            <Binding Converter="{StaticResource NullToFalseConv}" Path="SelectedItem" />
+                          </MultiBinding>
+                        </Button.IsEnabled>
+                      </Button>
+                    </ToolBar>
+
+                  </Grid>
+                </Border>
 
                 <TextBox
                   Grid.Row="2"
