@@ -2,11 +2,15 @@
     public class EnterNewItemName : ViewModel {
         public string Type { get; }
 
-        private string? name;
-        public string? Name {
-            get => name;
+        public string? OldName { get; }
+
+        public string? Label => $"{Type} name";
+
+        private string? newName;
+        public string? NewName {
+            get => newName;
             set {
-                if (SetProperty(ref name, value))
+                if (SetProperty(ref newName, value))
                     Touched = true;
             }
         }
@@ -14,6 +18,7 @@
         private bool touched;
         public bool Touched { get => touched; set => SetProperty(ref touched, value); }
 
-        public EnterNewItemName(ItemType type) => Type = $"{type.ToString().ToLower()} name";
+        public EnterNewItemName(ItemType type, string? oldName = null)
+            => (Type, OldName) = (type.ToString().ToLower(), oldName);
     }
 }

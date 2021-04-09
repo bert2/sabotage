@@ -10,7 +10,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:sys="clr-namespace:System;assembly=mscorlib"
   x:Name="mainWindow"
-  Title="hyperactive"
+  Title="  hyperactive"
   Width="1024"
   Height="768"
   d:DataContext="{d:DesignInstance Type=local:Repo,
@@ -210,11 +210,11 @@
           Grid.Row="0"
           Margin="16"
           HorizontalAlignment="Center">
-          <Run Text="{Binding Action, Mode=OneWay}" />
+          <Run Text="{Binding Action, Mode=OneTime}" />
           <Run
             FontFamily="Consolas"
             Foreground="{DynamicResource SecondaryHueMidBrush}"
-            Text="{Binding Subject, Mode=OneWay}" /><Run Text="?" />
+            Text="{Binding Subject, Mode=OneTime}" /><Run Text="?" />
         </TextBlock>
 
         <Grid Grid.Row="1" Margin="16">
@@ -368,8 +368,16 @@
         </Grid.RowDefinitions>
 
         <StackPanel Margin="16">
-          <TextBlock HorizontalAlignment="Center">
-            <Run Text="enter new " /><Run Text="{Binding Type, Mode=OneTime}" /><Run Text=":" />
+          <TextBlock HorizontalAlignment="Center" Visibility="{Binding OldName, Converter={StaticResource InvertedNullVisibilityConverter}}">
+            <Run Text="enter new " /><Run Text="{Binding Type, Mode=OneTime}" /><Run Text=" name:" />
+          </TextBlock>
+
+          <TextBlock HorizontalAlignment="Center" Visibility="{Binding OldName, Converter={StaticResource NullToCollapsedConv}}">
+            <Run Text="enter new name for " /><Run Text="{Binding Type, Mode=OneTime}" />
+            <Run
+              FontFamily="Consolas"
+              Foreground="{DynamicResource SecondaryHueMidBrush}"
+              Text="{Binding OldName, Mode=OneTime}" /><Run Text=":" />
           </TextBlock>
 
           <TextBox
@@ -377,11 +385,11 @@
             Grid.Row="0"
             Width="200"
             Margin="0,16,0,0"
-            mat:HintAssist.Hint="{Binding Type, Mode=OneTime}"
+            mat:HintAssist.Hint="{Binding Label, Mode=OneTime}"
             mat:TextFieldAssist.HasClearButton="True"
             Style="{StaticResource MaterialDesignFloatingHintTextBox}">
             <TextBox.Text>
-              <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
+              <Binding Path="NewName" UpdateSourceTrigger="PropertyChanged">
                 <Binding.ValidationRules>
                   <local:ValidateNotEmpty />
                   <local:ValidateItemName />

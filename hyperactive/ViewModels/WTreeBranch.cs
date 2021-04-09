@@ -74,12 +74,12 @@
             .ToArray();
 
         private async void CreateFolder() {
-            var (ok, folderName) = await Dialog.Show(new EnterNewItemName(ItemType.Folder), vm => vm.Name);
+            var (ok, folderName) = await Dialog.Show(new EnterNewItemName(ItemType.Folder), vm => vm.NewName);
             if (!ok) return;
 
             Debug.Assert(folderName is not null);
 
-            Directory.CreateDirectory(Path.Combine(CurrentPath, folderName));
+            _ = Directory.CreateDirectory(Path.Combine(CurrentPath, folderName));
 
             Snackbar.Show("folder created");
 
@@ -87,7 +87,7 @@
         }
 
         private async void CreateFile() {
-            var (ok, fileName) = await Dialog.Show(new EnterNewItemName(ItemType.File), vm => vm.Name);
+            var (ok, fileName) = await Dialog.Show(new EnterNewItemName(ItemType.File), vm => vm.NewName);
             if (!ok) return;
 
             Debug.Assert(fileName is not null);
@@ -105,10 +105,20 @@
 
             var type = SelectedItem.Type.ToString().ToLower();
 
-            var (ok, target) = await Dialog.Show(new EnterNewItemName(ItemType.Folder), vm => vm.Name);
+            var (ok, newName) = await Dialog.Show(
+                new EnterNewItemName(SelectedItem.Type, oldName: SelectedItem.Name),
+                vm => vm.NewName);
             if (!ok) return;
 
-            // TODO: implement
+            Debug.Assert(newName is not null);
+
+            var oldPath = Path.Combine(CurrentPath, SelectedItem.Name);
+            var newPath = Path.Combine(CurrentPath, newName);
+
+            if (SelectedItem.Type == ItemType.Folder)
+                Directory.Move(oldPath, newPath);
+            else
+                File.Move(oldPath, newPath);
 
             Snackbar.Show($"{type} renamed");
 
@@ -123,7 +133,12 @@
             if (!await Dialog.Show(new Confirm($"delete {type}", SelectedItem.Name)))
                 return;
 
-            // TODO: implement
+            var path = Path.Combine(CurrentPath, SelectedItem.Name);
+
+            if (SelectedItem.Type == ItemType.Folder)
+                Directory.Delete(path, recursive: true);
+            else
+                File.Delete(path);
 
             Snackbar.Show($"{type} deleted");
 
