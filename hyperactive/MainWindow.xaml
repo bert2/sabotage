@@ -604,6 +604,7 @@
             <Binding Path="IsLoaded" />
           </MultiBinding>
         </ItemsControl.IsEnabled>
+
         <ItemsControl.ItemTemplate>
           <DataTemplate DataType="{x:Type local:IBranch}">
             <mat:Card
