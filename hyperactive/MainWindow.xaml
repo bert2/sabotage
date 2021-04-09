@@ -33,8 +33,6 @@
 
     <local:NullableToBoolConverter x:Key="NullToFalseConv" />
 
-    <local:NullableToVisibilityConverter x:Key="NullToCollapsedConv" />
-
     <local:BoolToBrushConverter
       x:Key="IsHeadToHeaderBrushConv"
       FalseBrush="{StaticResource MaterialDesignBody}"
@@ -364,11 +362,15 @@
 
         <StackPanel Margin="16">
           <TextBlock HorizontalAlignment="Center" Visibility="{Binding OldName, Converter={StaticResource InvertedNullVisibilityConverter}}">
-            <Run Text="enter new " /><Run Text="{Binding Type, Mode=OneTime}" /><Run Text=" name:" />
+            <Run Text="enter new" />
+            <Run Text="{Binding Type, Mode=OneTime}" />
+            <Run Text="name:" />
           </TextBlock>
 
-          <TextBlock HorizontalAlignment="Center" Visibility="{Binding OldName, Converter={StaticResource NullToCollapsedConv}}">
-            <Run Text="enter new name for " /><Run Text="{Binding Type, Mode=OneTime}" />
+          <TextBlock HorizontalAlignment="Center" Visibility="{Binding OldName, Converter={StaticResource NullVisibilityConverter}}">
+            <Run Text="enter new" />
+            <Run Text="{Binding Type, Mode=OneTime}" />
+            <Run Text="name for" />
             <Run
               FontFamily="Consolas"
               Foreground="{DynamicResource SecondaryHueMidBrush}"
@@ -465,7 +467,7 @@
               Text="{Binding Details, Mode=OneTime}"
               TextWrapping="NoWrap"
               VerticalScrollBarVisibility="Auto"
-              Visibility="{Binding Details, Converter={StaticResource NullToCollapsedConv}}" />
+              Visibility="{Binding Details, Converter={StaticResource NullVisibilityConverter}}" />
           </StackPanel>
         </Grid>
 
