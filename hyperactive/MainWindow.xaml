@@ -83,9 +83,7 @@
             Grid.Row="0"
             Width="200"
             Margin="0,16,0,0"
-            mat:HintAssist.Hint="commit message"
-            mat:TextFieldAssist.HasClearButton="True"
-            Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+            mat:TextFieldAssist.HasClearButton="True">
             <TextBox.Text>
               <Binding Path="CommitMessage" UpdateSourceTrigger="PropertyChanged">
                 <Binding.ValidationRules>
@@ -148,9 +146,7 @@
             Grid.Row="0"
             Width="200"
             Margin="0,16,0,0"
-            mat:HintAssist.Hint="branch name"
-            mat:TextFieldAssist.HasClearButton="True"
-            Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+            mat:TextFieldAssist.HasClearButton="True">
             <TextBox.Text>
               <Binding Path="BranchName" UpdateSourceTrigger="PropertyChanged">
                 <Binding.ValidationRules>
@@ -264,8 +260,7 @@
             HorizontalAlignment="Center"
             mat:HintAssist.Hint="source branch"
             ItemsSource="{Binding Sources}"
-            SelectedItem="{Binding SelectedSource}"
-            Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+            SelectedItem="{Binding SelectedSource}" />
         </StackPanel>
 
         <Grid Grid.Row="1" Margin="16">
@@ -316,7 +311,7 @@
             Margin="0,16,0,0"
             AutocompleteSource="{Binding}"
             Background="{DynamicResource MaterialDesignPaper}"
-            Hint="commit"
+            Hint="sha or message"
             SearchOnInitialFocus="True"
             SelectedItem="{Binding SelectedCommit, Mode=TwoWay}"
             ShowClearButtonOnlyOnSelectedItem="false"
@@ -385,9 +380,7 @@
             Grid.Row="0"
             Width="200"
             Margin="0,16,0,0"
-            mat:HintAssist.Hint="{Binding Label, Mode=OneTime}"
-            mat:TextFieldAssist.HasClearButton="True"
-            Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+            mat:TextFieldAssist.HasClearButton="True">
             <TextBox.Text>
               <Binding Path="NewName" UpdateSourceTrigger="PropertyChanged">
                 <Binding.ValidationRules>

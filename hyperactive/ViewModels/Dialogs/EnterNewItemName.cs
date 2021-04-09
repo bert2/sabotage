@@ -4,8 +4,6 @@
 
         public string? OldName { get; }
 
-        public string? Label => $"{Type} name";
-
         private string? newName;
         public string? NewName {
             get => newName;
