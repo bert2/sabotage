@@ -50,8 +50,6 @@
 
             if (SelectedItem.Type == ItemType.Folder)
                 OpenFolder(((WTreeDirectoryItem)SelectedItem).Path);
-            else if (SelectedItem.Type == ItemType.File)
-                RenameItem();
         }
 
         private void OpenFolder(string path) {
