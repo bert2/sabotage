@@ -360,6 +360,73 @@
       </Grid>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type local:EnterNewItemName}">
+      <Grid Background="{DynamicResource MaterialDesignPaper}">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="auto" />
+          <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="16">
+          <TextBlock HorizontalAlignment="Center">
+            <Run Text="enter new " /><Run Text="{Binding Type, Mode=OneTime}" /><Run Text=":" />
+          </TextBlock>
+
+          <TextBox
+            x:Name="txtItemName"
+            Grid.Row="0"
+            Width="200"
+            Margin="0,16,0,0"
+            mat:HintAssist.Hint="{Binding Type, Mode=OneTime}"
+            mat:TextFieldAssist.HasClearButton="True"
+            Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+            <TextBox.Text>
+              <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                  <local:ValidateNotEmpty />
+                </Binding.ValidationRules>
+              </Binding>
+            </TextBox.Text>
+          </TextBox>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="16">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+
+          <Button
+            Grid.Column="0"
+            Background="{DynamicResource SecondaryHueDarkBrush}"
+            Command="{x:Static mat:DialogHost.CloseDialogCommand}"
+            CommandParameter="OK"
+            Content="{mat:PackIcon CheckBold,
+                                   Size=20}"
+            IsDefault="True">
+            <Button.IsEnabled>
+              <MultiBinding Converter="{StaticResource AndConv}">
+                <Binding
+                  Converter="{StaticResource NotConverter}"
+                  ElementName="txtItemName"
+                  Path="(Validation.HasError)" />
+                <Binding Path="Touched" />
+              </MultiBinding>
+            </Button.IsEnabled>
+          </Button>
+
+          <Button
+            Grid.Column="1"
+            HorizontalAlignment="Right"
+            Background="{DynamicResource PrimaryHueMidBrush}"
+            Command="{x:Static mat:DialogHost.CloseDialogCommand}"
+            Content="{mat:PackIcon CloseThick,
+                                   Size=20}"
+            IsCancel="True" />
+        </Grid>
+      </Grid>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type local:Error}">
       <Grid Background="{DynamicResource MaterialDesignPaper}">
         <Grid.RowDefinitions>
@@ -746,12 +813,14 @@
                       Style="{DynamicResource MaterialDesignToolBar}"
                       ToolBarTray.IsLocked="True">
                       <Button
+                        Command="{Binding CreateFolderCmd}"
                         Content="{mat:PackIcon FolderPlus}"
                         IsEnabled="{Binding IsHead}"
                         Style="{StaticResource MaterialDesignToolButton}"
                         ToolTip="create new folder" />
 
                       <Button
+                        Command="{Binding CreateFileCmd}"
                         Content="{mat:PackIcon FilePlusOutline}"
                         IsEnabled="{Binding IsHead}"
                         Style="{StaticResource MaterialDesignToolButton}"
@@ -760,6 +829,7 @@
                       <Separator />
 
                       <Button
+                        Command="{Binding RenameItemCmd}"
                         Content="{mat:PackIcon Pencil}"
                         Style="{StaticResource MaterialDesignToolButton}"
                         ToolTip="rename selected item">
@@ -772,6 +842,7 @@
                       </Button>
 
                       <Button
+                        Command="{Binding DeleteItemCmd}"
                         Content="{mat:PackIcon TrashCan}"
                         Style="{StaticResource MaterialDesignToolButton}"
                         ToolTip="delete selected item">

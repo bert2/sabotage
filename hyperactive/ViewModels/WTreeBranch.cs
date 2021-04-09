@@ -27,6 +27,14 @@
 
         public ICommand NavigateCmd => new Command(Navigate);
 
+        public ICommand CreateFolderCmd => new Command(CreateFolder);
+
+        public ICommand CreateFileCmd => new Command(CreateFile);
+
+        public ICommand RenameItemCmd => new Command(RenameItem);
+
+        public ICommand DeleteItemCmd => new Command(DeleteItem);
+
         public WTreeBranch(string repoDirectory, Branch branch) {
             repoRootPath = Path.TrimEndingDirectorySeparator(repoDirectory);
             Name = branch.FriendlyName;
@@ -40,7 +48,59 @@
             if (SelectedItem.Type == ItemType.Folder)
                 CurrentDirectory = OpenFolder(new DirectoryInfo(((WTreeDirectoryItem)SelectedItem).Path));
             else if (SelectedItem.Type == ItemType.File)
-                RenameFile();
+                RenameItem();
+        }
+
+        private async void CreateFolder() {
+            var (ok, target) = await Dialog.Show(new EnterNewItemName(ItemType.Folder), vm => vm.Name);
+            if (!ok) return;
+
+            // TODO: implement
+
+            Snackbar.Show("folder created");
+
+            // TODO: refresh
+        }
+
+        private async void CreateFile() {
+            var (ok, target) = await Dialog.Show(new EnterNewItemName(ItemType.File), vm => vm.Name);
+            if (!ok) return;
+
+            // TODO: create file
+
+            Snackbar.Show("file created");
+
+            // TODO: refresh
+        }
+
+        private async void RenameItem() {
+            Debug.Assert(SelectedItem is not null);
+
+            var type = SelectedItem.Type.ToString().ToLower();
+
+            var (ok, target) = await Dialog.Show(new EnterNewItemName(ItemType.Folder), vm => vm.Name);
+            if (!ok) return;
+
+            // TODO: implement
+
+            Snackbar.Show($"{type} renamed");
+
+            // TODO: refresh
+        }
+
+        private async void DeleteItem() {
+            Debug.Assert(SelectedItem is not null);
+
+            var type = SelectedItem.Type.ToString().ToLower();
+
+            if (!await Dialog.Show(new Confirm($"delete {type}", SelectedItem.Name)))
+                return;
+
+            // TODO: implement
+
+            Snackbar.Show($"{type} deleted");
+
+            // TODO: refresh
         }
 
         private WTreeDirectoryItem[] OpenFolder(DirectoryInfo folder) => folder
@@ -54,11 +114,6 @@
                     : Enumerable.Empty<WTreeDirectoryItem>(),
                 index: 0)
             .ToArray();
-
-        private static void RenameFile() {
-            // TODO: rename file dialog
-            MessageBox.Show("TODO: rename file dialog");
-        }
 
         private static int DirectoriesFirst(FileSystemInfo a, FileSystemInfo b) {
             var aIsDir = (a.Attributes & FileAttributes.Directory) != 0;

@@ -1,4 +1,5 @@
 ﻿namespace hyperactive {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
@@ -22,6 +23,14 @@
         public IDirectoryItem? SelectedItem { get => selectedItem; set => SetProperty(ref selectedItem, value); }
 
         public ICommand NavigateCmd => new Command(Navigate);
+
+        public ICommand CreateFolderCmd => new Command(() => throw new NotSupportedException());
+
+        public ICommand CreateFileCmd => new Command(() => throw new NotSupportedException());
+
+        public ICommand RenameItemCmd => new Command(() => throw new NotSupportedException());
+
+        public ICommand DeleteItemCmd => new Command(() => throw new NotSupportedException());
 
         public ObjDbBranch(Branch branch) {
             repoRoot = branch.Tip.Tree;
