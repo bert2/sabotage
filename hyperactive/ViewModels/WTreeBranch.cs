@@ -13,13 +13,13 @@
     public class WTreeBranch : ViewModel, IBranch {
         private readonly string repoRootPath;
 
-        private string name;
+        private string name = null!;
         public string Name { get => name; private set => SetProperty(ref name, value); }
 
         private bool isHead;
         public bool IsHead { get => isHead; private set => SetProperty(ref isHead, value); }
 
-        private IDirectoryItem[] currentDirectory;
+        private IDirectoryItem[] currentDirectory = null!;
         public IDirectoryItem[] CurrentDirectory { get => currentDirectory; private set => SetProperty(ref currentDirectory, value); }
 
         private IDirectoryItem? selectedItem;
@@ -56,6 +56,7 @@
             .ToArray();
 
         private static void RenameFile() {
+            // TODO: rename file dialog
             MessageBox.Show("TODO: rename file dialog");
         }
 

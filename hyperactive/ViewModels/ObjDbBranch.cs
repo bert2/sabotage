@@ -15,7 +15,7 @@
 
         public bool IsHead { get; }
 
-        private IDirectoryItem[] currentDirectory;
+        private IDirectoryItem[] currentDirectory = null!;
         public IDirectoryItem[] CurrentDirectory { get => currentDirectory; private set => SetProperty(ref currentDirectory, value); }
 
         private IDirectoryItem? selectedItem;
