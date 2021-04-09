@@ -312,12 +312,14 @@
           </TextBlock>
 
           <matex:Autocomplete
+            MinHeight="30"
             Margin="0,16,0,0"
             AutocompleteSource="{Binding}"
             Background="{DynamicResource MaterialDesignPaper}"
             Hint="commit"
             SearchOnInitialFocus="True"
             SelectedItem="{Binding SelectedCommit, Mode=TwoWay}"
+            ShowClearButtonOnlyOnSelectedItem="false"
             Style="{StaticResource MaterialDesignAutocompleteDense}">
             <matex:Autocomplete.ItemTemplate>
               <DataTemplate DataType="{x:Type local:Commit_}">
