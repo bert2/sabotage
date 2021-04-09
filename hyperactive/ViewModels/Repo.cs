@@ -182,7 +182,9 @@
         private async void RenameBranch(IBranch branch) {
             Debug.Assert(LibGitRepo is not null);
 
-            var (ok, newName) = await Dialog.Show(new EnterNewBranchName(), vm => vm.BranchName);
+            var (ok, newName) = await Dialog.Show(
+                new EnterNewBranchName(oldName: branch.Name),
+                vm => vm.BranchName);
             if (!ok) return;
 
             _ = LibGitRepo.Branches.Rename(branch.Name, newName);

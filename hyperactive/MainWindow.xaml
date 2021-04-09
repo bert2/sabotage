@@ -137,7 +137,18 @@
         </Grid.RowDefinitions>
 
         <StackPanel Margin="16">
-          <TextBlock HorizontalAlignment="Center" Text="enter new branch name:" />
+          <TextBlock
+            HorizontalAlignment="Center"
+            Text="enter new branch name:"
+            Visibility="{Binding OldName, Converter={StaticResource InvertedNullVisibilityConverter}}" />
+
+          <TextBlock HorizontalAlignment="Center" Visibility="{Binding OldName, Converter={StaticResource NullVisibilityConverter}}">
+            <Run Text="enter new branch name for" />
+            <Run
+              FontFamily="Consolas"
+              Foreground="{DynamicResource SecondaryHueMidBrush}"
+              Text="{Binding OldName, Mode=OneTime}" /><Run Text=":" />
+          </TextBlock>
 
           <TextBox
             x:Name="txtBranchName"
