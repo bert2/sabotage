@@ -13,6 +13,8 @@
     public class WTreeBranch : ViewModel, IBranch {
         private readonly string repoRootPath;
 
+        private string currentPath;
+
         private string name = null!;
         public string Name { get => name; private set => SetProperty(ref name, value); }
 
@@ -39,38 +41,62 @@
             repoRootPath = Path.TrimEndingDirectorySeparator(repoDirectory);
             Name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
-            CurrentDirectory = OpenFolder(new DirectoryInfo(repoRootPath));
+            OpenFolder(repoRootPath);
         }
 
         private void Navigate() {
             Debug.Assert(SelectedItem is not null);
 
             if (SelectedItem.Type == ItemType.Folder)
-                CurrentDirectory = OpenFolder(new DirectoryInfo(((WTreeDirectoryItem)SelectedItem).Path));
+                OpenFolder(((WTreeDirectoryItem)SelectedItem).Path);
             else if (SelectedItem.Type == ItemType.File)
                 RenameItem();
         }
 
+        private void OpenFolder(string path) {
+            CurrentDirectory = LoadFolder(new DirectoryInfo(path));
+            currentPath = repoRootPath;
+        }
+
+        private void ReloadCurrentFolder() => CurrentDirectory = LoadFolder(new DirectoryInfo(currentPath));
+
+        private WTreeDirectoryItem[] LoadFolder(DirectoryInfo folder) => folder
+            .EnumerateFileSystemInfos()
+            .Where(item => item.Name != ".git")
+            .OrderBy(item => item, Comparer<FileSystemInfo>.Create(DirectoriesFirst))
+            .Select(item => new WTreeDirectoryItem(item))
+            .Insert(
+                folder.FullName.IsSubPathOf(repoRootPath)
+                    ? new[] { new WTreeDirectoryItem("[ .. ]", folder.Parent!.FullName) }
+                    : Enumerable.Empty<WTreeDirectoryItem>(),
+                index: 0)
+            .ToArray();
+
         private async void CreateFolder() {
-            var (ok, target) = await Dialog.Show(new EnterNewItemName(ItemType.Folder), vm => vm.Name);
+            var (ok, folderName) = await Dialog.Show(new EnterNewItemName(ItemType.Folder), vm => vm.Name);
             if (!ok) return;
 
-            // TODO: implement
+            Debug.Assert(folderName is not null);
+
+            Directory.CreateDirectory(Path.Combine(currentPath, folderName));
 
             Snackbar.Show("folder created");
 
-            // TODO: refresh
+            ReloadCurrentFolder();
         }
 
         private async void CreateFile() {
-            var (ok, target) = await Dialog.Show(new EnterNewItemName(ItemType.File), vm => vm.Name);
+            var (ok, fileName) = await Dialog.Show(new EnterNewItemName(ItemType.File), vm => vm.Name);
             if (!ok) return;
 
-            // TODO: create file
+            Debug.Assert(fileName is not null);
+
+            File.Open(Path.Combine(currentPath, fileName), FileMode.CreateNew)
+                .Dispose();
 
             Snackbar.Show("file created");
 
-            // TODO: refresh
+            ReloadCurrentFolder();
         }
 
         private async void RenameItem() {
@@ -85,7 +111,7 @@
 
             Snackbar.Show($"{type} renamed");
 
-            // TODO: refresh
+            ReloadCurrentFolder();
         }
 
         private async void DeleteItem() {
@@ -100,20 +126,8 @@
 
             Snackbar.Show($"{type} deleted");
 
-            // TODO: refresh
+            ReloadCurrentFolder();
         }
-
-        private WTreeDirectoryItem[] OpenFolder(DirectoryInfo folder) => folder
-            .EnumerateFileSystemInfos()
-            .Where(item => item.Name != ".git")
-            .OrderBy(item => item, Comparer<FileSystemInfo>.Create(DirectoriesFirst))
-            .Select(item => new WTreeDirectoryItem(item))
-            .Insert(
-                folder.FullName.IsSubPathOf(repoRootPath)
-                    ? new[] { new WTreeDirectoryItem("[ .. ]", folder.Parent!.FullName) }
-                    : Enumerable.Empty<WTreeDirectoryItem>(),
-                index: 0)
-            .ToArray();
 
         private static int DirectoriesFirst(FileSystemInfo a, FileSystemInfo b) {
             var aIsDir = (a.Attributes & FileAttributes.Directory) != 0;
