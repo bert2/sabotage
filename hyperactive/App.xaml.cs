@@ -20,7 +20,12 @@
             };
         }
 
-        private static async void HandleException(Exception ex)
-            => await Dialog.Show(new Error(ex.Message, details: ex.ToString()));
+        private static async void HandleException(Exception ex) {
+            try {
+                await Dialog.Show(new Error(ex.Message, details: ex.ToString()));
+            } catch (Exception) {
+                MessageBox.Show(ex.ToString(), $"{ex.GetType().Name}: {ex.Message}", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 }
