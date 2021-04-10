@@ -101,12 +101,7 @@
         private async void CheckoutRemoteBranch(string remoteBranchName) {
             Debug.Assert(LibGitRepo is not null);
 
-            // resolves refs like "remotes/origin/HEAD -> origin/master"
-            var peeledRemoteRef = LibGitRepo
-                .Branches[remoteBranchName].NotNull()
-                .Reference
-                .ResolveToDirectReference();
-            var remoteBranch = LibGitRepo.Branches[peeledRemoteRef.CanonicalName].NotNull();
+            var remoteBranch = LibGitRepo.Branches[remoteBranchName].NotNull();
             var localBranchName = remoteBranch.FriendlyNameWithoutRemote();
 
             var localBranch = LibGitRepo.Branches[localBranchName]
@@ -253,7 +248,9 @@
 
             RemoteBranches = LibGitRepo
                 .Branches
-                .Where(b => b.IsRemote)
+                .Where(b
+                    => b.IsRemote
+                    && b.Reference is DirectReference) // skips refs like "remotes/origin/HEAD -> origin/master"
                 .Select(b => b.FriendlyName)
                 .OrderBy(b => b, Comparer<string>.Create(DevelopFirstMainLast))
                 .ToArray();
