@@ -515,30 +515,24 @@
               <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <matex:TextBoxSuggestions
+            <TextBox
+              x:Name="txtDirectory"
               Grid.Column="0"
-              Background="{DynamicResource MaterialDesignPaper}"
-              KeepFocusOnSelection="True"
-              TextBoxSuggestionsSource="{Binding GitDirSuggester}">
-              <TextBox
-                x:Name="txtDirectory"
-                mat:HintAssist.Hint="path to git repository"
-                mat:TextFieldAssist.HasClearButton="True"
-                mat:TextFieldAssist.HasLeadingIcon="True"
-                mat:TextFieldAssist.LeadingIcon="Git"
-                FontSize="16"
-                GotFocus="txtDirectory_SearchOnInitialFocus"
-                KeyUp="txtDirectory_UnfocusOnReturn"
-                Style="{StaticResource MaterialDesignFloatingHintTextBox}">
-                <TextBox.Text>
-                  <Binding Path="Directory">
-                    <Binding.ValidationRules>
-                      <local:ValidateGitDirectory />
-                    </Binding.ValidationRules>
-                  </Binding>
-                </TextBox.Text>
-              </TextBox>
-            </matex:TextBoxSuggestions>
+              mat:HintAssist.Hint="path to git repository"
+              mat:TextFieldAssist.HasClearButton="True"
+              mat:TextFieldAssist.HasLeadingIcon="True"
+              mat:TextFieldAssist.LeadingIcon="Git"
+              FontSize="16"
+              KeyUp="UpdateTextBoxBindingOnReturn"
+              Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+              <TextBox.Text>
+                <Binding Path="Directory">
+                  <Binding.ValidationRules>
+                    <local:ValidateGitDirectory />
+                  </Binding.ValidationRules>
+                </Binding>
+              </TextBox.Text>
+            </TextBox>
 
             <Button
               Grid.Column="1"
@@ -951,7 +945,6 @@
                   FontFamily="Consolas"
                   HorizontalScrollBarVisibility="Auto"
                   IsReadOnly="{Binding SelectedItem.ReadOnly}"
-                  LostFocus="FileEditorLeft"
                   Style="{StaticResource MaterialDesignOutlinedTextBox}"
                   Text="{Binding SelectedItem.Content, UpdateSourceTrigger=PropertyChanged, Delay=1000}"
                   TextWrapping="NoWrap"

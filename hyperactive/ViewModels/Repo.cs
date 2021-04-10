@@ -9,15 +9,10 @@
     using System.Windows.Forms;
     using System.Windows.Input;
 
-    using hyperactive.Util;
-    using hyperactive.ViewModels;
-
     using LibGit2Sharp;
 
-    using MaterialDesignExtensions.Model;
-
     public class Repo : ViewModel {
-        private string? directory;// = @"D:\DEV\git-conflicts"; // TODO: remove test value
+        private string? directory = @"D:\DEV\git-conflicts"; // TODO: remove test value
         public string? Directory {
             get => directory;
             set {
@@ -25,8 +20,6 @@
                     LoadRepository();
             }
         }
-
-        public ITextBoxSuggestionsSource GitDirSuggester { get; } = new GitDirSuggester();
 
         public Repository? LibGitRepo { get; private set; }
 
@@ -69,7 +62,7 @@
         public Repo() {
             WeakEventManager<Events, EventArgs>.AddHandler(Events.Instance, nameof(Events.WorkingTreeChanged), RefreshStatus);
             Instance = this;
-            //LoadRepository(); // TODO: remove test code
+            LoadRepository(); // TODO: remove test code
         }
 
         private void SelectDirectory() {

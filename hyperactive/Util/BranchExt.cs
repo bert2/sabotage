@@ -1,4 +1,4 @@
-﻿namespace hyperactive.Util {
+﻿namespace hyperactive {
     using LibGit2Sharp;
 
     public static class BranchExt {
