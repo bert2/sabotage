@@ -52,6 +52,7 @@
         private static ObjDbDirectoryItem[] OpenFolder(ObjDbDirectoryItem folder) => folder
             .GitObject
             .Peel<Tree>()
+            .Where(item => item.TargetType is TreeEntryTargetType.Blob or TreeEntryTargetType.Tree)
             .OrderBy(item => item, Comparer<TreeEntry>.Create(DirectoriesFirst))
             .Select(item => new ObjDbDirectoryItem(item, parent: folder))
             .Insert(

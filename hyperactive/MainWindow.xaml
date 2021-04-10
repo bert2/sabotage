@@ -561,19 +561,85 @@
           </Grid>
 
           <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
-            <StackPanel.IsEnabled>
-              <MultiBinding Converter="{StaticResource AndConv}">
-                <Binding
-                  Converter="{StaticResource NotConverter}"
-                  ElementName="txtDirectory"
-                  Path="(Validation.HasError)" />
-                <Binding Path="IsLoaded" />
-              </MultiBinding>
-            </StackPanel.IsEnabled>
-            <TextBlock Text="local branches:" />
-            <TextBlock Margin="8,0,0,0" Text="{Binding LocalBranchesCount}" />
-            <TextBlock Margin="32,0,0,0" Text="remote branches:" />
-            <TextBlock Margin="8,0,0,0" Text="{Binding RemoteBranchesCount}" />
+            <mat:PopupBox
+              Margin="8,0,0,0"
+              IsEnabled="{Binding Branches.Length, Converter={StaticResource NotZeroConverter}}"
+              PlacementMode="BottomAndAlignLeftEdges">
+              <mat:PopupBox.ToggleContent>
+                <mat:Badged Badge="{Binding Branches.Length}">
+                  <TextBlock Foreground="{DynamicResource MaterialDesignBody}" Text="local branches   " />
+                </mat:Badged>
+              </mat:PopupBox.ToggleContent>
+
+              <ItemsControl ItemsSource="{Binding Branches}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="{x:Type local:IBranch}">
+                    <Button
+                      HorizontalContentAlignment="Left"
+                      Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                      CommandParameter="{Binding}"
+                      Foreground="{DynamicResource PrimaryHueLightBrush}"
+                      IsEnabled="{Binding IsHead, Converter={StaticResource NotConverter}}"
+                      Style="{DynamicResource MaterialDesignFlatButton}">
+                      <Button.ToolTip>
+                        <TextBlock>
+                          <Run Text="checkout" />
+                          <Run Text="{Binding Name, Mode=OneTime}" />
+                        </TextBlock>
+                      </Button.ToolTip>
+                      <StackPanel Orientation="Horizontal">
+                        <mat:PackIcon Kind="TrayArrowDown" />
+                        <TextBlock
+                          Margin="8,0,0,0"
+                          VerticalAlignment="Center"
+                          Foreground="{DynamicResource MaterialDesignBody}"
+                          Text="{Binding Name, Mode=OneTime}" />
+                      </StackPanel>
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </mat:PopupBox>
+
+            <mat:PopupBox
+              Margin="16,0,0,0"
+              IsEnabled="{Binding RemoteBranches.Length, Converter={StaticResource NotZeroConverter}}"
+              PlacementMode="BottomAndAlignLeftEdges">
+              <mat:PopupBox.ToggleContent>
+                <mat:Badged Badge="{Binding RemoteBranches.Length}">
+                  <TextBlock Foreground="{DynamicResource MaterialDesignBody}" Text="remote branches   " />
+                </mat:Badged>
+              </mat:PopupBox.ToggleContent>
+
+              <ItemsControl ItemsSource="{Binding RemoteBranches}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="{x:Type sys:String}">
+                    <Button
+                      HorizontalContentAlignment="Left"
+                      Command="{Binding DataContext.CheckoutRemoteBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                      CommandParameter="{Binding}"
+                      Foreground="{DynamicResource PrimaryHueLightBrush}"
+                      Style="{DynamicResource MaterialDesignFlatButton}">
+                      <Button.ToolTip>
+                        <TextBlock>
+                          <Run Text="checkout" />
+                          <Run Text="{Binding Mode=OneTime}" />
+                        </TextBlock>
+                      </Button.ToolTip>
+                      <StackPanel Orientation="Horizontal">
+                        <mat:PackIcon Kind="TrayArrowDown" />
+                        <TextBlock
+                          Margin="8,0,0,0"
+                          VerticalAlignment="Center"
+                          Foreground="{DynamicResource MaterialDesignBody}"
+                          Text="{Binding Mode=OneTime}" />
+                      </StackPanel>
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </mat:PopupBox>
+
             <TextBlock Margin="32,0,0,0" Text="status:" />
             <TextBlock
               Margin="8,0,0,0"
@@ -658,11 +724,7 @@
                       Style="{StaticResource MaterialDesignIconButton}"
                       ToolTip="stage and commit all local changes" />
 
-                    <mat:PopupBox
-                      Padding="2,0,2,0"
-                      Foreground="{DynamicResource PrimaryHueMidBrush}"
-                      PlacementMode="BottomAndAlignLeftEdges"
-                      Style="{StaticResource MaterialDesignPopupBox}">
+                    <mat:PopupBox Foreground="{DynamicResource PrimaryHueMidBrush}" PlacementMode="BottomAndAlignLeftEdges">
                       <StackPanel>
                         <Button
                           HorizontalContentAlignment="Left"
@@ -743,6 +805,7 @@
                           Command="{Binding DataContext.DeleteBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
+                          IsEnabled="{Binding IsHead, Converter={StaticResource NotConverter}}"
                           Style="{DynamicResource MaterialDesignFlatButton}"
                           ToolTip="delete this branch locally">
                           <StackPanel Orientation="Horizontal">

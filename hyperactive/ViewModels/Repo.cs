@@ -9,6 +9,8 @@
     using System.Windows.Forms;
     using System.Windows.Input;
 
+    using hyperactive.Util;
+
     using LibGit2Sharp;
 
     public class Repo : ViewModel {
@@ -31,11 +33,8 @@
         private IBranch[]? branches;
         public IBranch[]? Branches { get => branches; private set => SetProperty(ref branches, value); }
 
-        private int? localBranchesCount;
-        public int? LocalBranchesCount { get => localBranchesCount; private set => SetProperty(ref localBranchesCount, value); }
-
-        private int? remoteBranchesCount;
-        public int? RemoteBranchesCount { get => remoteBranchesCount; private set => SetProperty(ref remoteBranchesCount, value); }
+        private string[]? remoteBranches;
+        public string[]? RemoteBranches { get => remoteBranches; private set => SetProperty(ref remoteBranches, value); }
 
         private bool isLoaded;
         public bool IsLoaded { get => isLoaded; private set => SetProperty(ref isLoaded, value); }
@@ -47,6 +46,8 @@
         public ICommand LoadRepositoryCmd => new Command(LoadRepository);
 
         public ICommand CheckoutBranchCmd => new Command<IBranch>(CheckoutBranch);
+
+        public ICommand CheckoutRemoteBranchCmd => new Command<string>(CheckoutRemoteBranch);
 
         public ICommand CommitCmd => new Command(Commit);
 
@@ -93,6 +94,31 @@
             LibGitRepo.RemoveUntrackedFiles();
 
             Snackbar.Show("branch switched");
+
+            await LoadRepositoryData();
+        }
+
+        private async void CheckoutRemoteBranch(string remoteBranchName) {
+            Debug.Assert(LibGitRepo is not null);
+
+            // resolves refs like "remotes/origin/HEAD -> origin/master"
+            var peeledRemoteRef = LibGitRepo
+                .Branches[remoteBranchName].NotNull()
+                .Reference
+                .ResolveToDirectReference();
+            var remoteBranch = LibGitRepo.Branches[peeledRemoteRef.CanonicalName].NotNull();
+            var localBranchName = remoteBranch.FriendlyNameWithoutRemote();
+
+            var localBranch = LibGitRepo.Branches[localBranchName]
+                ?? LibGitRepo.CreateBranch(localBranchName, remoteBranch.Tip);
+
+            _ = LibGitRepo.Branches.Update(localBranch, b => b.TrackedBranch = remoteBranch.CanonicalName);
+
+            LibGitRepo.Reset(ResetMode.Hard);
+            Commands.Checkout(LibGitRepo, localBranch, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
+            LibGitRepo.RemoveUntrackedFiles();
+
+            Snackbar.Show("remote branch checked out");
 
             await LoadRepositoryData();
         }
@@ -225,8 +251,12 @@
                 .OrderBy(b => b.Name, Comparer<string>.Create(DevelopFirstMainLast))
                 .ToArray();
 
-            LocalBranchesCount = Branches.Length;
-            RemoteBranchesCount = LibGitRepo.Branches.Count(b => b.IsRemote);
+            RemoteBranches = LibGitRepo
+                .Branches
+                .Where(b => b.IsRemote)
+                .Select(b => b.FriendlyName)
+                .OrderBy(b => b, Comparer<string>.Create(DevelopFirstMainLast))
+                .ToArray();
 
             IsLoaded = true;
         }
@@ -246,8 +276,6 @@
         private void Cleanup() {
             Status = new();
             Branches = Array.Empty<IBranch>();
-            LocalBranchesCount = null;
-            RemoteBranchesCount = null;
             LibGitRepo?.Dispose();
         }
 
