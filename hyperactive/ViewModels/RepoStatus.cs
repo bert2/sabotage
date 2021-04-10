@@ -33,7 +33,9 @@
 
             CurrentOperation = repo.Info.CurrentOperation;
 
+            System.Diagnostics.Trace.WriteLine($"##### start status ({Repo.Instance?.Directory})");
             var entries = repo.RetrieveStatus();
+            System.Diagnostics.Trace.WriteLine($"##### DONE status ({Repo.Instance?.Directory})");
 
             entries.ForEach(x => {
                 switch (x.State) {

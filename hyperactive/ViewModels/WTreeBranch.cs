@@ -77,7 +77,7 @@
 
             Debug.Assert(folderName is not null);
 
-            _ = Directory.CreateDirectory(Path.Combine(CurrentPath, folderName));
+            _ = Directory.CreateDirectory(Path.Join(CurrentPath, folderName));
 
             Snackbar.Show("folder created");
 
@@ -90,7 +90,7 @@
 
             Debug.Assert(fileName is not null);
 
-            File.Open(Path.Combine(CurrentPath, fileName), FileMode.CreateNew)
+            File.Open(Path.Join(CurrentPath, fileName), FileMode.CreateNew)
                 .Dispose();
 
             Snackbar.Show("file created");
@@ -110,8 +110,8 @@
 
             Debug.Assert(newName is not null);
 
-            var oldPath = Path.Combine(CurrentPath, SelectedItem.Name);
-            var newPath = Path.Combine(CurrentPath, newName);
+            var oldPath = Path.Join(CurrentPath, SelectedItem.Name);
+            var newPath = Path.Join(CurrentPath, newName);
 
             if (SelectedItem.Type == ItemType.Folder)
                 Directory.Move(oldPath, newPath);
@@ -131,7 +131,7 @@
             if (!await Dialog.Show(new Confirm($"delete {type}", SelectedItem.Name)))
                 return;
 
-            var path = Path.Combine(CurrentPath, SelectedItem.Name);
+            var path = Path.Join(CurrentPath, SelectedItem.Name);
 
             if (SelectedItem.Type == ItemType.Folder)
                 Directory.Delete(path, recursive: true);

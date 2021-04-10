@@ -22,7 +22,7 @@
 
         private static string GetPath(string name) {
             Debug.Assert(Repo.Instance?.WTree?.CurrentPath is not null);
-            return Path.Combine(Repo.Instance.WTree.CurrentPath, name);
+            return Path.Join(Repo.Instance.WTree.CurrentPath, name);
         }
     }
 }

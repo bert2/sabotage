@@ -515,23 +515,30 @@
               <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBox
-              x:Name="txtDirectory"
+            <matex:TextBoxSuggestions
               Grid.Column="0"
-              mat:HintAssist.Hint="path to git repository"
-              mat:TextFieldAssist.HasClearButton="True"
-              mat:TextFieldAssist.HasLeadingIcon="True"
-              mat:TextFieldAssist.LeadingIcon="Git"
-              FontSize="16"
-              Style="{StaticResource MaterialDesignFloatingHintTextBox}">
-              <TextBox.Text>
-                <Binding Path="Directory" UpdateSourceTrigger="PropertyChanged">
-                  <Binding.ValidationRules>
-                    <local:ValidateGitDirectory />
-                  </Binding.ValidationRules>
-                </Binding>
-              </TextBox.Text>
-            </TextBox>
+              Background="{DynamicResource MaterialDesignPaper}"
+              KeepFocusOnSelection="True"
+              TextBoxSuggestionsSource="{Binding GitDirSuggester}">
+              <TextBox
+                x:Name="txtDirectory"
+                mat:HintAssist.Hint="path to git repository"
+                mat:TextFieldAssist.HasClearButton="True"
+                mat:TextFieldAssist.HasLeadingIcon="True"
+                mat:TextFieldAssist.LeadingIcon="Git"
+                FontSize="16"
+                GotFocus="txtDirectory_SearchOnInitialFocus"
+                KeyUp="txtDirectory_UnfocusOnReturn"
+                Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+                <TextBox.Text>
+                  <Binding Path="Directory">
+                    <Binding.ValidationRules>
+                      <local:ValidateGitDirectory />
+                    </Binding.ValidationRules>
+                  </Binding>
+                </TextBox.Text>
+              </TextBox>
+            </matex:TextBoxSuggestions>
 
             <Button
               Grid.Column="1"
@@ -561,10 +568,7 @@
           </Grid>
 
           <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
-            <mat:PopupBox
-              Margin="8,0,0,0"
-              IsEnabled="{Binding Branches.Length, Converter={StaticResource NotZeroConverter}}"
-              PlacementMode="BottomAndAlignLeftEdges">
+            <mat:PopupBox IsEnabled="{Binding Branches.Length, Converter={StaticResource NotZeroConverter}}" PlacementMode="BottomAndAlignLeftEdges">
               <mat:PopupBox.ToggleContent>
                 <mat:Badged Badge="{Binding Branches.Length}">
                   <TextBlock Foreground="{DynamicResource MaterialDesignBody}" Text="local branches   " />
@@ -602,7 +606,7 @@
             </mat:PopupBox>
 
             <mat:PopupBox
-              Margin="16,0,0,0"
+              Margin="32,0,0,0"
               IsEnabled="{Binding RemoteBranches.Length, Converter={StaticResource NotZeroConverter}}"
               PlacementMode="BottomAndAlignLeftEdges">
               <mat:PopupBox.ToggleContent>
