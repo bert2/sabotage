@@ -65,7 +65,7 @@
             LoadRepository(); // TODO: remove test code
         }
 
-        private void SelectDirectory() {
+        private async void SelectDirectory() {
             using var dialog = new FolderBrowserDialog {
                 Description = "Select Git Repository",
                 UseDescriptionForTitle = true,
@@ -73,9 +73,12 @@
                 ShowNewFolderButton = false
             };
 
-            if (dialog.ShowDialog() == DialogResult.OK) {
+            if (dialog.ShowDialog() != DialogResult.OK) return;
+
+            if (Repository.IsValid(dialog.SelectedPath))
                 Directory = dialog.SelectedPath;
-            }
+            else
+                await Dialog.Show(new Error($"'{dialog.SelectedPath}' is not a git repository."));
         }
 
         private async void LoadRepository() {
