@@ -78,7 +78,7 @@
             if (Repository.IsValid(dialog.SelectedPath))
                 Directory = dialog.SelectedPath;
             else
-                await Dialog.Show(new Error($"'{dialog.SelectedPath}' is not a git repository."));
+                await Dialog.Show(new Error("not a git repository", details: dialog.SelectedPath));
         }
 
         private async void LoadRepository() {

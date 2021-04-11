@@ -67,7 +67,7 @@
     <local:CurrentOperationToTextConverter x:Key="CurrOpToTextConv" />
 
     <DataTemplate DataType="{x:Type local:EnterCommitMessage}">
-      <Grid Background="{DynamicResource MaterialDesignPaper}">
+      <Grid MinWidth="300" Background="{DynamicResource MaterialDesignPaper}">
         <Grid.RowDefinitions>
           <RowDefinition Height="auto" />
           <RowDefinition Height="auto" />
@@ -130,7 +130,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type local:EnterNewBranchName}">
-      <Grid Background="{DynamicResource MaterialDesignPaper}">
+      <Grid MinWidth="300" Background="{DynamicResource MaterialDesignPaper}">
         <Grid.RowDefinitions>
           <RowDefinition Height="auto" />
           <RowDefinition Height="auto" />
@@ -205,7 +205,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type local:Confirm}">
-      <Grid Background="{DynamicResource MaterialDesignPaper}">
+      <Grid MinWidth="250" Background="{DynamicResource MaterialDesignPaper}">
         <Grid.RowDefinitions>
           <RowDefinition Height="auto" />
           <RowDefinition Height="auto" />
@@ -250,7 +250,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type local:SelectMergeSource}">
-      <Grid Background="{DynamicResource MaterialDesignPaper}">
+      <Grid MinWidth="300" Background="{DynamicResource MaterialDesignPaper}">
         <Grid.RowDefinitions>
           <RowDefinition Height="auto" />
           <RowDefinition Height="auto" />
@@ -301,7 +301,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type local:SelectCommit}">
-      <Grid Background="{DynamicResource MaterialDesignPaper}">
+      <Grid MinWidth="300" Background="{DynamicResource MaterialDesignPaper}">
         <Grid.RowDefinitions>
           <RowDefinition Height="auto" />
           <RowDefinition Height="auto" />
@@ -365,7 +365,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type local:EnterNewItemName}">
-      <Grid Background="{DynamicResource MaterialDesignPaper}">
+      <Grid MinWidth="300" Background="{DynamicResource MaterialDesignPaper}">
         <Grid.RowDefinitions>
           <RowDefinition Height="auto" />
           <RowDefinition Height="auto" />
@@ -443,7 +443,7 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type local:Error}">
-      <Grid Background="{DynamicResource MaterialDesignPaper}">
+      <Grid MinWidth="400" Background="{DynamicResource MaterialDesignPaper}">
         <Grid.RowDefinitions>
           <RowDefinition Height="auto" />
           <RowDefinition Height="auto" />
@@ -452,7 +452,7 @@
         <Grid Grid.Row="0">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
-            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
           </Grid.ColumnDefinitions>
 
           <mat:PackIcon
@@ -470,6 +470,7 @@
               MaxWidth="600"
               MaxHeight="600"
               Margin="16"
+              HorizontalAlignment="Stretch"
               VerticalContentAlignment="Stretch"
               mat:TextFieldAssist.UnderlineBrush="{DynamicResource MaterialDesignBody}"
               HorizontalScrollBarVisibility="Auto"
