@@ -4,12 +4,12 @@
         public string? CommitMessage {
             get => commitMessage;
             set {
-                if (SetProperty(ref commitMessage, value))
+                if (SetProp(ref commitMessage, value))
                     Touched = true;
             }
         }
 
         private bool touched;
-        public bool Touched { get => touched; set => SetProperty(ref touched, value); }
+        public bool Touched { get => touched; set => SetProp(ref touched, value); }
     }
 }

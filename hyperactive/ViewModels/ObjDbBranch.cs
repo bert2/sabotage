@@ -17,10 +17,10 @@
         public bool IsHead { get; }
 
         private IDirectoryItem[] currentDirectory = null!;
-        public IDirectoryItem[] CurrentDirectory { get => currentDirectory; private set => SetProperty(ref currentDirectory, value); }
+        public IDirectoryItem[] CurrentDirectory { get => currentDirectory; private set => SetProp(ref currentDirectory, value); }
 
         private IDirectoryItem? selectedItem;
-        public IDirectoryItem? SelectedItem { get => selectedItem; set => SetProperty(ref selectedItem, value); }
+        public IDirectoryItem? SelectedItem { get => selectedItem; set => SetProp(ref selectedItem, value); }
 
         public ICommand NavigateCmd => new Command(Navigate);
 

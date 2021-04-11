@@ -5,10 +5,10 @@
         public IBranch Target { get; }
 
         private IEnumerable<IBranch> sources;
-        public IEnumerable<IBranch> Sources { get => sources; private set => SetProperty(ref sources, value); }
+        public IEnumerable<IBranch> Sources { get => sources; private set => SetProp(ref sources, value); }
 
         private IBranch? selectedSource;
-        public IBranch? SelectedSource { get => selectedSource; set => SetProperty(ref selectedSource, value); }
+        public IBranch? SelectedSource { get => selectedSource; set => SetProp(ref selectedSource, value); }
 
         public SelectMergeSource(IBranch target, IEnumerable<IBranch> sources)
             => (Target, this.sources) = (target, sources);

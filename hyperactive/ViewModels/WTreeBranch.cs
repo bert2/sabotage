@@ -16,16 +16,16 @@
         public string CurrentPath { get; private set; }
 
         private string name = null!;
-        public string Name { get => name; private set => SetProperty(ref name, value); }
+        public string Name { get => name; private set => SetProp(ref name, value); }
 
         private bool isHead;
-        public bool IsHead { get => isHead; private set => SetProperty(ref isHead, value); }
+        public bool IsHead { get => isHead; private set => SetProp(ref isHead, value); }
 
         private IDirectoryItem[] currentDirectory = null!;
-        public IDirectoryItem[] CurrentDirectory { get => currentDirectory; private set => SetProperty(ref currentDirectory, value); }
+        public IDirectoryItem[] CurrentDirectory { get => currentDirectory; private set => SetProp(ref currentDirectory, value); }
 
         private IDirectoryItem? selectedItem;
-        public IDirectoryItem? SelectedItem { get => selectedItem; set => SetProperty(ref selectedItem, value); }
+        public IDirectoryItem? SelectedItem { get => selectedItem; set => SetProp(ref selectedItem, value); }
 
         public ICommand NavigateCmd => new Command(Navigate);
 

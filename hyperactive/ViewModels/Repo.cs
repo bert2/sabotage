@@ -16,7 +16,7 @@
         public string? Directory {
             get => directory;
             set {
-                if (SetProperty(ref directory, value))
+                if (SetProp(ref directory, value))
                     LoadRepository();
             }
         }
@@ -26,16 +26,16 @@
         public static Repo? Instance { get; private set; }
 
         private RepoStatus status = new();
-        public RepoStatus Status { get => status; private set => SetProperty(ref status, value); }
+        public RepoStatus Status { get => status; private set => SetProp(ref status, value); }
 
         private IBranch[]? branches;
-        public IBranch[]? Branches { get => branches; private set => SetProperty(ref branches, value); }
+        public IBranch[]? Branches { get => branches; private set => SetProp(ref branches, value); }
 
         private string[]? remoteBranches;
-        public string[]? RemoteBranches { get => remoteBranches; private set => SetProperty(ref remoteBranches, value); }
+        public string[]? RemoteBranches { get => remoteBranches; private set => SetProp(ref remoteBranches, value); }
 
         private bool isLoaded;
-        public bool IsLoaded { get => isLoaded; private set => SetProperty(ref isLoaded, value); }
+        public bool IsLoaded { get => isLoaded; private set => SetProp(ref isLoaded, value); }
 
         public WTreeBranch? WTree => Branches?.OfType<WTreeBranch>().Single();
 

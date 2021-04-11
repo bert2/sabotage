@@ -28,10 +28,10 @@
         public string? Content {
             get => content ??= Type == ItemType.File ? File.ReadAllText(Path) : null;
             set {
-                if (SetProperty(ref content, value)) {
+                if (SetProp(ref content, value)) {
                     File.WriteAllText(Path, value);
                     Events.RaiseWorkingTreeChanged();
-                    SetProperty(ref status, null, nameof(Status));
+                    SetProp(ref status, null, nameof(Status));
                 }
             }
         }

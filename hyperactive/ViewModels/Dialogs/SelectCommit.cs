@@ -9,10 +9,10 @@
         public IBranch MergeTarget { get; }
 
         private IEnumerable<Commit_> commits;
-        public IEnumerable<Commit_> Commits { get => commits; private set => SetProperty(ref commits, value); }
+        public IEnumerable<Commit_> Commits { get => commits; private set => SetProp(ref commits, value); }
 
         private Commit_? selectedCommit;
-        public Commit_? SelectedCommit { get => selectedCommit; set => SetProperty(ref selectedCommit, value); }
+        public Commit_? SelectedCommit { get => selectedCommit; set => SetProp(ref selectedCommit, value); }
 
         public SelectCommit(IBranch target, IEnumerable<Commit_> commits)
             => (MergeTarget, this.commits) = (target, commits);

@@ -6,13 +6,13 @@
         public string? BranchName {
             get => branchName;
             set {
-                if (SetProperty(ref branchName, value))
+                if (SetProp(ref branchName, value))
                     Touched = true;
             }
         }
 
         private bool touched;
-        public bool Touched { get => touched; set => SetProperty(ref touched, value); }
+        public bool Touched { get => touched; set => SetProp(ref touched, value); }
 
         public EnterNewBranchName(string? oldName = null) => OldName = oldName;
     }
