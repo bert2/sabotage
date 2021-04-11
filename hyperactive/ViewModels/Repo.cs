@@ -30,8 +30,6 @@
 
         public ICommand CherryPickCmd => new Command<LocalBranch>(CherryPick);
 
-        public ICommand DeleteBranchCmd => new Command<LocalBranch>(DeleteBranch);
-
         public Repo(string path) {
             Path = path;
             LibGitRepo = new Repository(path);
@@ -138,17 +136,6 @@
                 CherryPickStatus.Conflicts => "cherry-pick failed with conflicts",
                 _ => $"cherry-pick result: {cherryPick.Status}"
             });
-
-            LoadRepositoryData();
-        }
-
-        private async void DeleteBranch(LocalBranch branch) {
-            if (!await Dialog.Show(new Confirm(action: "delete branch", subject: branch.Name)))
-                return;
-
-            LibGitRepo.Branches.Remove(branch.Name);
-
-            Snackbar.Show("branch deleted");
 
             LoadRepositoryData();
         }

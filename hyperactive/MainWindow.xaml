@@ -794,7 +794,7 @@
 
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding Parent.DeleteBranchCmd}"
+                          Command="{Binding DeleteCmd}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           IsEnabled="{Binding IsHead, Converter={StaticResource NotConverter}}"

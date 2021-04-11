@@ -19,6 +19,14 @@
         private IDirectoryItem? selectedItem;
         public IDirectoryItem? SelectedItem { get => selectedItem; set => SetProp(ref selectedItem, value); }
 
+        public ICommand CheckoutCmd => new Command(Checkout);
+
+        public ICommand BranchOffCmd => new Command(BranchOff);
+
+        public ICommand RenameCmd => new Command(Rename);
+
+        public abstract ICommand DeleteCmd { get; }
+
         public abstract ICommand NavigateCmd { get; }
 
         public abstract ICommand CreateFolderCmd { get; }
@@ -28,12 +36,6 @@
         public abstract ICommand RenameItemCmd { get; }
 
         public abstract ICommand DeleteItemCmd { get; }
-
-        public ICommand CheckoutCmd => new Command(Checkout);
-
-        public ICommand BranchOffCmd => new Command(BranchOff);
-
-        public ICommand RenameCmd => new Command(Rename);
 
         protected LocalBranch(Repo parent, Branch branch)
             => (repo, Parent, name, IsHead) = (parent.LibGitRepo, parent, branch.FriendlyName, branch.IsCurrentRepositoryHead);

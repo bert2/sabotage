@@ -14,6 +14,8 @@
 
         public string CurrentPath { get; private set; }
 
+        public override ICommand DeleteCmd => new InvalidCommand();
+
         public override ICommand NavigateCmd => new Command(Navigate);
 
         public override ICommand CreateFolderCmd => new Command(CreateFolder);

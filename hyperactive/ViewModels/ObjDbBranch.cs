@@ -1,5 +1,4 @@
 ﻿namespace hyperactive {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
@@ -10,7 +9,11 @@
     using MoreLinq;
 
     public class ObjDbBranch : LocalBranch {
+        private readonly Repository repo;
+
         private readonly Tree repoRoot;
+
+        public override ICommand DeleteCmd => new Command(Delete);
 
         public override ICommand NavigateCmd => new Command(Navigate);
 
@@ -23,15 +26,9 @@
         public override ICommand DeleteItemCmd => new InvalidCommand();
 
         public ObjDbBranch(Repo parent, Branch branch) : base(parent, branch) {
+            repo = parent.LibGitRepo;
             repoRoot = branch.Tip.Tree;
             CurrentDirectory = OpenRootFolder(repoRoot);
-        }
-
-        private void Navigate() {
-            Debug.Assert(SelectedItem is not null);
-
-            if (SelectedItem.Type == ItemType.Folder)
-                CurrentDirectory = OpenFolder((ObjDbDirectoryItem)SelectedItem);
         }
 
         private ObjDbDirectoryItem[] OpenRootFolder(Tree root)
@@ -49,6 +46,24 @@
                     : new[] { new ObjDbDirectoryItem(this, "[ .. ]", folder.ParentItem.GitObject, folder.ParentItem.ParentItem) },
                 index: 0)
             .ToArray();
+
+        private async void Delete() {
+            if (!await Dialog.Show(new Confirm(action: "delete branch", subject: Name)))
+                return;
+
+            repo.Branches.Remove(Name);
+
+            Snackbar.Show("branch deleted");
+
+            Events.RaiseBranchesChanged();
+        }
+
+        private void Navigate() {
+            Debug.Assert(SelectedItem is not null);
+
+            if (SelectedItem.Type == ItemType.Folder)
+                CurrentDirectory = OpenFolder((ObjDbDirectoryItem)SelectedItem);
+        }
 
         private static int DirectoriesFirst(TreeEntry a, TreeEntry b) => (a.Mode, b.Mode) switch {
             (Mode.Directory, Mode.Directory) => a.Name.CompareTo(b.Name),
