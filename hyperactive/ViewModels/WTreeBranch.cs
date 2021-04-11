@@ -31,9 +31,7 @@
         }
 
         private void Navigate() {
-            Debug.Assert(SelectedItem is not null);
-
-            if (SelectedItem.Type == ItemType.Folder)
+            if (SelectedItem?.Type == ItemType.Folder)
                 OpenFolder(((WTreeDirectoryItem)SelectedItem).Path);
         }
 
@@ -60,9 +58,7 @@
             var (ok, folderName) = await Dialog.Show(new EnterNewItemName(ItemType.Folder), vm => vm.NewName);
             if (!ok) return;
 
-            Debug.Assert(folderName is not null);
-
-            _ = Directory.CreateDirectory(Path.Join(CurrentPath, folderName));
+            _ = Directory.CreateDirectory(Path.Join(CurrentPath, folderName.NotNull()));
 
             Snackbar.Show("folder created");
 
@@ -73,9 +69,7 @@
             var (ok, fileName) = await Dialog.Show(new EnterNewItemName(ItemType.File), vm => vm.NewName);
             if (!ok) return;
 
-            Debug.Assert(fileName is not null);
-
-            File.Open(Path.Join(CurrentPath, fileName), FileMode.CreateNew)
+            File.Open(Path.Join(CurrentPath, fileName.NotNull()), FileMode.CreateNew)
                 .Dispose();
 
             Snackbar.Show("file created");
@@ -93,10 +87,8 @@
                 vm => vm.NewName);
             if (!ok) return;
 
-            Debug.Assert(newName is not null);
-
             var oldPath = Path.Join(CurrentPath, SelectedItem.Name);
-            var newPath = Path.Join(CurrentPath, newName);
+            var newPath = Path.Join(CurrentPath, newName.NotNull());
 
             if (SelectedItem.Type == ItemType.Folder)
                 Directory.Move(oldPath, newPath);
@@ -139,7 +131,5 @@
                 (false, false) => a.Name.CompareTo(b.Name)
             };
         }
-
-        public override string ToString() => Name;
     }
 }

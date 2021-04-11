@@ -56,7 +56,5 @@
             (_             , Mode.Directory) => 1,
             (_             , _             ) => a.Name.CompareTo(b.Name)
         };
-
-        public override string ToString() => Name;
     }
 }

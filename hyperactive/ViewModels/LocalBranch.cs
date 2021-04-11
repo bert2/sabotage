@@ -71,5 +71,7 @@
 
             Snackbar.Show("branch renamed");
         }
+
+        public override string ToString() => Name;
     }
 }
