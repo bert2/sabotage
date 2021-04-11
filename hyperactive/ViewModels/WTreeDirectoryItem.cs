@@ -121,7 +121,7 @@
 
             (ItemStatus.Modified  , ItemStatus.Modified  ) =>  0,
 
-            _ => throw new InvalidOperationException($"Unexpected folder item status when comparing {a} vs {b}.")
+            _ => throw new NotSupportedException($"Unexpected folder item status when comparing {a} vs {b}.")
         };
 
         private static string GetRelativeGitPath(string path) => System.IO.Path
