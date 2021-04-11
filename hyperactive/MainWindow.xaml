@@ -716,7 +716,7 @@
                       <StackPanel>
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding Parent.CreateBranchCmd}"
+                          Command="{Binding BranchOffCmd}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           Style="{DynamicResource MaterialDesignFlatButton}"

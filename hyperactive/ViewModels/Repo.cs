@@ -2,7 +2,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Windows;
     using System.Windows.Input;
 
     using LibGit2Sharp;
@@ -26,8 +25,6 @@
         public WTreeBranch WTree => Branches.OfType<WTreeBranch>().Single();
 
         public ICommand CommitCmd => new Command(Commit);
-
-        public ICommand CreateBranchCmd => new Command<LocalBranch>(CreateBranch);
 
         public ICommand MergeBranchCmd => new Command<LocalBranch>(MergeBranch);
 
@@ -99,17 +96,6 @@
             LibGitRepo.Commit(message, sig, sig);
 
             Snackbar.Show("local changes committed");
-
-            LoadRepositoryData();
-        }
-
-        private async void CreateBranch(LocalBranch source) {
-            var (ok, target) = await Dialog.Show(new EnterNewBranchName(), vm => vm.BranchName);
-            if (!ok) return;
-
-            _ = LibGitRepo.CreateBranch(branchName: target, source.Name);
-
-            Snackbar.Show("branch created");
 
             LoadRepositoryData();
         }

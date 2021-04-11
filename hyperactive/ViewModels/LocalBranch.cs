@@ -30,6 +30,8 @@
 
         public ICommand CheckoutCmd => new Command(Checkout);
 
+        public ICommand BranchOffCmd => new Command(BranchOff);
+
         protected LocalBranch(Repo parent, Branch branch)
             => (repo, Parent, Name, IsHead) = (parent.LibGitRepo, parent, branch.FriendlyName, branch.IsCurrentRepositoryHead);
 
@@ -41,6 +43,17 @@
             Snackbar.Show("branch switched");
 
             Events.RaiseWTreeChanged();
+            Events.RaiseBranchesChanged();
+        }
+
+        private async void BranchOff() {
+            var (ok, target) = await Dialog.Show(new EnterNewBranchName(), vm => vm.BranchName);
+            if (!ok) return;
+
+            _ = repo.CreateBranch(branchName: target, Name);
+
+            Snackbar.Show("branch created");
+
             Events.RaiseBranchesChanged();
         }
     }
