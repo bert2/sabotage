@@ -9,36 +9,21 @@
 
     using MoreLinq;
 
-    public class ObjDbBranch : ViewModel, IBranch {
+    public class ObjDbBranch : LocalBranch {
         private readonly Tree repoRoot;
 
-        public Repo Parent { get; }
+        public override ICommand NavigateCmd => new Command(Navigate);
 
-        public string Name { get; }
+        public override ICommand CreateFolderCmd => new Command(() => throw new NotSupportedException());
 
-        public bool IsHead { get; }
+        public override ICommand CreateFileCmd => new Command(() => throw new NotSupportedException());
 
-        private IDirectoryItem[] currentDirectory = null!;
-        public IDirectoryItem[] CurrentDirectory { get => currentDirectory; private set => SetProp(ref currentDirectory, value); }
+        public override ICommand RenameItemCmd => new Command(() => throw new NotSupportedException());
 
-        private IDirectoryItem? selectedItem;
-        public IDirectoryItem? SelectedItem { get => selectedItem; set => SetProp(ref selectedItem, value); }
+        public override ICommand DeleteItemCmd => new Command(() => throw new NotSupportedException());
 
-        public ICommand NavigateCmd => new Command(Navigate);
-
-        public ICommand CreateFolderCmd => new Command(() => throw new NotSupportedException());
-
-        public ICommand CreateFileCmd => new Command(() => throw new NotSupportedException());
-
-        public ICommand RenameItemCmd => new Command(() => throw new NotSupportedException());
-
-        public ICommand DeleteItemCmd => new Command(() => throw new NotSupportedException());
-
-        public ObjDbBranch(Repo parent, Branch branch) {
-            Parent = parent;
+        public ObjDbBranch(Repo parent, Branch branch) : base(parent, branch) {
             repoRoot = branch.Tip.Tree;
-            Name = branch.FriendlyName;
-            IsHead = branch.IsCurrentRepositoryHead;
             CurrentDirectory = OpenRootFolder(repoRoot);
         }
 

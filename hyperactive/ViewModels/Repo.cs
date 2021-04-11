@@ -17,37 +17,33 @@
         private RepoStatus status = new();
         public RepoStatus Status { get => status; private set => SetProp(ref status, value); }
 
-        private IBranch[] branches = null!;
-        public IBranch[] Branches { get => branches; private set => SetProp(ref branches, value); }
+        private LocalBranch[] branches = null!;
+        public LocalBranch[] Branches { get => branches; private set => SetProp(ref branches, value); }
 
         private RemoteBranch[] remoteBranches = null!;
         public RemoteBranch[] RemoteBranches { get => remoteBranches; private set => SetProp(ref remoteBranches, value); }
 
         public WTreeBranch WTree => Branches.OfType<WTreeBranch>().Single();
 
-        public ICommand CheckoutBranchCmd => new Command<IBranch>(CheckoutBranch);
-
         public ICommand CommitCmd => new Command(Commit);
 
-        public ICommand CreateBranchCmd => new Command<IBranch>(CreateBranch);
+        public ICommand CreateBranchCmd => new Command<LocalBranch>(CreateBranch);
 
-        public ICommand MergeBranchCmd => new Command<IBranch>(MergeBranch);
+        public ICommand MergeBranchCmd => new Command<LocalBranch>(MergeBranch);
 
-        public ICommand CherryPickCmd => new Command<IBranch>(CherryPick);
+        public ICommand CherryPickCmd => new Command<LocalBranch>(CherryPick);
 
-        public ICommand RenameBranchCmd => new Command<IBranch>(RenameBranch);
+        public ICommand RenameBranchCmd => new Command<LocalBranch>(RenameBranch);
 
-        public ICommand DeleteBranchCmd => new Command<IBranch>(DeleteBranch);
+        public ICommand DeleteBranchCmd => new Command<LocalBranch>(DeleteBranch);
 
         public Repo(string path) {
             Path = path;
             LibGitRepo = new Repository(path);
             LoadRepositoryData();
 
-            WeakEventManager<Events, EventArgs>.AddHandler(
-                Events.Instance, nameof(Events.WTreeChanged), (_, __) => LoadStatus());
-            WeakEventManager<Events, EventArgs>.AddHandler(
-                Events.Instance, nameof(Events.WTreeAndBranchesChanged), (_, __) => { LoadStatus(); LoadLocalBranches(); });
+            Events.Instance.WTreeChanged += RefreshStatus;
+            Events.Instance.WTreeAndBranchesChanged += RefreshStatusAndBranches;
 
             Instance = this; // TODO: refactor
         }
@@ -64,9 +60,9 @@
             => Branches = LibGitRepo
                 .Branches
                 .Where(b => !b.IsRemote)
-                .Select(b => b.IsCurrentRepositoryHead
+                .Select<Branch, LocalBranch>(b => b.IsCurrentRepositoryHead
                     ? new WTreeBranch(this, b)
-                    : (IBranch)new ObjDbBranch(this, b))
+                    : new ObjDbBranch(this, b))
                 .OrderBy(b => b.Name, sortDevelopFirstMainLast)
                 .ToArray();
 
@@ -80,19 +76,20 @@
                 .OrderBy(b => b.Name, sortDevelopFirstMainLast)
                 .ToArray();
 
-        public void Dispose() {
-            LibGitRepo.Dispose();
-            Instance = null; // TODO: refactor
+        private void RefreshStatus(object? sender, EventArgs args) => LoadStatus();
+
+        private void RefreshStatusAndBranches(object? sender, EventArgs args) {
+            LoadStatus();
+            LoadLocalBranches();
         }
 
-        private void CheckoutBranch(IBranch branch) {
-            LibGitRepo.Reset(ResetMode.Hard);
-            Commands.Checkout(LibGitRepo, branch.Name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
-            LibGitRepo.RemoveUntrackedFiles();
+        public void Dispose() {
+            Events.Instance.WTreeChanged -= RefreshStatus;
+            Events.Instance.WTreeAndBranchesChanged -= RefreshStatusAndBranches;
 
-            Snackbar.Show("branch switched");
+            LibGitRepo.Dispose();
 
-            LoadRepositoryData();
+            Instance = null; // TODO: refactor
         }
 
         private async void Commit() {
@@ -109,7 +106,7 @@
             LoadRepositoryData();
         }
 
-        private async void CreateBranch(IBranch source) {
+        private async void CreateBranch(LocalBranch source) {
             var (ok, target) = await Dialog.Show(new EnterNewBranchName(), vm => vm.BranchName);
             if (!ok) return;
 
@@ -120,7 +117,7 @@
             LoadRepositoryData();
         }
 
-        private async void MergeBranch(IBranch target) {
+        private async void MergeBranch(LocalBranch target) {
             var (ok, source) = await Dialog.Show(
                 new SelectMergeSource(target, sources: Branches.Where(b => b.Name != target.Name)),
                 vm => vm.SelectedSource);
@@ -139,7 +136,7 @@
             LoadRepositoryData();
         }
 
-        private async void CherryPick(IBranch mergeTarget) {
+        private async void CherryPick(LocalBranch mergeTarget) {
             var commits = LibGitRepo
                 .Commits
                 .QueryBy(new CommitFilter {
@@ -164,7 +161,7 @@
             LoadRepositoryData();
         }
 
-        private async void RenameBranch(IBranch branch) {
+        private async void RenameBranch(LocalBranch branch) {
             var (ok, newName) = await Dialog.Show(
                 new EnterNewBranchName(oldName: branch.Name),
                 vm => vm.BranchName);
@@ -177,7 +174,7 @@
             LoadRepositoryData();
         }
 
-        private async void DeleteBranch(IBranch branch) {
+        private async void DeleteBranch(LocalBranch branch) {
             if (!await Dialog.Show(new Confirm(action: "delete branch", subject: branch.Name)))
                 return;
 

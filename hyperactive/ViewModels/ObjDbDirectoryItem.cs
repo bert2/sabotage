@@ -5,7 +5,7 @@
     using LibGit2Sharp;
 
     public class ObjDbDirectoryItem: IDirectoryItem {
-        public IBranch Parent { get; }
+        public LocalBranch Parent { get; }
 
         public string Name { get; }
 

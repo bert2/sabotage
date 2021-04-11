@@ -11,7 +11,7 @@
     public class WTreeDirectoryItem: ViewModel, IDirectoryItem {
         private readonly bool isVirtual;
 
-        public IBranch Parent { get; }
+        public LocalBranch Parent { get; }
 
         public string Name { get; }
 

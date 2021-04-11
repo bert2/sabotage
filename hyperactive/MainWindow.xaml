@@ -572,10 +572,10 @@
 
               <ItemsControl ItemsSource="{Binding Repo.Branches}">
                 <ItemsControl.ItemTemplate>
-                  <DataTemplate DataType="{x:Type local:IBranch}">
+                  <DataTemplate DataType="{x:Type local:LocalBranch}">
                     <Button
                       HorizontalContentAlignment="Left"
-                      Command="{Binding Parent.CheckoutBranchCmd}"
+                      Command="{Binding CheckoutCmd}"
                       CommandParameter="{Binding}"
                       Foreground="{DynamicResource PrimaryHueLightBrush}"
                       IsEnabled="{Binding IsHead, Converter={StaticResource NotConverter}}"
@@ -660,7 +660,7 @@
 
       <ItemsControl Grid.Row="1" ItemsSource="{Binding Repo.Branches}">
         <ItemsControl.ItemTemplate>
-          <DataTemplate DataType="{x:Type local:IBranch}">
+          <DataTemplate DataType="{x:Type local:LocalBranch}">
             <mat:Card
               Margin="16"
               Padding="8"
@@ -697,7 +697,7 @@
 
                   <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button
-                      Command="{Binding Parent.CheckoutBranchCmd}"
+                      Command="{Binding CheckoutCmd}"
                       CommandParameter="{Binding}"
                       Content="{mat:PackIcon TrayArrowDown,
                                              Size=20}"

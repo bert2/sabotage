@@ -9,41 +9,24 @@
 
     using MoreLinq;
 
-    public class WTreeBranch : ViewModel, IBranch {
+    public class WTreeBranch : LocalBranch {
         private readonly string repoRootPath;
-
-        public Repo Parent { get; }
 
         public string CurrentPath { get; private set; }
 
-        private string name = null!;
-        public string Name { get => name; private set => SetProp(ref name, value); }
+        public override ICommand NavigateCmd => new Command(Navigate);
 
-        private bool isHead;
-        public bool IsHead { get => isHead; private set => SetProp(ref isHead, value); }
+        public override ICommand CreateFolderCmd => new Command(CreateFolder);
 
-        private IDirectoryItem[] currentDirectory = null!;
-        public IDirectoryItem[] CurrentDirectory { get => currentDirectory; private set => SetProp(ref currentDirectory, value); }
+        public override ICommand CreateFileCmd => new Command(CreateFile);
 
-        private IDirectoryItem? selectedItem;
-        public IDirectoryItem? SelectedItem { get => selectedItem; set => SetProp(ref selectedItem, value); }
+        public override ICommand RenameItemCmd => new Command(RenameItem);
 
-        public ICommand NavigateCmd => new Command(Navigate);
+        public override ICommand DeleteItemCmd => new Command(DeleteItem);
 
-        public ICommand CreateFolderCmd => new Command(CreateFolder);
-
-        public ICommand CreateFileCmd => new Command(CreateFile);
-
-        public ICommand RenameItemCmd => new Command(RenameItem);
-
-        public ICommand DeleteItemCmd => new Command(DeleteItem);
-
-        public WTreeBranch(Repo parent, Branch branch) {
-            Parent = parent;
+        public WTreeBranch(Repo parent, Branch branch) : base(parent, branch) {
             repoRootPath = Path.TrimEndingDirectorySeparator(parent.Path);
             CurrentPath = repoRootPath;
-            Name = branch.FriendlyName;
-            IsHead = branch.IsCurrentRepositoryHead;
             OpenFolder(repoRootPath);
         }
 
