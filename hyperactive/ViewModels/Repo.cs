@@ -30,8 +30,6 @@
 
         public ICommand CherryPickCmd => new Command<LocalBranch>(CherryPick);
 
-        public ICommand RenameBranchCmd => new Command<LocalBranch>(RenameBranch);
-
         public ICommand DeleteBranchCmd => new Command<LocalBranch>(DeleteBranch);
 
         public Repo(string path) {
@@ -140,19 +138,6 @@
                 CherryPickStatus.Conflicts => "cherry-pick failed with conflicts",
                 _ => $"cherry-pick result: {cherryPick.Status}"
             });
-
-            LoadRepositoryData();
-        }
-
-        private async void RenameBranch(LocalBranch branch) {
-            var (ok, newName) = await Dialog.Show(
-                new EnterNewBranchName(oldName: branch.Name),
-                vm => vm.BranchName);
-            if (!ok) return;
-
-            _ = LibGitRepo.Branches.Rename(branch.Name, newName);
-
-            Snackbar.Show("branch renamed");
 
             LoadRepositoryData();
         }

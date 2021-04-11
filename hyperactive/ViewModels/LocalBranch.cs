@@ -8,7 +8,8 @@
 
         public Repo Parent { get; } // TODO: refactor to remove this
 
-        public string Name { get; }
+        private string name;
+        public string Name { get => name; set => SetProp(ref name, value); }
 
         public bool IsHead { get; }
 
@@ -32,12 +33,14 @@
 
         public ICommand BranchOffCmd => new Command(BranchOff);
 
+        public ICommand RenameCmd => new Command(Rename);
+
         protected LocalBranch(Repo parent, Branch branch)
-            => (repo, Parent, Name, IsHead) = (parent.LibGitRepo, parent, branch.FriendlyName, branch.IsCurrentRepositoryHead);
+            => (repo, Parent, name, IsHead) = (parent.LibGitRepo, parent, branch.FriendlyName, branch.IsCurrentRepositoryHead);
 
         private void Checkout() {
             repo.Reset(ResetMode.Hard);
-            Commands.Checkout(repo, Name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
+            Commands.Checkout(repo, name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
             repo.RemoveUntrackedFiles();
 
             Snackbar.Show("branch switched");
@@ -50,11 +53,23 @@
             var (ok, target) = await Dialog.Show(new EnterNewBranchName(), vm => vm.BranchName);
             if (!ok) return;
 
-            _ = repo.CreateBranch(branchName: target, Name);
+            _ = repo.CreateBranch(branchName: target, name);
 
             Snackbar.Show("branch created");
 
             Events.RaiseBranchesChanged();
+        }
+
+        private async void Rename() {
+            var (ok, newName) = await Dialog.Show(
+                new EnterNewBranchName(oldName: name),
+                vm => vm.BranchName);
+            if (!ok) return;
+
+            _ = repo.Branches.Rename(name, newName);
+            Name = newName.NotNull();
+
+            Snackbar.Show("branch renamed");
         }
     }
 }

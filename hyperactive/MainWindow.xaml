@@ -261,7 +261,7 @@
             <Run Text="select branch to merge into " /><Run
               FontFamily="Consolas"
               Foreground="{DynamicResource SecondaryHueMidBrush}"
-              Text="{Binding Target.Name, Mode=OneWay}" /><Run Text=":" />
+              Text="{Binding Target.Name, Mode=OneTime}" /><Run Text=":" />
           </TextBlock>
 
           <ComboBox
@@ -312,7 +312,7 @@
             <Run Text="select commit to merge into " /><Run
               FontFamily="Consolas"
               Foreground="{DynamicResource SecondaryHueMidBrush}"
-              Text="{Binding MergeTarget.Name, Mode=OneWay}" /><Run Text=":" />
+              Text="{Binding MergeTarget.Name, Mode=OneTime}" /><Run Text=":" />
           </TextBlock>
 
           <matex:Autocomplete
@@ -583,7 +583,7 @@
                       <Button.ToolTip>
                         <TextBlock>
                           <Run Text="checkout" />
-                          <Run Text="{Binding Name, Mode=OneTime}" />
+                          <Run Text="{Binding Name, Mode=OneWay}" />
                         </TextBlock>
                       </Button.ToolTip>
                       <StackPanel Orientation="Horizontal">
@@ -592,7 +592,7 @@
                           Margin="8,0,0,0"
                           VerticalAlignment="Center"
                           Foreground="{DynamicResource MaterialDesignBody}"
-                          Text="{Binding Name, Mode=OneTime}" />
+                          Text="{Binding Name, Mode=OneWay}" />
                       </StackPanel>
                     </Button>
                   </DataTemplate>
@@ -692,7 +692,7 @@
                     <TextBlock
                       Foreground="{Binding IsHead, Converter={StaticResource IsHeadToHeaderBrushConv}}"
                       Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
-                      Text="{Binding Name}" />
+                      Text="{Binding Name, Mode=OneWay}" />
                   </StackPanel>
 
                   <StackPanel Grid.Column="1" Orientation="Horizontal">
@@ -773,7 +773,7 @@
 
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding Parent.RenameBranchCmd}"
+                          Command="{Binding RenameCmd}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           Style="{DynamicResource MaterialDesignFlatButton}"
