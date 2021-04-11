@@ -13,7 +13,7 @@
         public static void RaiseWTreeChanged(object? sender = null)
             => Instance.WTreeChanged?.Invoke(sender ?? Instance, EventArgs.Empty);
 
-        public static void RaiseWTreeAndBranchesChanged(object? sender = null)
+        public static void RaiseBranchesChanged(object? sender = null)
             => Instance.WTreeAndBranchesChanged?.Invoke(sender ?? Instance, EventArgs.Empty);
     }
 }

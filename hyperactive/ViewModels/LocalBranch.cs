@@ -40,7 +40,8 @@
 
             Snackbar.Show("branch switched");
 
-            Events.RaiseWTreeAndBranchesChanged();
+            Events.RaiseWTreeChanged();
+            Events.RaiseBranchesChanged();
         }
     }
 }
