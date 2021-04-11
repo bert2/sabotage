@@ -113,11 +113,14 @@
             .First();
 
         private static int ConflictedFirstUnchangedLast(ItemStatus a, ItemStatus b) => (a, b) switch {
-            (ItemStatus.Conflicted, _) => 1,
-            (_, ItemStatus.Conflicted) => -1,
-            (ItemStatus.Unchanged, _) => -1,
-            (_, ItemStatus.Unchanged) => 1,
-            (ItemStatus.Modified, ItemStatus.Modified) => 0,
+            (ItemStatus.Conflicted, _                    ) =>  1,
+            (_                    , ItemStatus.Conflicted) => -1,
+
+            (ItemStatus.Unchanged , _                    ) => -1,
+            (_                    , ItemStatus.Unchanged ) =>  1,
+
+            (ItemStatus.Modified  , ItemStatus.Modified  ) =>  0,
+
             _ => throw new InvalidOperationException($"Unexpected folder item status when comparing {a} vs {b}.")
         };
 

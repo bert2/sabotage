@@ -14,13 +14,13 @@
 
         public override ICommand NavigateCmd => new Command(Navigate);
 
-        public override ICommand CreateFolderCmd => new Command(() => throw new NotSupportedException());
+        public override ICommand CreateFolderCmd => new InvalidCommand();
 
-        public override ICommand CreateFileCmd => new Command(() => throw new NotSupportedException());
+        public override ICommand CreateFileCmd => new InvalidCommand();
 
-        public override ICommand RenameItemCmd => new Command(() => throw new NotSupportedException());
+        public override ICommand RenameItemCmd => new InvalidCommand();
 
-        public override ICommand DeleteItemCmd => new Command(() => throw new NotSupportedException());
+        public override ICommand DeleteItemCmd => new InvalidCommand();
 
         public ObjDbBranch(Repo parent, Branch branch) : base(parent, branch) {
             repoRoot = branch.Tip.Tree;

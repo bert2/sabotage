@@ -25,10 +25,19 @@
 
         public bool CanExecute(object? parameter) => true;
 
-        public void Execute(object? parameter) => execute(parameter is T t
-            ? t
-            : throw new InvalidOperationException($"Command parameter {parameter} must be of type {typeof(T).Name} and cannot be null."));
+        public void Execute(object? parameter)
+            => execute(parameter is T t
+                ? t
+                : throw new InvalidOperationException($"Command parameter {parameter} must be of type {typeof(T).Name} and cannot be null."));
 
         public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public class InvalidCommand : ICommand {
+        public event EventHandler? CanExecuteChanged;
+
+        public bool CanExecute(object? parameter) => false;
+
+        public void Execute(object? parameter) => throw new InvalidOperationException();
     }
 }
