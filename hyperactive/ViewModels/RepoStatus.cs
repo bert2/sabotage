@@ -6,8 +6,6 @@
     public enum WTreeStatus { Clean, Dirty, Conflicted }
 
     public class RepoStatus {
-        public string? Head { get; }
-
         public CurrentOperation CurrentOperation { get; }
 
         public WTreeStatus WTreeStatus { get; }
@@ -29,8 +27,6 @@
         public RepoStatus() { }
 
         public RepoStatus(Repository repo) {
-            Head = repo.Head.FriendlyName;
-
             CurrentOperation = repo.Info.CurrentOperation;
 
             var entries = repo.RetrieveStatus();

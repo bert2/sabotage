@@ -503,12 +503,14 @@
         <RowDefinition Height="*" />
       </Grid.RowDefinitions>
 
+      <!--  directory selection, branch counts, and status  -->
       <mat:Card
         Grid.Row="0"
         Margin="16"
         Padding="8"
         Background="{DynamicResource MaterialDesignPaper}">
         <StackPanel>
+          <!--  directory selection  -->
           <Grid>
             <Grid.ColumnDefinitions>
               <ColumnDefinition />
@@ -562,6 +564,7 @@
             </Button>
           </Grid>
 
+          <!--  branch counts & status  -->
           <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
             <mat:PopupBox IsEnabled="{Binding Repo.Branches.Length, Converter={StaticResource NotZeroConverter}}" PlacementMode="BottomAndAlignLeftEdges">
               <mat:PopupBox.ToggleContent>
@@ -643,7 +646,7 @@
               Margin="8,0,0,0"
               FontFamily="Consolas"
               Foreground="{Binding Repo.Status.WTreeStatus, Converter={StaticResource WTreeStatusToBrushConv}, Mode=OneWay}">
-              <Run Text="{Binding Repo.Status.Head, Mode=OneWay}" />
+              <Run Text="{Binding Repo.WTree.Name, Mode=OneWay}" />
               +<Run Text="{Binding Repo.Status.IdxAdd, Mode=OneWay}" />
               ~<Run Text="{Binding Repo.Status.IdxMod, Mode=OneWay}" />
               -<Run Text="{Binding Repo.Status.IdxDel, Mode=OneWay}" />
@@ -658,6 +661,7 @@
         </StackPanel>
       </mat:Card>
 
+      <!--  branches  -->
       <ItemsControl Grid.Row="1" ItemsSource="{Binding Repo.Branches}">
         <ItemsControl.ItemTemplate>
           <DataTemplate DataType="{x:Type local:LocalBranch}">
