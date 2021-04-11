@@ -575,7 +575,7 @@
                   <DataTemplate DataType="{x:Type local:IBranch}">
                     <Button
                       HorizontalContentAlignment="Left"
-                      Command="{Binding DataContext.Repo.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                      Command="{Binding Parent.CheckoutBranchCmd}"
                       CommandParameter="{Binding}"
                       Foreground="{DynamicResource PrimaryHueLightBrush}"
                       IsEnabled="{Binding IsHead, Converter={StaticResource NotConverter}}"
@@ -612,10 +612,10 @@
 
               <ItemsControl ItemsSource="{Binding Repo.RemoteBranches}">
                 <ItemsControl.ItemTemplate>
-                  <DataTemplate DataType="{x:Type sys:String}">
+                  <DataTemplate DataType="{x:Type local:RemoteBranch}">
                     <Button
                       HorizontalContentAlignment="Left"
-                      Command="{Binding DataContext.Repo.CheckoutRemoteBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                      Command="{Binding Repo.CheckoutRemoteBranchCmd}"
                       CommandParameter="{Binding}"
                       Foreground="{DynamicResource PrimaryHueLightBrush}"
                       Style="{DynamicResource MaterialDesignFlatButton}">
@@ -631,7 +631,7 @@
                           Margin="8,0,0,0"
                           VerticalAlignment="Center"
                           Foreground="{DynamicResource MaterialDesignBody}"
-                          Text="{Binding Mode=OneTime}" />
+                          Text="{Binding Name, Mode=OneTime}" />
                       </StackPanel>
                     </Button>
                   </DataTemplate>
@@ -698,7 +698,7 @@
 
                   <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button
-                      Command="{Binding DataContext.Repo.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                      Command="{Binding Parent.CheckoutBranchCmd}"
                       CommandParameter="{Binding}"
                       Content="{mat:PackIcon TrayArrowDown,
                                              Size=20}"
@@ -706,7 +706,7 @@
                       ToolTip="checkout this branch (discards all local changes and aborts failed merges)" />
 
                     <Button
-                      Command="{Binding DataContext.Repo.CommitCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                      Command="{Binding Parent.CommitCmd}"
                       Content="{mat:PackIcon ContentSave,
                                              Size=20}"
                       IsEnabled="{Binding IsHead}"
@@ -717,7 +717,7 @@
                       <StackPanel>
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding DataContext.Repo.CreateBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          Command="{Binding Parent.CreateBranchCmd}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           Style="{DynamicResource MaterialDesignFlatButton}"
@@ -736,7 +736,7 @@
 
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding DataContext.Repo.MergeBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          Command="{Binding Parent.MergeBranchCmd}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           IsEnabled="{Binding IsHead}"
@@ -754,7 +754,7 @@
 
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding DataContext.Repo.CherryPickCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          Command="{Binding Parent.CherryPickCmd}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           IsEnabled="{Binding IsHead}"
@@ -774,7 +774,7 @@
 
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding DataContext.Repo.RenameBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          Command="{Binding Parent.RenameBranchCmd}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           Style="{DynamicResource MaterialDesignFlatButton}"
@@ -791,7 +791,7 @@
 
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding DataContext.Repo.DeleteBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          Command="{Binding Parent.DeleteBranchCmd}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           IsEnabled="{Binding IsHead, Converter={StaticResource NotConverter}}"
@@ -868,7 +868,7 @@
                               </Style>
                             </ContentControl.Style>
                             <ContentControl.InputBindings>
-                              <MouseBinding Command="{Binding DataContext.NavigateCmd, RelativeSource={RelativeSource AncestorType=ItemsControl}}" MouseAction="LeftDoubleClick" />
+                              <MouseBinding Command="{Binding Parent.NavigateCmd}" MouseAction="LeftDoubleClick" />
                             </ContentControl.InputBindings>
                           </ContentControl>
                         </DataTemplate>

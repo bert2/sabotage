@@ -10,7 +10,7 @@
     public sealed class Repo : ViewModel, IDisposable {
         public static Repo? Instance { get; private set; } // TODO: refactor
 
-        public string Directory { get; } // TODO: refactor to private field named path?
+        public string Path { get; }
 
         public Repository LibGitRepo { get; }
 
@@ -20,14 +20,14 @@
         private IBranch[] branches = null!;
         public IBranch[] Branches { get => branches; private set => SetProp(ref branches, value); }
 
-        private string[] remoteBranches = null!;
-        public string[] RemoteBranches { get => remoteBranches; private set => SetProp(ref remoteBranches, value); }
+        private RemoteBranch[] remoteBranches = null!;
+        public RemoteBranch[] RemoteBranches { get => remoteBranches; private set => SetProp(ref remoteBranches, value); }
 
         public WTreeBranch WTree => Branches.OfType<WTreeBranch>().Single();
 
         public ICommand CheckoutBranchCmd => new Command<IBranch>(CheckoutBranch);
 
-        public ICommand CheckoutRemoteBranchCmd => new Command<string>(CheckoutRemoteBranch);
+        public ICommand CheckoutRemoteBranchCmd => new Command<RemoteBranch>(CheckoutRemoteBranch);
 
         public ICommand CommitCmd => new Command(Commit);
 
@@ -42,7 +42,7 @@
         public ICommand DeleteBranchCmd => new Command<IBranch>(DeleteBranch);
 
         public Repo(string path) {
-            Directory = path;
+            Path = path;
             LibGitRepo = new Repository(path);
             LoadRepositoryData();
             WeakEventManager<Events, EventArgs>.AddHandler(
@@ -59,9 +59,9 @@
                 .Branches
                 .Where(b => !b.IsRemote)
                 .Select(b => b.IsCurrentRepositoryHead
-                    ? new WTreeBranch(Directory, b)
-                    : (IBranch)new ObjDbBranch(b))
-                .OrderBy(b => b.Name, Comparer<string>.Create(DevelopFirstMainLast))
+                    ? new WTreeBranch(this, b)
+                    : (IBranch)new ObjDbBranch(this, b))
+                .OrderBy(b => b.Name, sortDevelopFirstMainLast)
                 .ToArray();
 
             RemoteBranches = LibGitRepo
@@ -69,8 +69,8 @@
                 .Where(b
                     => b.IsRemote
                     && b.Reference is DirectReference) // skips refs like "remotes/origin/HEAD -> origin/master"
-                .Select(b => b.FriendlyName)
-                .OrderBy(b => b, Comparer<string>.Create(DevelopFirstMainLast))
+                .Select(b => new RemoteBranch(this, b.FriendlyName))
+                .OrderBy(b => b.Name, sortDevelopFirstMainLast)
                 .ToArray();
         }
 
@@ -89,8 +89,8 @@
             LoadRepositoryData();
         }
 
-        private void CheckoutRemoteBranch(string remoteBranchName) {
-            var remoteBranch = LibGitRepo.Branches[remoteBranchName].NotNull();
+        private void CheckoutRemoteBranch(RemoteBranch remoteBranch_) {
+            var remoteBranch = LibGitRepo.Branches[remoteBranch_.Name].NotNull();
             var localBranchName = remoteBranch.FriendlyNameWithoutRemote();
 
             var localBranch = LibGitRepo.Branches[localBranchName]
@@ -200,14 +200,16 @@
             LoadRepositoryData();
         }
 
-        private int DevelopFirstMainLast(string branch1, string branch2) => (branch1, branch2) switch {
-            ("main", _)    => 1,
+        private static readonly IComparer<string> sortDevelopFirstMainLast = Comparer<string>.Create(DevelopFirstMainLast);
+
+        private static int DevelopFirstMainLast(string branch1, string branch2) => (branch1, branch2) switch {
+            ("main", _)    =>  1,
             (_, "main")    => -1,
-            ("master", _)  => 1,
+            ("master", _)  =>  1,
             (_, "master")  => -1,
 
             ("develop", _) => -1,
-            (_, "develop") => 1,
+            (_, "develop") =>  1,
 
             (_, _)         => branch1.CompareTo(branch2)
         };

@@ -4,6 +4,8 @@
     public enum ItemStatus { Unchanged, Added, Modified, Conflicted, Ignored }
 
     public interface IDirectoryItem {
+        public IBranch Parent { get; }
+
         public string Name { get; }
 
         public ItemType Type { get; }

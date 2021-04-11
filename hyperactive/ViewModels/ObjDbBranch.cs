@@ -12,6 +12,8 @@
     public class ObjDbBranch : ViewModel, IBranch {
         private readonly Tree repoRoot;
 
+        public Repo Parent { get; }
+
         public string Name { get; }
 
         public bool IsHead { get; }
@@ -32,7 +34,8 @@
 
         public ICommand DeleteItemCmd => new Command(() => throw new NotSupportedException());
 
-        public ObjDbBranch(Branch branch) {
+        public ObjDbBranch(Repo parent, Branch branch) {
+            Parent = parent;
             repoRoot = branch.Tip.Tree;
             Name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
@@ -46,19 +49,19 @@
                 CurrentDirectory = OpenFolder((ObjDbDirectoryItem)SelectedItem);
         }
 
-        private static ObjDbDirectoryItem[] OpenRootFolder(Tree root)
-            => OpenFolder(new ObjDbDirectoryItem(name: "(root)", gitObject: root, parent: null));
+        private ObjDbDirectoryItem[] OpenRootFolder(Tree root)
+            => OpenFolder(new ObjDbDirectoryItem(this, name: "(root)", gitObject: root, parentItem: null));
 
-        private static ObjDbDirectoryItem[] OpenFolder(ObjDbDirectoryItem folder) => folder
+        private ObjDbDirectoryItem[] OpenFolder(ObjDbDirectoryItem folder) => folder
             .GitObject
             .Peel<Tree>()
             .Where(item => item.TargetType is TreeEntryTargetType.Blob or TreeEntryTargetType.Tree)
             .OrderBy(item => item, Comparer<TreeEntry>.Create(DirectoriesFirst))
-            .Select(item => new ObjDbDirectoryItem(item, parent: folder))
+            .Select(item => new ObjDbDirectoryItem(this, item, parentItem: folder))
             .Insert(
                 folder.IsRoot
                     ? Enumerable.Empty<ObjDbDirectoryItem>()
-                    : new[] { new ObjDbDirectoryItem("[ .. ]", folder.Parent.GitObject, folder.Parent.Parent) },
+                    : new[] { new ObjDbDirectoryItem(this, "[ .. ]", folder.ParentItem.GitObject, folder.ParentItem.ParentItem) },
                 index: 0)
             .ToArray();
 

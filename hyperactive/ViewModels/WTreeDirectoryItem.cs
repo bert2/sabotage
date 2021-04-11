@@ -1,7 +1,6 @@
 ﻿namespace hyperactive {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
 
@@ -11,6 +10,8 @@
 
     public class WTreeDirectoryItem: ViewModel, IDirectoryItem {
         private readonly bool isVirtual;
+
+        public IBranch Parent { get; }
 
         public string Name { get; }
 
@@ -38,12 +39,12 @@
 
         public bool ReadOnly { get; } = false;
 
-        public WTreeDirectoryItem(FileSystemInfo fsi)
-            => (Name, Path, Type, isVirtual) = (fsi.Name, fsi.FullName, GetItemType(fsi), false);
+        public WTreeDirectoryItem(WTreeBranch parent, FileSystemInfo fsi)
+            => (Parent, Name, Path, Type, isVirtual) = (parent, fsi.Name, fsi.FullName, GetItemType(fsi), false);
 
         /// <summary>Used to create the "[..]" entry that navigates backwards.</summary>
-        public WTreeDirectoryItem(string name, string path)
-            => (Name, Path, Type, isVirtual) = (name, path, ItemType.Folder, true);
+        public WTreeDirectoryItem(WTreeBranch parent, string name, string path)
+            => (Parent, Name, Path, Type, isVirtual) = (parent, name, path, ItemType.Folder, true);
 
         private static ItemType GetItemType(FileSystemInfo fsi)
             => (fsi.Attributes & FileAttributes.Directory) != 0
@@ -121,7 +122,7 @@
         };
 
         private static string GetRelativeGitPath(string path) => System.IO.Path
-            .GetRelativePath(Repo.Instance.NotNull().Directory.NotNull(), path)
+            .GetRelativePath(Repo.Instance.NotNull().Path.NotNull(), path)
             .Replace('\\', '/');
     }
 }

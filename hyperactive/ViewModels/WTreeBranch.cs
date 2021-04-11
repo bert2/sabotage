@@ -3,7 +3,6 @@
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
-    using System.Windows;
     using System.Windows.Input;
 
     using LibGit2Sharp;
@@ -12,6 +11,8 @@
 
     public class WTreeBranch : ViewModel, IBranch {
         private readonly string repoRootPath;
+
+        public Repo Parent { get; }
 
         public string CurrentPath { get; private set; }
 
@@ -37,8 +38,9 @@
 
         public ICommand DeleteItemCmd => new Command(DeleteItem);
 
-        public WTreeBranch(string repoDirectory, Branch branch) {
-            repoRootPath = Path.TrimEndingDirectorySeparator(repoDirectory);
+        public WTreeBranch(Repo parent, Branch branch) {
+            Parent = parent;
+            repoRootPath = Path.TrimEndingDirectorySeparator(parent.Path);
             CurrentPath = repoRootPath;
             Name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
@@ -63,10 +65,10 @@
             .EnumerateFileSystemInfos()
             .Where(item => item.Name != ".git")
             .OrderBy(item => item, Comparer<FileSystemInfo>.Create(DirectoriesFirst))
-            .Select(item => new WTreeDirectoryItem(item))
+            .Select(item => new WTreeDirectoryItem(this, item))
             .Insert(
                 folder.FullName.IsSubPathOf(repoRootPath)
-                    ? new[] { new WTreeDirectoryItem("[ .. ]", folder.Parent!.FullName) }
+                    ? new[] { new WTreeDirectoryItem(this, "[ .. ]", folder.Parent!.FullName) }
                     : Enumerable.Empty<WTreeDirectoryItem>(),
                 index: 0)
             .ToArray();

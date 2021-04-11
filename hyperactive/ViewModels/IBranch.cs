@@ -2,6 +2,8 @@
     using System.Windows.Input;
 
     public interface IBranch {
+        public Repo Parent { get; }
+
         public string Name { get; }
 
         public bool IsHead { get; }
