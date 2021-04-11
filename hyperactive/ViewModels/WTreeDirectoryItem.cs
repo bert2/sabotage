@@ -31,7 +31,7 @@
             set {
                 if (SetProp(ref content, value)) {
                     File.WriteAllText(Path, value);
-                    Events.RaiseWorkingTreeChanged();
+                    Events.RaiseWTreeChanged();
                     SetProp(ref status, null, nameof(Status));
                 }
             }

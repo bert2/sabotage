@@ -615,8 +615,7 @@
                   <DataTemplate DataType="{x:Type local:RemoteBranch}">
                     <Button
                       HorizontalContentAlignment="Left"
-                      Command="{Binding Repo.CheckoutRemoteBranchCmd}"
-                      CommandParameter="{Binding}"
+                      Command="{Binding CheckoutCmd}"
                       Foreground="{DynamicResource PrimaryHueLightBrush}"
                       Style="{DynamicResource MaterialDesignFlatButton}">
                       <Button.ToolTip>

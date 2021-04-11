@@ -27,8 +27,6 @@
 
         public ICommand CheckoutBranchCmd => new Command<IBranch>(CheckoutBranch);
 
-        public ICommand CheckoutRemoteBranchCmd => new Command<RemoteBranch>(CheckoutRemoteBranch);
-
         public ICommand CommitCmd => new Command(Commit);
 
         public ICommand CreateBranchCmd => new Command<IBranch>(CreateBranch);
@@ -45,17 +43,25 @@
             Path = path;
             LibGitRepo = new Repository(path);
             LoadRepositoryData();
+
             WeakEventManager<Events, EventArgs>.AddHandler(
-                Events.Instance,
-                nameof(Events.WorkingTreeChanged),
-                (_, __) => Status = new(LibGitRepo));
+                Events.Instance, nameof(Events.WTreeChanged), (_, __) => LoadStatus());
+            WeakEventManager<Events, EventArgs>.AddHandler(
+                Events.Instance, nameof(Events.WTreeAndBranchesChanged), (_, __) => { LoadStatus(); LoadLocalBranches(); });
+
             Instance = this; // TODO: refactor
         }
 
         private void LoadRepositoryData() {
-            Status = new(LibGitRepo);
+            LoadStatus();
+            LoadLocalBranches();
+            LoadRemoteBranches();
+        }
 
-            Branches = LibGitRepo
+        private void LoadStatus() => Status = new(LibGitRepo);
+
+        private void LoadLocalBranches()
+            => Branches = LibGitRepo
                 .Branches
                 .Where(b => !b.IsRemote)
                 .Select(b => b.IsCurrentRepositoryHead
@@ -64,7 +70,8 @@
                 .OrderBy(b => b.Name, sortDevelopFirstMainLast)
                 .ToArray();
 
-            RemoteBranches = LibGitRepo
+        private void LoadRemoteBranches()
+            => RemoteBranches = LibGitRepo
                 .Branches
                 .Where(b
                     => b.IsRemote
@@ -72,7 +79,6 @@
                 .Select(b => new RemoteBranch(this, b.FriendlyName))
                 .OrderBy(b => b.Name, sortDevelopFirstMainLast)
                 .ToArray();
-        }
 
         public void Dispose() {
             LibGitRepo.Dispose();
@@ -85,24 +91,6 @@
             LibGitRepo.RemoveUntrackedFiles();
 
             Snackbar.Show("branch switched");
-
-            LoadRepositoryData();
-        }
-
-        private void CheckoutRemoteBranch(RemoteBranch remoteBranch_) {
-            var remoteBranch = LibGitRepo.Branches[remoteBranch_.Name].NotNull();
-            var localBranchName = remoteBranch.FriendlyNameWithoutRemote();
-
-            var localBranch = LibGitRepo.Branches[localBranchName]
-                ?? LibGitRepo.CreateBranch(localBranchName, remoteBranch.Tip);
-
-            _ = LibGitRepo.Branches.Update(localBranch, b => b.TrackedBranch = remoteBranch.CanonicalName);
-
-            LibGitRepo.Reset(ResetMode.Hard);
-            Commands.Checkout(LibGitRepo, localBranch, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
-            LibGitRepo.RemoveUntrackedFiles();
-
-            Snackbar.Show("remote branch checked out");
 
             LoadRepositoryData();
         }

@@ -4,11 +4,16 @@
     public sealed class Events {
         public static Events Instance { get; } = new Events();
 
-        public event EventHandler<EventArgs>? WorkingTreeChanged;
+        public event EventHandler<EventArgs>? WTreeChanged;
+
+        public event EventHandler<EventArgs>? WTreeAndBranchesChanged;
 
         private Events() { }
 
-        public static void RaiseWorkingTreeChanged(object? sender = null)
-            => Instance.WorkingTreeChanged?.Invoke(sender ?? Instance, EventArgs.Empty);
+        public static void RaiseWTreeChanged(object? sender = null)
+            => Instance.WTreeChanged?.Invoke(sender ?? Instance, EventArgs.Empty);
+
+        public static void RaiseWTreeAndBranchesChanged(object? sender = null)
+            => Instance.WTreeAndBranchesChanged?.Invoke(sender ?? Instance, EventArgs.Empty);
     }
 }
