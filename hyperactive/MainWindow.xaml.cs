@@ -6,7 +6,7 @@
     public partial class MainWindow : MaterialWindow {
         public MainWindow() {
             InitializeComponent();
-            DataContext = new Repo();
+            DataContext = new Main();
         }
 
         private void UpdateTextBoxBindingOnReturn(object sender, System.Windows.Input.KeyEventArgs e) {

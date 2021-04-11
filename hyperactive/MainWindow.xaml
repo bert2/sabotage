@@ -13,7 +13,7 @@
   Title="  hyperactive"
   Width="1024"
   Height="768"
-  d:DataContext="{d:DesignInstance Type=local:Repo,
+  d:DataContext="{d:DesignInstance Type=local:Main,
                                    IsDesignTimeCreatable=True}"
   Background="{DynamicResource MaterialDesignToolBarBackground}"
   BorderBackgroundBrush="{DynamicResource MaterialDesignToolBarBackground}"
@@ -556,26 +556,26 @@
                     Converter="{StaticResource NotConverter}"
                     ElementName="txtDirectory"
                     Path="(Validation.HasError)" />
-                  <Binding Path="IsLoaded" />
+                  <Binding Converter="{StaticResource NullToFalseConv}" Path="Repo" />
                 </MultiBinding>
               </Button.IsEnabled>
             </Button>
           </Grid>
 
           <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
-            <mat:PopupBox IsEnabled="{Binding Branches.Length, Converter={StaticResource NotZeroConverter}}" PlacementMode="BottomAndAlignLeftEdges">
+            <mat:PopupBox IsEnabled="{Binding Repo.Branches.Length, Converter={StaticResource NotZeroConverter}}" PlacementMode="BottomAndAlignLeftEdges">
               <mat:PopupBox.ToggleContent>
-                <mat:Badged Badge="{Binding Branches.Length}">
+                <mat:Badged Badge="{Binding Repo.Branches.Length}">
                   <TextBlock Foreground="{DynamicResource MaterialDesignBody}" Text="local branches   " />
                 </mat:Badged>
               </mat:PopupBox.ToggleContent>
 
-              <ItemsControl ItemsSource="{Binding Branches}">
+              <ItemsControl ItemsSource="{Binding Repo.Branches}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate DataType="{x:Type local:IBranch}">
                     <Button
                       HorizontalContentAlignment="Left"
-                      Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                      Command="{Binding DataContext.Repo.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                       CommandParameter="{Binding}"
                       Foreground="{DynamicResource PrimaryHueLightBrush}"
                       IsEnabled="{Binding IsHead, Converter={StaticResource NotConverter}}"
@@ -602,20 +602,20 @@
 
             <mat:PopupBox
               Margin="32,0,0,0"
-              IsEnabled="{Binding RemoteBranches.Length, Converter={StaticResource NotZeroConverter}}"
+              IsEnabled="{Binding Repo.RemoteBranches.Length, Converter={StaticResource NotZeroConverter}}"
               PlacementMode="BottomAndAlignLeftEdges">
               <mat:PopupBox.ToggleContent>
-                <mat:Badged Badge="{Binding RemoteBranches.Length}">
+                <mat:Badged Badge="{Binding Repo.RemoteBranches.Length}">
                   <TextBlock Foreground="{DynamicResource MaterialDesignBody}" Text="remote branches   " />
                 </mat:Badged>
               </mat:PopupBox.ToggleContent>
 
-              <ItemsControl ItemsSource="{Binding RemoteBranches}">
+              <ItemsControl ItemsSource="{Binding Repo.RemoteBranches}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate DataType="{x:Type sys:String}">
                     <Button
                       HorizontalContentAlignment="Left"
-                      Command="{Binding DataContext.CheckoutRemoteBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                      Command="{Binding DataContext.Repo.CheckoutRemoteBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                       CommandParameter="{Binding}"
                       Foreground="{DynamicResource PrimaryHueLightBrush}"
                       Style="{DynamicResource MaterialDesignFlatButton}">
@@ -643,33 +643,23 @@
             <TextBlock
               Margin="8,0,0,0"
               FontFamily="Consolas"
-              Foreground="{Binding Status.WTreeStatus, Converter={StaticResource WTreeStatusToBrushConv}, Mode=OneWay}">
-              <Run Text="{Binding Status.Head, Mode=OneWay}" />
-              +<Run Text="{Binding Status.IdxAdd, Mode=OneWay}" />
-              ~<Run Text="{Binding Status.IdxMod, Mode=OneWay}" />
-              -<Run Text="{Binding Status.IdxDel, Mode=OneWay}" />
+              Foreground="{Binding Repo.Status.WTreeStatus, Converter={StaticResource WTreeStatusToBrushConv}, Mode=OneWay}">
+              <Run Text="{Binding Repo.Status.Head, Mode=OneWay}" />
+              +<Run Text="{Binding Repo.Status.IdxAdd, Mode=OneWay}" />
+              ~<Run Text="{Binding Repo.Status.IdxMod, Mode=OneWay}" />
+              -<Run Text="{Binding Repo.Status.IdxDel, Mode=OneWay}" />
               |
-              +<Run Text="{Binding Status.WdirAdd, Mode=OneWay}" />
-              ~<Run Text="{Binding Status.WdirMod, Mode=OneWay}" />
-              -<Run Text="{Binding Status.WdirDel, Mode=OneWay}" />
-              !<Run Text="{Binding Status.WdirCon, Mode=OneWay}" />
+              +<Run Text="{Binding Repo.Status.WdirAdd, Mode=OneWay}" />
+              ~<Run Text="{Binding Repo.Status.WdirMod, Mode=OneWay}" />
+              -<Run Text="{Binding Repo.Status.WdirDel, Mode=OneWay}" />
+              !<Run Text="{Binding Repo.Status.WdirCon, Mode=OneWay}" />
             </TextBlock>
-            <TextBlock Margin="8,0,0,0" Text="{Binding Status.CurrentOperation, Mode=OneWay, Converter={StaticResource CurrOpToTextConv}}" />
+            <TextBlock Margin="8,0,0,0" Text="{Binding Repo.Status.CurrentOperation, Mode=OneWay, Converter={StaticResource CurrOpToTextConv}}" />
           </StackPanel>
         </StackPanel>
       </mat:Card>
 
-      <ItemsControl Grid.Row="1" ItemsSource="{Binding Branches}">
-        <ItemsControl.IsEnabled>
-          <MultiBinding Converter="{StaticResource AndConv}">
-            <Binding
-              Converter="{StaticResource NotConverter}"
-              ElementName="txtDirectory"
-              Path="(Validation.HasError)" />
-            <Binding Path="IsLoaded" />
-          </MultiBinding>
-        </ItemsControl.IsEnabled>
-
+      <ItemsControl Grid.Row="1" ItemsSource="{Binding Repo.Branches}">
         <ItemsControl.ItemTemplate>
           <DataTemplate DataType="{x:Type local:IBranch}">
             <mat:Card
@@ -708,7 +698,7 @@
 
                   <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button
-                      Command="{Binding DataContext.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                      Command="{Binding DataContext.Repo.CheckoutBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                       CommandParameter="{Binding}"
                       Content="{mat:PackIcon TrayArrowDown,
                                              Size=20}"
@@ -716,7 +706,7 @@
                       ToolTip="checkout this branch (discards all local changes and aborts failed merges)" />
 
                     <Button
-                      Command="{Binding DataContext.CommitCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                      Command="{Binding DataContext.Repo.CommitCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                       Content="{mat:PackIcon ContentSave,
                                              Size=20}"
                       IsEnabled="{Binding IsHead}"
@@ -727,7 +717,7 @@
                       <StackPanel>
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding DataContext.CreateBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          Command="{Binding DataContext.Repo.CreateBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           Style="{DynamicResource MaterialDesignFlatButton}"
@@ -746,7 +736,7 @@
 
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding DataContext.MergeBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          Command="{Binding DataContext.Repo.MergeBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           IsEnabled="{Binding IsHead}"
@@ -764,7 +754,7 @@
 
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding DataContext.CherryPickCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          Command="{Binding DataContext.Repo.CherryPickCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           IsEnabled="{Binding IsHead}"
@@ -784,7 +774,7 @@
 
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding DataContext.RenameBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          Command="{Binding DataContext.Repo.RenameBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           Style="{DynamicResource MaterialDesignFlatButton}"
@@ -801,7 +791,7 @@
 
                         <Button
                           HorizontalContentAlignment="Left"
-                          Command="{Binding DataContext.DeleteBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
+                          Command="{Binding DataContext.Repo.DeleteBranchCmd, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"
                           CommandParameter="{Binding}"
                           Foreground="{DynamicResource PrimaryHueLightBrush}"
                           IsEnabled="{Binding IsHead, Converter={StaticResource NotConverter}}"
@@ -932,7 +922,6 @@
                         </Button.IsEnabled>
                       </Button>
                     </ToolBar>
-
                   </Grid>
                 </Border>
 

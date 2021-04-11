@@ -1,47 +1,29 @@
 ﻿namespace hyperactive {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
     using System.Linq;
-    using System.Threading.Tasks;
     using System.Windows;
-    using System.Windows.Forms;
     using System.Windows.Input;
 
     using LibGit2Sharp;
 
-    public class Repo : ViewModel {
-        private string? directory = @"D:\DEV\git-conflicts"; // TODO: remove test value
-        public string? Directory {
-            get => directory;
-            set {
-                if (SetProp(ref directory, value))
-                    LoadRepository();
-            }
-        }
+    public sealed class Repo : ViewModel, IDisposable {
+        public static Repo? Instance { get; private set; } // TODO: refactor
 
-        public Repository? LibGitRepo { get; private set; }
+        public string Directory { get; } // TODO: refactor to private field named path?
 
-        public static Repo? Instance { get; private set; }
+        public Repository LibGitRepo { get; }
 
         private RepoStatus status = new();
         public RepoStatus Status { get => status; private set => SetProp(ref status, value); }
 
-        private IBranch[]? branches;
-        public IBranch[]? Branches { get => branches; private set => SetProp(ref branches, value); }
+        private IBranch[] branches = null!;
+        public IBranch[] Branches { get => branches; private set => SetProp(ref branches, value); }
 
-        private string[]? remoteBranches;
-        public string[]? RemoteBranches { get => remoteBranches; private set => SetProp(ref remoteBranches, value); }
+        private string[] remoteBranches = null!;
+        public string[] RemoteBranches { get => remoteBranches; private set => SetProp(ref remoteBranches, value); }
 
-        private bool isLoaded;
-        public bool IsLoaded { get => isLoaded; private set => SetProp(ref isLoaded, value); }
-
-        public WTreeBranch? WTree => Branches?.OfType<WTreeBranch>().Single();
-
-        public ICommand SelectDirectoryCmd => new Command(SelectDirectory);
-
-        public ICommand LoadRepositoryCmd => new Command(LoadRepository);
+        public WTreeBranch WTree => Branches.OfType<WTreeBranch>().Single();
 
         public ICommand CheckoutBranchCmd => new Command<IBranch>(CheckoutBranch);
 
@@ -59,49 +41,55 @@
 
         public ICommand DeleteBranchCmd => new Command<IBranch>(DeleteBranch);
 
-        public Repo() {
-            WeakEventManager<Events, EventArgs>.AddHandler(Events.Instance, nameof(Events.WorkingTreeChanged), RefreshStatus);
-            Instance = this;
-            LoadRepository(); // TODO: remove test code
+        public Repo(string path) {
+            Directory = path;
+            LibGitRepo = new Repository(path);
+            LoadRepositoryData();
+            WeakEventManager<Events, EventArgs>.AddHandler(
+                Events.Instance,
+                nameof(Events.WorkingTreeChanged),
+                (_, __) => Status = new(LibGitRepo));
+            Instance = this; // TODO: refactor
         }
 
-        private async void SelectDirectory() {
-            using var dialog = new FolderBrowserDialog {
-                Description = "Select Git Repository",
-                UseDescriptionForTitle = true,
-                SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + Path.DirectorySeparatorChar,
-                ShowNewFolderButton = false
-            };
+        private void LoadRepositoryData() {
+            Status = new(LibGitRepo);
 
-            if (dialog.ShowDialog() != DialogResult.OK) return;
+            Branches = LibGitRepo
+                .Branches
+                .Where(b => !b.IsRemote)
+                .Select(b => b.IsCurrentRepositoryHead
+                    ? new WTreeBranch(Directory, b)
+                    : (IBranch)new ObjDbBranch(b))
+                .OrderBy(b => b.Name, Comparer<string>.Create(DevelopFirstMainLast))
+                .ToArray();
 
-            if (Repository.IsValid(dialog.SelectedPath))
-                Directory = dialog.SelectedPath;
-            else
-                await Dialog.Show(new Error("not a git repository", details: dialog.SelectedPath));
+            RemoteBranches = LibGitRepo
+                .Branches
+                .Where(b
+                    => b.IsRemote
+                    && b.Reference is DirectReference) // skips refs like "remotes/origin/HEAD -> origin/master"
+                .Select(b => b.FriendlyName)
+                .OrderBy(b => b, Comparer<string>.Create(DevelopFirstMainLast))
+                .ToArray();
         }
 
-        private async void LoadRepository() {
-            Cleanup();
-            LibGitRepo = new Repository(Directory);
-            await LoadRepositoryData();
+        public void Dispose() {
+            LibGitRepo.Dispose();
+            Instance = null; // TODO: refactor
         }
 
-        private async void CheckoutBranch(IBranch branch) {
-            Debug.Assert(LibGitRepo is not null);
-
+        private void CheckoutBranch(IBranch branch) {
             LibGitRepo.Reset(ResetMode.Hard);
             Commands.Checkout(LibGitRepo, branch.Name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
             LibGitRepo.RemoveUntrackedFiles();
 
             Snackbar.Show("branch switched");
 
-            await LoadRepositoryData();
+            LoadRepositoryData();
         }
 
-        private async void CheckoutRemoteBranch(string remoteBranchName) {
-            Debug.Assert(LibGitRepo is not null);
-
+        private void CheckoutRemoteBranch(string remoteBranchName) {
             var remoteBranch = LibGitRepo.Branches[remoteBranchName].NotNull();
             var localBranchName = remoteBranch.FriendlyNameWithoutRemote();
 
@@ -116,28 +104,24 @@
 
             Snackbar.Show("remote branch checked out");
 
-            await LoadRepositoryData();
+            LoadRepositoryData();
         }
 
         private async void Commit() {
-            Debug.Assert(LibGitRepo is not null);
-
             var (ok, message) = await Dialog.Show(new EnterCommitMessage(), vm => vm.CommitMessage);
             if (!ok) return;
 
             Commands.Stage(LibGitRepo, "*");
 
-            var sig = CreateSignature(LibGitRepo);
+            var sig = CreateSignature();
             LibGitRepo.Commit(message, sig, sig);
 
             Snackbar.Show("local changes committed");
 
-            await LoadRepositoryData();
+            LoadRepositoryData();
         }
 
         private async void CreateBranch(IBranch source) {
-            Debug.Assert(LibGitRepo is not null);
-
             var (ok, target) = await Dialog.Show(new EnterNewBranchName(), vm => vm.BranchName);
             if (!ok) return;
 
@@ -145,21 +129,16 @@
 
             Snackbar.Show("branch created");
 
-            await LoadRepositoryData();
+            LoadRepositoryData();
         }
 
         private async void MergeBranch(IBranch target) {
-            Debug.Assert(LibGitRepo is not null);
-            Debug.Assert(Branches is not null);
-
             var (ok, source) = await Dialog.Show(
                 new SelectMergeSource(target, sources: Branches.Where(b => b.Name != target.Name)),
                 vm => vm.SelectedSource);
             if (!ok) return;
 
-            Debug.Assert(source is not null);
-            var sig = CreateSignature(LibGitRepo);
-            var merge = LibGitRepo.Merge(source.Name, sig);
+            var merge = LibGitRepo.Merge(source.NotNull().Name, CreateSignature());
 
             Snackbar.ShowImportant(merge.Status switch {
                 MergeStatus.NonFastForward => "merge succeeded",
@@ -169,12 +148,10 @@
                 _                          => $"merge result: {merge.Status}"
             });
 
-            await LoadRepositoryData();
+            LoadRepositoryData();
         }
 
         private async void CherryPick(IBranch mergeTarget) {
-            Debug.Assert(LibGitRepo is not null);
-
             var commits = LibGitRepo
                 .Commits
                 .QueryBy(new CommitFilter {
@@ -188,9 +165,7 @@
             var (ok, commit) = await Dialog.Show(new SelectCommit(mergeTarget, commits), vm => vm.SelectedCommit);
             if (!ok) return;
 
-            Debug.Assert(commit is not null);
-            var sig = CreateSignature(LibGitRepo);
-            var cherryPick = LibGitRepo.CherryPick(commit.GitObject, sig);
+            var cherryPick = LibGitRepo.CherryPick(commit.NotNull().GitObject, CreateSignature());
 
             Snackbar.ShowImportant(cherryPick.Status switch {
                 CherryPickStatus.CherryPicked => "cherry-pick succeeded",
@@ -198,12 +173,10 @@
                 _ => $"cherry-pick result: {cherryPick.Status}"
             });
 
-            await LoadRepositoryData();
+            LoadRepositoryData();
         }
 
         private async void RenameBranch(IBranch branch) {
-            Debug.Assert(LibGitRepo is not null);
-
             var (ok, newName) = await Dialog.Show(
                 new EnterNewBranchName(oldName: branch.Name),
                 vm => vm.BranchName);
@@ -213,12 +186,10 @@
 
             Snackbar.Show("branch renamed");
 
-            await LoadRepositoryData();
+            LoadRepositoryData();
         }
 
         private async void DeleteBranch(IBranch branch) {
-            Debug.Assert(LibGitRepo is not null);
-
             if (!await Dialog.Show(new Confirm(action: "delete branch", subject: branch.Name)))
                 return;
 
@@ -226,37 +197,7 @@
 
             Snackbar.Show("branch deleted");
 
-            await LoadRepositoryData();
-        }
-
-        private async void RefreshStatus(object? sender, EventArgs args) => await RefreshStatus();
-
-        private async Task RefreshStatus() => await Task.Run(() => Status = new(LibGitRepo!));
-
-        private async Task LoadRepositoryData() {
-            Debug.Assert(LibGitRepo is not null);
-
-            await RefreshStatus();
-
-            Branches = LibGitRepo
-                .Branches
-                .Where(b => !b.IsRemote)
-                .Select(b => b.IsCurrentRepositoryHead
-                    ? new WTreeBranch(Directory!, b)
-                    : (IBranch)new ObjDbBranch(b))
-                .OrderBy(b => b.Name, Comparer<string>.Create(DevelopFirstMainLast))
-                .ToArray();
-
-            RemoteBranches = LibGitRepo
-                .Branches
-                .Where(b
-                    => b.IsRemote
-                    && b.Reference is DirectReference) // skips refs like "remotes/origin/HEAD -> origin/master"
-                .Select(b => b.FriendlyName)
-                .OrderBy(b => b, Comparer<string>.Create(DevelopFirstMainLast))
-                .ToArray();
-
-            IsLoaded = true;
+            LoadRepositoryData();
         }
 
         private int DevelopFirstMainLast(string branch1, string branch2) => (branch1, branch2) switch {
@@ -271,14 +212,8 @@
             (_, _)         => branch1.CompareTo(branch2)
         };
 
-        private void Cleanup() {
-            Status = new();
-            Branches = Array.Empty<IBranch>();
-            LibGitRepo?.Dispose();
-        }
-
-        private static Signature CreateSignature(Repository repo) => repo
-            .Config.BuildSignature(DateTime.Now)
+        private Signature CreateSignature()
+            => LibGitRepo.Config.BuildSignature(DateTime.Now)
             ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
     }
 }
