@@ -29,6 +29,7 @@
 
             Events.RaiseWTreeCleared();
             Events.RaiseBranchesChanged();
+            Events.RaiseHeadChanged();
         }
     }
 }

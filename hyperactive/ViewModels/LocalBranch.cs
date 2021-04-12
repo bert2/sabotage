@@ -55,6 +55,7 @@
 
             Events.RaiseWTreeCleared();
             Events.RaiseBranchesChanged();
+            Events.RaiseHeadChanged();
         }
 
         private async void BranchOff() {
