@@ -104,7 +104,8 @@
                 _                          => $"merge result: {merge.Status}"
             });
 
-            LoadRepositoryData();
+            LoadStatus();
+            WTree.ReloadCurrentFolder();
         }
 
         private async void CherryPick(LocalBranch mergeTarget) {
@@ -129,7 +130,8 @@
                 _ => $"cherry-pick result: {cherryPick.Status}"
             });
 
-            LoadRepositoryData();
+            LoadStatus();
+            WTree.ReloadCurrentFolder();
         }
 
         private static readonly IComparer<string> sortDevelopFirstMainLast = Comparer<string>.Create(DevelopFirstMainLast);

@@ -34,12 +34,12 @@
             OpenFolder(repoRootPath);
         }
 
+        public void ReloadCurrentFolder() => CurrentDirectory = LoadFolder(new DirectoryInfo(CurrentPath));
+
         private void OpenFolder(string path) {
             CurrentDirectory = LoadFolder(new DirectoryInfo(path));
             CurrentPath = path;
         }
-
-        private void ReloadCurrentFolder() => CurrentDirectory = LoadFolder(new DirectoryInfo(CurrentPath));
 
         private WTreeDirectoryItem[] LoadFolder(DirectoryInfo folder) => folder
             .EnumerateFileSystemInfos()

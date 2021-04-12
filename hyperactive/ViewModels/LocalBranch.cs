@@ -51,7 +51,7 @@
             Commands.Checkout(repo, name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
             repo.RemoveUntrackedFiles();
 
-            Snackbar.Show("branch switched");
+            Snackbar.Show("branch checked out");
 
             Events.RaiseWTreeCleared();
             Events.RaiseBranchesChanged();
