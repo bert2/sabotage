@@ -8,7 +8,7 @@
 
     using MoreLinq;
 
-    public class WTreeDirectoryItem: ViewModel, IDirectoryItem {
+    public class WTreeItem: ViewModel, IDirectoryItem {
         // true when item is the "[..]" entry that navigates backwards
         private readonly bool isVirtual;
 
@@ -42,11 +42,11 @@
 
         public bool ReadOnly { get; } = false;
 
-        public WTreeDirectoryItem(WTreeBranch parent, FileSystemInfo fsi)
+        public WTreeItem(WTreeBranch parent, FileSystemInfo fsi)
             => (Parent, Name, Path, Type, isVirtual) = (parent, fsi.Name, fsi.FullName, GetItemType(fsi), false);
 
         // used to create the "[..]" entry that navigates backwards
-        public WTreeDirectoryItem(WTreeBranch parent, string name, string path)
+        public WTreeItem(WTreeBranch parent, string name, string path)
             => (Parent, Name, Path, Type, isVirtual) = (parent, name, path, ItemType.Folder, true);
 
         // will cause a new status retrieval next time the item is rendered

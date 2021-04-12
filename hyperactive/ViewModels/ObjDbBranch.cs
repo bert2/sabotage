@@ -30,19 +30,19 @@
             CurrentDirectory = OpenRootFolder(repoRoot);
         }
 
-        private ObjDbDirectoryItem[] OpenRootFolder(Tree root)
-            => OpenFolder(new ObjDbDirectoryItem(this, name: "(root)", gitObject: root, parentItem: null));
+        private ObjDbItem[] OpenRootFolder(Tree root)
+            => OpenFolder(new ObjDbItem(this, name: "(root)", gitObject: root, parentItem: null));
 
-        private ObjDbDirectoryItem[] OpenFolder(ObjDbDirectoryItem folder) => folder
+        private ObjDbItem[] OpenFolder(ObjDbItem folder) => folder
             .GitObject
             .Peel<Tree>()
             .Where(item => item.TargetType is TreeEntryTargetType.Blob or TreeEntryTargetType.Tree)
             .OrderBy(item => item, Comparer<TreeEntry>.Create(DirectoriesFirst))
-            .Select(item => new ObjDbDirectoryItem(this, item, parentItem: folder))
+            .Select(item => new ObjDbItem(this, item, parentItem: folder))
             .Insert(
                 folder.IsRoot
-                    ? Enumerable.Empty<ObjDbDirectoryItem>()
-                    : new[] { new ObjDbDirectoryItem(this, "[ .. ]", folder.ParentItem.GitObject, folder.ParentItem.ParentItem) },
+                    ? Enumerable.Empty<ObjDbItem>()
+                    : new[] { new ObjDbItem(this, "[ .. ]", folder.ParentItem.GitObject, folder.ParentItem.ParentItem) },
                 index: 0)
             .ToArray();
 
@@ -61,7 +61,7 @@
             Debug.Assert(SelectedItem is not null);
 
             if (SelectedItem.Type == ItemType.Folder)
-                CurrentDirectory = OpenFolder((ObjDbDirectoryItem)SelectedItem);
+                CurrentDirectory = OpenFolder((ObjDbItem)SelectedItem);
         }
 
         private static int DirectoriesFirst(TreeEntry a, TreeEntry b) => (a.Mode, b.Mode) switch {

@@ -13,8 +13,8 @@
 
         public Repository LibGitRepo { get; }
 
-        private RepoStatus status = new();
-        public RepoStatus Status { get => status; private set => SetProp(ref status, value); }
+        private Status status = new();
+        public Status Status { get => status; private set => SetProp(ref status, value); }
 
         private LocalBranch[] branches = null!;
         public LocalBranch[] Branches { get => branches; private set => SetProp(ref branches, value); }

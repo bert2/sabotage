@@ -41,15 +41,15 @@
             CurrentPath = path;
         }
 
-        private WTreeDirectoryItem[] LoadFolder(DirectoryInfo folder) => folder
+        private WTreeItem[] LoadFolder(DirectoryInfo folder) => folder
             .EnumerateFileSystemInfos()
             .Where(item => item.Name != ".git")
             .OrderBy(item => item, Comparer<FileSystemInfo>.Create(DirectoriesFirst))
-            .Select(item => new WTreeDirectoryItem(this, item))
+            .Select(item => new WTreeItem(this, item))
             .Insert(
                 folder.FullName.IsSubPathOf(repoRootPath)
-                    ? new[] { new WTreeDirectoryItem(this, "[ .. ]", folder.Parent!.FullName) }
-                    : Enumerable.Empty<WTreeDirectoryItem>(),
+                    ? new[] { new WTreeItem(this, "[ .. ]", folder.Parent!.FullName) }
+                    : Enumerable.Empty<WTreeItem>(),
                 index: 0)
             .ToArray();
 
@@ -65,12 +65,12 @@
             Snackbar.Show("local changes committed");
 
             Events.RaiseWTreeCleared();
-            CurrentDirectory.OfType<WTreeDirectoryItem>().ForEach(item => item.ResetStatus());
+            CurrentDirectory.OfType<WTreeItem>().ForEach(item => item.ResetStatus());
         }
 
         private void Navigate() {
             if (SelectedItem?.Type == ItemType.Folder)
-                OpenFolder(((WTreeDirectoryItem)SelectedItem).Path);
+                OpenFolder(((WTreeItem)SelectedItem).Path);
         }
 
         private async void CreateFolder() {

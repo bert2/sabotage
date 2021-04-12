@@ -5,7 +5,7 @@
 
     public enum WTreeStatus { Clean, Dirty, Conflicted }
 
-    public class RepoStatus {
+    public class Status {
         public CurrentOperation CurrentOperation { get; }
 
         public WTreeStatus WTreeStatus { get; }
@@ -24,9 +24,9 @@
 
         public int IdxDel { get; private set; }
 
-        public RepoStatus() { }
+        public Status() { }
 
-        public RepoStatus(Repository repo) {
+        public Status(Repository repo) {
             CurrentOperation = repo.Info.CurrentOperation;
 
             var entries = repo.RetrieveStatus();

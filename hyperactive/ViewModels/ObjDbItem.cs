@@ -4,7 +4,7 @@
 
     using LibGit2Sharp;
 
-    public class ObjDbDirectoryItem: IDirectoryItem {
+    public class ObjDbItem: IDirectoryItem {
         public LocalBranch Parent { get; }
 
         public string Name { get; }
@@ -23,16 +23,16 @@
 
         public bool ReadOnly { get; } = true;
 
-        public ObjDbDirectoryItem? ParentItem { get; }
+        public ObjDbItem? ParentItem { get; }
 
         [MemberNotNullWhen(false, nameof(ParentItem))]
         public bool IsRoot => ParentItem is null;
 
-        public ObjDbDirectoryItem(ObjDbBranch parent, TreeEntry entry, ObjDbDirectoryItem? parentItem)
+        public ObjDbItem(ObjDbBranch parent, TreeEntry entry, ObjDbItem? parentItem)
             => (Parent, Name, GitObject, Type, ParentItem) = (parent, entry.Name, entry.Target, GetItemType(entry), parentItem);
 
         // used to create the "[..]" entry that navigates backwards
-        public ObjDbDirectoryItem(ObjDbBranch parent, string name, GitObject gitObject, ObjDbDirectoryItem? parentItem)
+        public ObjDbItem(ObjDbBranch parent, string name, GitObject gitObject, ObjDbItem? parentItem)
             => (Parent, Name, GitObject, Type, ParentItem) = (parent, name, gitObject, ItemType.Folder, parentItem);
 
         private static ItemType GetItemType(TreeEntry entry) => entry.TargetType switch {
