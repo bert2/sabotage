@@ -943,6 +943,7 @@
                   FontFamily="Consolas"
                   HorizontalScrollBarVisibility="Auto"
                   IsReadOnly="{Binding SelectedItem.ReadOnly}"
+                  LostFocus="UpdateTextBoxBindingOnLeave"
                   Style="{StaticResource MaterialDesignOutlinedTextBox}"
                   Text="{Binding SelectedItem.Content, UpdateSourceTrigger=PropertyChanged, Delay=1000}"
                   TextWrapping="NoWrap"
