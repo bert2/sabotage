@@ -5,21 +5,25 @@
     public class Command : ICommand {
         private readonly Action execute;
 
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged {
+            add => throw new NotSupportedException();
+            remove => throw new NotSupportedException();
+        }
 
         public Command(Action execute) => this.execute = execute;
 
         public bool CanExecute(object? parameter) => true;
 
         public void Execute(object? parameter) => execute();
-
-        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public class Command<T> : ICommand {
         private readonly Action<T> execute;
 
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged {
+            add => throw new NotSupportedException();
+            remove => throw new NotSupportedException();
+        }
 
         public Command(Action<T> execute) => this.execute = execute;
 
@@ -29,12 +33,13 @@
             => execute(parameter is T t
                 ? t
                 : throw new InvalidOperationException($"Command parameter {parameter} must be of type {typeof(T).Name} and cannot be null."));
-
-        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public class InvalidCommand : ICommand {
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged {
+            add => throw new NotSupportedException();
+            remove => throw new NotSupportedException();
+        }
 
         public bool CanExecute(object? parameter) => false;
 
