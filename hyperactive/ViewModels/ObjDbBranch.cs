@@ -11,6 +11,8 @@
     public class ObjDbBranch : LocalBranch {
         private readonly Tree repoRoot;
 
+        public override ICommand CommitCmd => new InvalidCommand();
+
         public override ICommand DeleteCmd => new Command(Delete);
 
         public override ICommand NavigateCmd => new Command(Navigate);

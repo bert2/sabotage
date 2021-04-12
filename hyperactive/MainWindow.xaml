@@ -676,12 +676,14 @@
                   <RowDefinition Height="3*" />
                 </Grid.RowDefinitions>
 
+                <!--  branch header  -->
                 <Grid Grid.Row="0">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                   </Grid.ColumnDefinitions>
 
+                  <!--  branch name  -->
                   <StackPanel
                     Grid.Column="0"
                     Margin="8,0,0,0"
@@ -699,6 +701,7 @@
                       Text="{Binding Name, Mode=OneWay}" />
                   </StackPanel>
 
+                  <!--  branch actions  -->
                   <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button
                       Command="{Binding CheckoutCmd}"
@@ -709,7 +712,7 @@
                       ToolTip="checkout this branch (discards all local changes and aborts failed merges)" />
 
                     <Button
-                      Command="{Binding Parent.CommitCmd}"
+                      Command="{Binding CommitCmd}"
                       Content="{mat:PackIcon ContentSave,
                                              Size=20}"
                       IsEnabled="{Binding IsHead}"
@@ -814,6 +817,7 @@
                   </StackPanel>
                 </Grid>
 
+                <!--  directory view  -->
                 <Border
                   Grid.Row="1"
                   Margin="0,16,0,0"
@@ -928,6 +932,7 @@
                   </Grid>
                 </Border>
 
+                <!--  file editor  -->
                 <TextBox
                   Grid.Row="2"
                   Margin="0,16,0,0"

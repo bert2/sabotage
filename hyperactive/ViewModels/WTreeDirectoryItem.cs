@@ -31,8 +31,8 @@
             set {
                 if (SetProp(ref content, value)) {
                     File.WriteAllText(Path, value);
+                    RaiseStatusChanged();
                     Events.RaiseWTreeChanged();
-                    SetProp(ref status, null, nameof(Status));
                 }
             }
         }
@@ -45,6 +45,8 @@
         /// <summary>Used to create the "[..]" entry that navigates backwards.</summary>
         public WTreeDirectoryItem(WTreeBranch parent, string name, string path)
             => (Parent, Name, Path, Type, isVirtual) = (parent, name, path, ItemType.Folder, true);
+
+        public void RaiseStatusChanged() => SetProp(ref status, null, nameof(Status));
 
         private static ItemType GetItemType(FileSystemInfo fsi)
             => (fsi.Attributes & FileAttributes.Directory) != 0

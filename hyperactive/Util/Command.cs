@@ -5,10 +5,7 @@
     public class Command : ICommand {
         private readonly Action execute;
 
-        public event EventHandler? CanExecuteChanged {
-            add => throw new NotSupportedException();
-            remove => throw new NotSupportedException();
-        }
+        public event EventHandler? CanExecuteChanged { add { } remove { } }
 
         public Command(Action execute) => this.execute = execute;
 
@@ -20,10 +17,7 @@
     public class Command<T> : ICommand {
         private readonly Action<T> execute;
 
-        public event EventHandler? CanExecuteChanged {
-            add => throw new NotSupportedException();
-            remove => throw new NotSupportedException();
-        }
+        public event EventHandler? CanExecuteChanged { add { } remove { } }
 
         public Command(Action<T> execute) => this.execute = execute;
 
@@ -36,10 +30,7 @@
     }
 
     public class InvalidCommand : ICommand {
-        public event EventHandler? CanExecuteChanged {
-            add => throw new NotSupportedException();
-            remove => throw new NotSupportedException();
-        }
+        public event EventHandler? CanExecuteChanged { add { } remove { } }
 
         public bool CanExecute(object? parameter) => false;
 

@@ -14,6 +14,8 @@
 
         public string CurrentPath { get; private set; }
 
+        public override ICommand CommitCmd => new Command(Commit);
+
         public override ICommand DeleteCmd => new InvalidCommand();
 
         public override ICommand NavigateCmd => new Command(Navigate);
@@ -30,11 +32,6 @@
             repoRootPath = Path.TrimEndingDirectorySeparator(parent.Path);
             CurrentPath = repoRootPath;
             OpenFolder(repoRootPath);
-        }
-
-        private void Navigate() {
-            if (SelectedItem?.Type == ItemType.Folder)
-                OpenFolder(((WTreeDirectoryItem)SelectedItem).Path);
         }
 
         private void OpenFolder(string path) {
@@ -55,6 +52,26 @@
                     : Enumerable.Empty<WTreeDirectoryItem>(),
                 index: 0)
             .ToArray();
+
+        private async void Commit() {
+            var (ok, message) = await Dialog.Show(new EnterCommitMessage(), vm => vm.CommitMessage);
+            if (!ok) return;
+
+            Commands.Stage(repo, "*");
+
+            var sig = repo.CreateSignature();
+            repo.Commit(message, sig, sig);
+
+            Snackbar.Show("local changes committed");
+
+            Events.RaiseWTreeChanged();
+            CurrentDirectory.OfType<WTreeDirectoryItem>().ForEach(item => item.RaiseStatusChanged());
+        }
+
+        private void Navigate() {
+            if (SelectedItem?.Type == ItemType.Folder)
+                OpenFolder(((WTreeDirectoryItem)SelectedItem).Path);
+        }
 
         private async void CreateFolder() {
             var (ok, folderName) = await Dialog.Show(new EnterNewItemName(ItemType.Folder), vm => vm.NewName);
@@ -129,7 +146,7 @@
             return (aIsDir, bIsDir) switch {
                 (true , true ) => a.Name.CompareTo(b.Name),
                 (true , false) => -1,
-                (false, true ) => 1,
+                (false, true ) =>  1,
                 (false, false) => a.Name.CompareTo(b.Name)
             };
         }

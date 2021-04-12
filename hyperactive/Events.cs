@@ -6,7 +6,7 @@
 
         public event EventHandler<EventArgs>? WTreeChanged;
 
-        public event EventHandler<EventArgs>? WTreeAndBranchesChanged;
+        public event EventHandler<EventArgs>? BranchesChanged;
 
         private Events() { }
 
@@ -14,6 +14,6 @@
             => Instance.WTreeChanged?.Invoke(sender ?? Instance, EventArgs.Empty);
 
         public static void RaiseBranchesChanged(object? sender = null)
-            => Instance.WTreeAndBranchesChanged?.Invoke(sender ?? Instance, EventArgs.Empty);
+            => Instance.BranchesChanged?.Invoke(sender ?? Instance, EventArgs.Empty);
     }
 }

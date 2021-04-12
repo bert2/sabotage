@@ -25,6 +25,8 @@
 
         public ICommand RenameCmd => new Command(Rename);
 
+        public abstract ICommand CommitCmd { get; }
+
         public abstract ICommand DeleteCmd { get; }
 
         public abstract ICommand NavigateCmd { get; }

@@ -24,8 +24,6 @@
 
         public WTreeBranch WTree => Branches.OfType<WTreeBranch>().Single();
 
-        public ICommand CommitCmd => new Command(Commit);
-
         public ICommand MergeBranchCmd => new Command<LocalBranch>(MergeBranch);
 
         public ICommand CherryPickCmd => new Command<LocalBranch>(CherryPick);
@@ -36,7 +34,7 @@
             LoadRepositoryData();
 
             Events.Instance.WTreeChanged += RefreshStatus;
-            Events.Instance.WTreeAndBranchesChanged += RefreshBranches;
+            Events.Instance.BranchesChanged += RefreshBranches;
 
             Instance = this; // TODO: refactor
         }
@@ -75,25 +73,11 @@
 
         public void Dispose() {
             Events.Instance.WTreeChanged -= RefreshStatus;
-            Events.Instance.WTreeAndBranchesChanged -= RefreshBranches;
+            Events.Instance.BranchesChanged -= RefreshBranches;
 
             LibGitRepo.Dispose();
 
             Instance = null; // TODO: refactor
-        }
-
-        private async void Commit() {
-            var (ok, message) = await Dialog.Show(new EnterCommitMessage(), vm => vm.CommitMessage);
-            if (!ok) return;
-
-            Commands.Stage(LibGitRepo, "*");
-
-            var sig = CreateSignature();
-            LibGitRepo.Commit(message, sig, sig);
-
-            Snackbar.Show("local changes committed");
-
-            LoadRepositoryData();
         }
 
         private async void MergeBranch(LocalBranch target) {
@@ -102,7 +86,7 @@
                 vm => vm.SelectedSource);
             if (!ok) return;
 
-            var merge = LibGitRepo.Merge(source.NotNull().Name, CreateSignature());
+            var merge = LibGitRepo.Merge(source.NotNull().Name, LibGitRepo.CreateSignature());
 
             Snackbar.ShowImportant(merge.Status switch {
                 MergeStatus.NonFastForward => "merge succeeded",
@@ -129,7 +113,7 @@
             var (ok, commit) = await Dialog.Show(new SelectCommit(mergeTarget, commits), vm => vm.SelectedCommit);
             if (!ok) return;
 
-            var cherryPick = LibGitRepo.CherryPick(commit.NotNull().GitObject, CreateSignature());
+            var cherryPick = LibGitRepo.CherryPick(commit.NotNull().GitObject, LibGitRepo.CreateSignature());
 
             Snackbar.ShowImportant(cherryPick.Status switch {
                 CherryPickStatus.CherryPicked => "cherry-pick succeeded",
@@ -153,9 +137,5 @@
 
             (_, _)         => branch1.CompareTo(branch2)
         };
-
-        private Signature CreateSignature()
-            => LibGitRepo.Config.BuildSignature(DateTime.Now)
-            ?? new Signature(new Identity("hyperactive", "hyper@active"), DateTime.Now);
     }
 }
