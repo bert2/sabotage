@@ -9,6 +9,7 @@
     using MoreLinq;
 
     public class WTreeDirectoryItem: ViewModel, IDirectoryItem {
+        // true when item is the "[..]" entry that navigates backwards
         private readonly bool isVirtual;
 
         public LocalBranch Parent { get; }
@@ -19,19 +20,21 @@
 
         public ItemType Type { get; }
 
+        // status is retrieved lazily when item is scrolled into view
         private ItemStatus? status;
         public ItemStatus Status => status ??=
             isVirtual ? ItemStatus.Unchanged
             : Type == ItemType.File ? GetFileStatus(Path)
             : GetFolderStatus(Path);
 
+        // content is read lazily when item is selected
         private string? content;
         public string? Content {
             get => content ??= Type == ItemType.File ? File.ReadAllText(Path) : null;
             set {
                 if (SetProp(ref content, value)) {
                     File.WriteAllText(Path, value);
-                    RaiseStatusChanged();
+                    ResetStatus();
                     Events.RaiseWTreeChanged();
                 }
             }
@@ -42,11 +45,12 @@
         public WTreeDirectoryItem(WTreeBranch parent, FileSystemInfo fsi)
             => (Parent, Name, Path, Type, isVirtual) = (parent, fsi.Name, fsi.FullName, GetItemType(fsi), false);
 
-        /// <summary>Used to create the "[..]" entry that navigates backwards.</summary>
+        // used to create the "[..]" entry that navigates backwards
         public WTreeDirectoryItem(WTreeBranch parent, string name, string path)
             => (Parent, Name, Path, Type, isVirtual) = (parent, name, path, ItemType.Folder, true);
 
-        public void RaiseStatusChanged() => SetProp(ref status, null, nameof(Status));
+        // will cause a new status retrieval next time the item is rendered
+        public void ResetStatus() => SetProp(ref status, null, nameof(Status));
 
         private static ItemType GetItemType(FileSystemInfo fsi)
             => (fsi.Attributes & FileAttributes.Directory) != 0

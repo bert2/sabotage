@@ -31,7 +31,7 @@
         public ObjDbDirectoryItem(ObjDbBranch parent, TreeEntry entry, ObjDbDirectoryItem? parentItem)
             => (Parent, Name, GitObject, Type, ParentItem) = (parent, entry.Name, entry.Target, GetItemType(entry), parentItem);
 
-        /// <summary>Used to create the "[..]" entry that navigates backwards.</summary>
+        // used to create the "[..]" entry that navigates backwards
         public ObjDbDirectoryItem(ObjDbBranch parent, string name, GitObject gitObject, ObjDbDirectoryItem? parentItem)
             => (Parent, Name, GitObject, Type, ParentItem) = (parent, name, gitObject, ItemType.Folder, parentItem);
 

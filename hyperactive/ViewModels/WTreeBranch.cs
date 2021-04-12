@@ -65,7 +65,7 @@
             Snackbar.Show("local changes committed");
 
             Events.RaiseWTreeChanged();
-            CurrentDirectory.OfType<WTreeDirectoryItem>().ForEach(item => item.RaiseStatusChanged());
+            CurrentDirectory.OfType<WTreeDirectoryItem>().ForEach(item => item.ResetStatus());
         }
 
         private void Navigate() {
