@@ -93,6 +93,7 @@
 
             Snackbar.Show("file created");
 
+            Events.RaiseWTreeChanged();
             ReloadCurrentFolder();
         }
 
@@ -116,6 +117,7 @@
 
             Snackbar.Show($"{type} renamed");
 
+            Events.RaiseWTreeChanged();
             ReloadCurrentFolder();
         }
 
@@ -136,6 +138,7 @@
 
             Snackbar.Show($"{type} deleted");
 
+            Events.RaiseWTreeChanged();
             ReloadCurrentFolder();
         }
 
