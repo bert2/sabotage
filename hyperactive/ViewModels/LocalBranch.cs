@@ -4,7 +4,7 @@
     using LibGit2Sharp;
 
     public abstract class LocalBranch: ViewModel {
-        private readonly Repository repo;
+        protected readonly Repository repo;
 
         public Repo Parent { get; } // TODO: refactor to remove this
 
@@ -37,8 +37,12 @@
 
         public abstract ICommand DeleteItemCmd { get; }
 
-        protected LocalBranch(Repo parent, Branch branch)
-            => (repo, Parent, name, IsHead) = (parent.LibGitRepo, parent, branch.FriendlyName, branch.IsCurrentRepositoryHead);
+        protected LocalBranch(Repo parent, Branch branch) {
+            repo = parent.LibGitRepo;
+            Parent = parent;
+            name = branch.FriendlyName;
+            IsHead = branch.IsCurrentRepositoryHead;
+        }
 
         private void Checkout() {
             repo.Reset(ResetMode.Hard);

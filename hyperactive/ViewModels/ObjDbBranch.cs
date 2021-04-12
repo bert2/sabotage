@@ -9,8 +9,6 @@
     using MoreLinq;
 
     public class ObjDbBranch : LocalBranch {
-        private readonly Repository repo;
-
         private readonly Tree repoRoot;
 
         public override ICommand DeleteCmd => new Command(Delete);
@@ -26,7 +24,6 @@
         public override ICommand DeleteItemCmd => new InvalidCommand();
 
         public ObjDbBranch(Repo parent, Branch branch) : base(parent, branch) {
-            repo = parent.LibGitRepo;
             repoRoot = branch.Tip.Tree;
             CurrentDirectory = OpenRootFolder(repoRoot);
         }
