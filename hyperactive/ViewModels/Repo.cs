@@ -1,10 +1,13 @@
 ﻿namespace hyperactive {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Windows.Input;
 
     using LibGit2Sharp;
+
+    using MoreLinq;
 
     public sealed class Repo : ViewModel, IDisposable {
         public static Repo? Instance { get; private set; } // TODO: refactor
@@ -16,8 +19,8 @@
         private Status status = new();
         public Status Status { get => status; private set => SetProp(ref status, value); }
 
-        private LocalBranch[] branches = null!;
-        public LocalBranch[] Branches { get => branches; private set => SetProp(ref branches, value); }
+        private ObservableCollection<LocalBranch> branches = null!;
+        public ObservableCollection<LocalBranch> Branches { get => branches; private set => SetProp(ref branches, value); }
 
         private RemoteBranch[] remoteBranches = null!;
         public RemoteBranch[] RemoteBranches { get => remoteBranches; private set => SetProp(ref remoteBranches, value); }
@@ -36,9 +39,24 @@
             Events.Instance.WTreeChanged += RefreshStatus;
             Events.Instance.WTreeCleared += ResetStatus;
             Events.Instance.HeadChanged += RefreshHead;
-            Events.Instance.BranchesChanged += RefreshBranches;
+            Events.Instance.BranchesCreated += AddBranches;
+            Events.Instance.BranchesDeleted += RemoveBranches;
+            Events.Instance.BranchesModified += RefreshBranches;
 
             Instance = this; // TODO: refactor
+        }
+
+        public void Dispose() {
+            Events.Instance.WTreeChanged -= RefreshStatus;
+            Events.Instance.WTreeCleared -= ResetStatus;
+            Events.Instance.HeadChanged -= RefreshHead;
+            Events.Instance.BranchesCreated -= AddBranches;
+            Events.Instance.BranchesDeleted -= RemoveBranches;
+            Events.Instance.BranchesModified -= RefreshBranches;
+
+            LibGitRepo.Dispose();
+
+            Instance = null; // TODO: refactor
         }
 
         private void LoadRepositoryData() {
@@ -50,14 +68,13 @@
         private void LoadStatus() => Status = new(LibGitRepo);
 
         private void LoadLocalBranches()
-            => Branches = LibGitRepo
+            => Branches = new(LibGitRepo
                 .Branches
                 .Where(b => !b.IsRemote)
                 .Select<Branch, LocalBranch>(b => b.IsCurrentRepositoryHead
                     ? new WTreeBranch(this, b)
                     : new ObjDbBranch(this, b))
-                .OrderBy(b => b.Name, sortDevelopFirstMainLast)
-                .ToArray();
+                .OrderBy(b => b.Name, sortDevelopFirstMainLast));
 
         private void LoadRemoteBranches()
             => RemoteBranches = LibGitRepo
@@ -75,18 +92,11 @@
 
         private void RefreshHead(object? sender, EventArgs args) => RaisePropertyChanged(nameof(WTree));
 
+        private void AddBranches(object? sender, BranchChanges created) => created.ForEach(b => Branches.Add(b));
+
+        private void RemoveBranches(object? sender, BranchChanges deleted) => deleted.ForEach(b => Branches.Remove(b));
+
         private void RefreshBranches(object? sender, EventArgs args) => LoadLocalBranches();
-
-        public void Dispose() {
-            Events.Instance.WTreeChanged -= RefreshStatus;
-            Events.Instance.WTreeCleared -= ResetStatus;
-            Events.Instance.HeadChanged -= RefreshHead;
-            Events.Instance.BranchesChanged -= RefreshBranches;
-
-            LibGitRepo.Dispose();
-
-            Instance = null; // TODO: refactor
-        }
 
         private async void MergeBranch(LocalBranch target) {
             var (ok, source) = await Dialog.Show(

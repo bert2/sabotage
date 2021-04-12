@@ -54,7 +54,7 @@
 
             Snackbar.Show("branch deleted");
 
-            Events.RaiseBranchesChanged();
+            Events.RaiseBranchDeleted(this);
         }
 
         private void Navigate() {

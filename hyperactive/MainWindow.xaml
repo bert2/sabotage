@@ -558,9 +558,9 @@
             Grid.Column="0"
             Margin="0,8,0,0"
             Orientation="Horizontal">
-            <mat:PopupBox IsEnabled="{Binding Repo.Branches.Length, Converter={StaticResource NotZeroConverter}}" PlacementMode="BottomAndAlignLeftEdges">
+            <mat:PopupBox IsEnabled="{Binding Repo.Branches.Count, Converter={StaticResource NotZeroConverter}}" PlacementMode="BottomAndAlignLeftEdges">
               <mat:PopupBox.ToggleContent>
-                <mat:Badged Badge="{Binding Repo.Branches.Length}">
+                <mat:Badged Badge="{Binding Repo.Branches.Count}">
                   <TextBlock Foreground="{DynamicResource MaterialDesignBody}" Text="local branches   " />
                 </mat:Badged>
               </mat:PopupBox.ToggleContent>

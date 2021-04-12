@@ -28,7 +28,7 @@
             Snackbar.Show("remote branch checked out");
 
             Events.RaiseWTreeCleared();
-            Events.RaiseBranchesChanged();
+            Events.RaiseBranchesModified();
             Events.RaiseHeadChanged();
         }
     }

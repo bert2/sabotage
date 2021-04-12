@@ -54,7 +54,7 @@
             Snackbar.Show("branch checked out");
 
             Events.RaiseWTreeCleared();
-            Events.RaiseBranchesChanged();
+            Events.RaiseBranchesModified();
             Events.RaiseHeadChanged();
         }
 
@@ -62,11 +62,11 @@
             var (ok, target) = await Dialog.Show(new EnterNewBranchName(), vm => vm.BranchName);
             if (!ok) return;
 
-            _ = repo.CreateBranch(branchName: target, name);
+            var created = repo.CreateBranch(branchName: target, name);
 
             Snackbar.Show("branch created");
 
-            Events.RaiseBranchesChanged();
+            Events.RaiseBranchCreated(new ObjDbBranch(Parent, created));
         }
 
         private async void Rename() {
