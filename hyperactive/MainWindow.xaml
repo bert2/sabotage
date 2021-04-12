@@ -509,63 +509,55 @@
         Margin="16"
         Padding="8"
         Background="{DynamicResource MaterialDesignPaper}">
-        <StackPanel>
-          <!--  directory selection  -->
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition />
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
 
-            <TextBox
-              x:Name="txtDirectory"
-              Grid.Column="0"
-              mat:HintAssist.Hint="path to git repository"
-              mat:TextFieldAssist.HasClearButton="True"
-              mat:TextFieldAssist.HasLeadingIcon="True"
-              mat:TextFieldAssist.LeadingIcon="Git"
-              FontSize="16"
-              KeyUp="UpdateTextBoxBindingOnReturn"
-              Style="{StaticResource MaterialDesignFloatingHintTextBox}">
-              <TextBox.Text>
-                <Binding Path="Directory">
-                  <Binding.ValidationRules>
-                    <local:ValidateGitDirectory />
-                  </Binding.ValidationRules>
-                </Binding>
-              </TextBox.Text>
-            </TextBox>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
 
-            <Button
-              Grid.Column="1"
-              Margin="8,0,0,0"
-              Command="{Binding SelectDirectoryCmd}"
-              Content="{mat:PackIcon FolderOpen,
-                                     Size=20}"
-              ToolTip="open git repository" />
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
 
-            <Button
-              Grid.Column="2"
-              Margin="8,0,0,0"
-              Command="{Binding LoadRepositoryCmd}"
-              Content="{mat:PackIcon Reload,
-                                     Size=20}"
-              ToolTip="reload git repository">
-              <Button.IsEnabled>
-                <MultiBinding Converter="{StaticResource AndConv}">
-                  <Binding
-                    Converter="{StaticResource NotConverter}"
-                    ElementName="txtDirectory"
-                    Path="(Validation.HasError)" />
-                  <Binding Converter="{StaticResource NullToFalseConv}" Path="Repo" />
-                </MultiBinding>
-              </Button.IsEnabled>
-            </Button>
-          </Grid>
+          <!--  directory selection input  -->
+          <TextBox
+            x:Name="txtDirectory"
+            Grid.Row="0"
+            Grid.Column="0"
+            mat:HintAssist.Hint="path to git repository"
+            mat:TextFieldAssist.HasClearButton="True"
+            mat:TextFieldAssist.HasLeadingIcon="True"
+            mat:TextFieldAssist.LeadingIcon="Git"
+            FontSize="16"
+            KeyUp="UpdateTextBoxBindingOnReturn"
+            Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+            <TextBox.Text>
+              <Binding Path="Directory">
+                <Binding.ValidationRules>
+                  <local:ValidateGitDirectory />
+                </Binding.ValidationRules>
+              </Binding>
+            </TextBox.Text>
+          </TextBox>
+
+          <!--  directory selection button  -->
+          <Button
+            Grid.Row="0"
+            Grid.Column="1"
+            Margin="16,0,0,0"
+            Command="{Binding SelectDirectoryCmd}"
+            Content="{mat:PackIcon FolderOpen,
+                                   Size=20}"
+            ToolTip="open git repository" />
 
           <!--  branch counts & status  -->
-          <StackPanel Margin="0,16,0,0" Orientation="Horizontal">
+          <StackPanel
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="0,8,0,0"
+            Orientation="Horizontal">
             <mat:PopupBox IsEnabled="{Binding Repo.Branches.Length, Converter={StaticResource NotZeroConverter}}" PlacementMode="BottomAndAlignLeftEdges">
               <mat:PopupBox.ToggleContent>
                 <mat:Badged Badge="{Binding Repo.Branches.Length}">
@@ -641,9 +633,13 @@
               </ItemsControl>
             </mat:PopupBox>
 
-            <TextBlock Margin="32,0,0,0" Text="status:" />
+            <TextBlock
+              Margin="32,0,0,0"
+              VerticalAlignment="Center"
+              Text="status:" />
             <TextBlock
               Margin="8,0,0,0"
+              VerticalAlignment="Center"
               FontFamily="Consolas"
               Foreground="{Binding Repo.Status.WTreeStatus, Converter={StaticResource WTreeStatusToBrushConv}, Mode=OneWay}">
               <Run Text="{Binding Repo.WTree.Name, Mode=OneWay}" />
@@ -656,9 +652,32 @@
               -<Run Text="{Binding Repo.Status.WdirDel, Mode=OneWay}" />
               !<Run Text="{Binding Repo.Status.WdirCon, Mode=OneWay}" />
             </TextBlock>
-            <TextBlock Margin="8,0,0,0" Text="{Binding Repo.Status.CurrentOperation, Mode=OneWay, Converter={StaticResource CurrOpToTextConv}}" />
+            <TextBlock
+              Margin="8,0,0,0"
+              VerticalAlignment="Center"
+              Text="{Binding Repo.Status.CurrentOperation, Mode=OneWay, Converter={StaticResource CurrOpToTextConv}}" />
           </StackPanel>
-        </StackPanel>
+
+          <!--  repo reload button  -->
+          <Button
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="16,8,0,0"
+            Command="{Binding LoadRepositoryCmd}"
+            Content="{mat:PackIcon Reload,
+                                   Size=20}"
+            ToolTip="reload git repository">
+            <Button.IsEnabled>
+              <MultiBinding Converter="{StaticResource AndConv}">
+                <Binding
+                  Converter="{StaticResource NotConverter}"
+                  ElementName="txtDirectory"
+                  Path="(Validation.HasError)" />
+                <Binding Converter="{StaticResource NullToFalseConv}" Path="Repo" />
+              </MultiBinding>
+            </Button.IsEnabled>
+          </Button>
+        </Grid>
       </mat:Card>
 
       <!--  branches  -->
