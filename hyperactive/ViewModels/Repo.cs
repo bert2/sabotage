@@ -34,6 +34,7 @@
             LoadRepositoryData();
 
             Events.Instance.WTreeChanged += RefreshStatus;
+            Events.Instance.WTreeCleared += ResetStatus;
             Events.Instance.BranchesChanged += RefreshBranches;
 
             Instance = this; // TODO: refactor
@@ -69,10 +70,13 @@
 
         private void RefreshStatus(object? sender, EventArgs args) => LoadStatus();
 
+        private void ResetStatus(object? sender, EventArgs args) => Status = new();
+
         private void RefreshBranches(object? sender, EventArgs args) => LoadLocalBranches();
 
         public void Dispose() {
             Events.Instance.WTreeChanged -= RefreshStatus;
+            Events.Instance.WTreeCleared -= ResetStatus;
             Events.Instance.BranchesChanged -= RefreshBranches;
 
             LibGitRepo.Dispose();

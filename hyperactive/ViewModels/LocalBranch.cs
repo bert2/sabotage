@@ -53,7 +53,7 @@
 
             Snackbar.Show("branch switched");
 
-            Events.RaiseWTreeChanged();
+            Events.RaiseWTreeCleared();
             Events.RaiseBranchesChanged();
         }
 
