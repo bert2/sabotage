@@ -642,7 +642,7 @@
               VerticalAlignment="Center"
               FontFamily="Consolas"
               Foreground="{Binding Repo.Status.WTreeStatus, Converter={StaticResource WTreeStatusToBrushConv}, Mode=OneWay}">
-              <Run Text="{Binding Repo.WTree.Name, Mode=OneWay}" />
+              <Run Text="{Binding Repo.Head.Name, Mode=OneWay}" />
               +<Run Text="{Binding Repo.Status.IdxAdd, Mode=OneWay}" />
               ~<Run Text="{Binding Repo.Status.IdxMod, Mode=OneWay}" />
               -<Run Text="{Binding Repo.Status.IdxDel, Mode=OneWay}" />

@@ -25,7 +25,7 @@
         private RemoteBranch[] remoteBranches = null!;
         public RemoteBranch[] RemoteBranches { get => remoteBranches; private set => SetProp(ref remoteBranches, value); }
 
-        public WTreeBranch WTree => Branches.OfType<WTreeBranch>().Single();
+        public WTreeBranch Head => Branches.OfType<WTreeBranch>().Single();
 
         public ICommand MergeBranchCmd => new Command<LocalBranch>(MergeBranch);
 
@@ -90,7 +90,7 @@
 
         private void ResetStatus(object? sender, EventArgs args) => Status = new();
 
-        private void RefreshHead(object? sender, EventArgs args) => RaisePropertyChanged(nameof(WTree));
+        private void RefreshHead(object? sender, EventArgs args) => RaisePropertyChanged(nameof(Head));
 
         private void AddBranches(object? sender, BranchChanges created)
             => created.ForEach(b => Branches.InsertSorted(b, DevelopFirstMainLast));
@@ -116,7 +116,7 @@
             });
 
             LoadStatus();
-            WTree.ReloadCurrentFolder();
+            Head.ReloadCurrentFolder();
         }
 
         private async void CherryPick(LocalBranch mergeTarget) {
@@ -142,7 +142,7 @@
             });
 
             LoadStatus();
-            WTree.ReloadCurrentFolder();
+            Head.ReloadCurrentFolder();
         }
 
         private static readonly IComparer<string> developFirstMainLast = Comparer<string>.Create(DevelopFirstMainLast);

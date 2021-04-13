@@ -21,8 +21,8 @@
                 : new ValidationResult(false, "already exists");
 
         private static string GetPath(string name) {
-            Debug.Assert(Repo.Instance?.WTree?.CurrentPath is not null);
-            return Path.Join(Repo.Instance.WTree.CurrentPath, name);
+            Debug.Assert(Repo.Instance?.Head?.CurrentPath is not null);
+            return Path.Join(Repo.Instance.Head.CurrentPath, name);
         }
     }
 }
