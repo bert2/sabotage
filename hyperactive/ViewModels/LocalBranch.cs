@@ -6,7 +6,9 @@
     public abstract class LocalBranch: ViewModel {
         protected readonly Repository repo;
 
-        public Repo Parent { get; } // TODO: refactor to remove this
+        public Repo Parent { get; } // TODO: refactor to remove this?
+
+        public Branch LibGitBranch { get; }
 
         private string name;
         public string Name { get => name; set => SetProp(ref name, value); }
@@ -19,11 +21,11 @@
         private IDirectoryItem? selectedItem;
         public IDirectoryItem? SelectedItem { get => selectedItem; set => SetProp(ref selectedItem, value); }
 
-        public ICommand CheckoutCmd => new Command(Checkout);
-
         public ICommand BranchOffCmd => new Command(BranchOff);
 
         public ICommand RenameCmd => new Command(Rename);
+
+        public abstract ICommand CheckoutCmd { get; }
 
         public abstract ICommand CommitCmd { get; }
 
@@ -42,20 +44,9 @@
         protected LocalBranch(Repo parent, Branch branch) {
             repo = parent.LibGitRepo;
             Parent = parent;
+            LibGitBranch = branch;
             name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
-        }
-
-        private void Checkout() {
-            repo.Reset(ResetMode.Hard);
-            Commands.Checkout(repo, name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
-            repo.RemoveUntrackedFiles();
-
-            Snackbar.Show("branch checked out");
-
-            Events.RaiseWTreeCleared();
-            Events.RaiseBranchesModified();
-            Events.RaiseHeadChanged();
         }
 
         private async void BranchOff() {
@@ -66,7 +57,7 @@
 
             Snackbar.Show("branch created");
 
-            Events.RaiseBranchCreated(new ObjDbBranch(Parent, created));
+            Events.RaiseBranchCreated(created);
         }
 
         private async void Rename() {

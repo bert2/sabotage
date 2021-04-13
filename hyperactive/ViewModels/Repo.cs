@@ -36,48 +36,39 @@
             LibGitRepo = new Repository(path);
             LoadRepositoryData();
 
-            Events.Instance.WTreeChanged += RefreshStatus;
-            Events.Instance.WTreeCleared += ResetStatus;
+            Events.Instance.WTreeModified += RefreshStatus;
+            Events.Instance.WTreeCleaned += ResetStatus;
             Events.Instance.HeadChanged += RefreshHead;
-            Events.Instance.BranchesCreated += AddBranches;
-            Events.Instance.BranchesDeleted += RemoveBranches;
-            Events.Instance.BranchesModified += RefreshBranches;
+            Events.Instance.BranchCreated += AddBranch;
+            Events.Instance.BranchDeleted += RemoveBranch;
 
             Instance = this; // TODO: refactor
         }
 
         public void Dispose() {
-            Events.Instance.WTreeChanged -= RefreshStatus;
-            Events.Instance.WTreeCleared -= ResetStatus;
+            Events.Instance.WTreeModified -= RefreshStatus;
+            Events.Instance.WTreeCleaned -= ResetStatus;
             Events.Instance.HeadChanged -= RefreshHead;
-            Events.Instance.BranchesCreated -= AddBranches;
-            Events.Instance.BranchesDeleted -= RemoveBranches;
-            Events.Instance.BranchesModified -= RefreshBranches;
+            Events.Instance.BranchCreated -= AddBranch;
+            Events.Instance.BranchDeleted -= RemoveBranch;
 
             LibGitRepo.Dispose();
 
             Instance = null; // TODO: refactor
         }
 
+        #region loading
+
         private void LoadRepositoryData() {
             LoadStatus();
-            LoadLocalBranches();
-            LoadRemoteBranches();
-        }
 
-        private void LoadStatus() => Status = new(LibGitRepo);
-
-        private void LoadLocalBranches()
-            => Branches = new(LibGitRepo
+            Branches = new(LibGitRepo
                 .Branches
                 .Where(b => !b.IsRemote)
-                .Select<Branch, LocalBranch>(b => b.IsCurrentRepositoryHead
-                    ? new WTreeBranch(this, b)
-                    : new ObjDbBranch(this, b))
+                .Select(CreateBranch)
                 .OrderBy(b => b.Name, developFirstMainLast));
 
-        private void LoadRemoteBranches()
-            => RemoteBranches = LibGitRepo
+            RemoteBranches = LibGitRepo
                 .Branches
                 .Where(b
                     => b.IsRemote
@@ -85,19 +76,47 @@
                 .Select(b => new RemoteBranch(this, b.FriendlyName))
                 .OrderBy(b => b.Name, developFirstMainLast)
                 .ToArray();
+        }
+
+        private void LoadStatus() => Status = new(LibGitRepo);
+
+        private LocalBranch CreateBranch(Branch b) => b.IsCurrentRepositoryHead ? new WTreeBranch(this, b) : new ObjDbBranch(this, b);
+
+        #endregion loading
+
+        #region event handlers
 
         private void RefreshStatus(object? sender, EventArgs args) => LoadStatus();
 
         private void ResetStatus(object? sender, EventArgs args) => Status = new();
 
-        private void RefreshHead(object? sender, EventArgs args) => RaisePropertyChanged(nameof(Head));
+        private void RefreshHead(object? sender, HeadChangedArgs args) {
+            void ReloadBranch(LocalBranch branch) {
+                Branches.Remove(branch);
+                Branches.InsertSorted(CreateBranch(branch.LibGitBranch), DevelopFirstMainLast);
+            }
 
-        private void AddBranches(object? sender, BranchChanges created)
-            => created.ForEach(b => Branches.InsertSorted(b, DevelopFirstMainLast));
+            ReloadBranch(Head);
 
-        private void RemoveBranches(object? sender, BranchChanges deleted) => deleted.ForEach(b => Branches.Remove(b));
+            if (args.NewHead.Is<LocalBranch>()) {
+                ReloadBranch(args.NewHead);
+            } else {
+                var existing = Branches.SingleOrDefault(b => b.LibGitBranch == args.NewHead);
+                if (existing is not null) Branches.Remove(existing);
+                Branches.InsertSorted(CreateBranch(args.NewHead), DevelopFirstMainLast);
+            }
 
-        private void RefreshBranches(object? sender, EventArgs args) => LoadLocalBranches();
+            RaisePropertyChanged(nameof(Head));
+        }
+
+        private void AddBranch(object? sender, BranchCreatedArgs args)
+            => Branches.InsertSorted(CreateBranch(args.Created), DevelopFirstMainLast);
+
+        private void RemoveBranch(object? sender, BranchDeletedArgs args) => Branches.Remove(args.Deleted);
+
+        #endregion event handlers
+
+        #region command handlers
 
         private async void MergeBranch(LocalBranch target) {
             var (ok, source) = await Dialog.Show(
@@ -144,6 +163,8 @@
             LoadStatus();
             Head.ReloadCurrentFolder();
         }
+
+        #endregion command handlers
 
         private static readonly IComparer<string> developFirstMainLast = Comparer<string>.Create(DevelopFirstMainLast);
 

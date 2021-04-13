@@ -1,52 +1,46 @@
 ﻿namespace hyperactive {
     using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
+
+    using LibGit2Sharp;
 
     public sealed class Events {
         public static Events Instance { get; } = new Events();
 
-        public event EventHandler<EventArgs>? WTreeChanged;
+        public event EventHandler<EventArgs>? WTreeModified;
 
-        public event EventHandler<EventArgs>? WTreeCleared;
+        public event EventHandler<EventArgs>? WTreeCleaned;
 
-        public event EventHandler<EventArgs>? HeadChanged;
+        public event EventHandler<HeadChangedArgs>? HeadChanged;
 
-        public event EventHandler<BranchChanges>? BranchesCreated;
+        public event EventHandler<BranchCreatedArgs>? BranchCreated;
 
-        public event EventHandler<BranchChanges>? BranchesDeleted;
-
-        public event EventHandler<EventArgs>? BranchesModified;
+        public event EventHandler<BranchDeletedArgs>? BranchDeleted;
 
         private Events() { }
 
-        public static void RaiseWTreeChanged(object? sender = null)
-            => Instance.WTreeChanged?.Invoke(sender ?? Instance, EventArgs.Empty);
+        public static void RaiseWTreeModified() => Instance.WTreeModified?.Invoke(null, EventArgs.Empty);
 
-        public static void RaiseWTreeCleared(object? sender = null)
-            => Instance.WTreeCleared?.Invoke(sender ?? Instance, EventArgs.Empty);
+        public static void RaiseWTreeCleaned() => Instance.WTreeCleaned?.Invoke(null, EventArgs.Empty);
 
-        public static void RaiseHeadChanged(object? sender = null)
-            => Instance.HeadChanged?.Invoke(sender ?? Instance, EventArgs.Empty);
+        public static void RaiseHeadChanged(OneOf<LocalBranch, Branch> newHead) => Instance.HeadChanged?.Invoke(null, new(newHead));
 
-        public static void RaiseBranchCreated(LocalBranch created, object? sender = null)
-            => Instance.BranchesCreated?.Invoke(sender ?? Instance, new(created));
+        public static void RaiseBranchCreated(Branch created) => Instance.BranchCreated?.Invoke(null, new(created));
 
-        public static void RaiseBranchDeleted(LocalBranch deleted, object? sender = null)
-            => Instance.BranchesDeleted?.Invoke(sender ?? Instance, new(deleted));
-
-        public static void RaiseBranchesModified(object? sender = null)
-            => Instance.BranchesModified?.Invoke(sender ?? Instance, EventArgs.Empty);
+        public static void RaiseBranchDeleted(LocalBranch deleted) => Instance.BranchDeleted?.Invoke(null, new(deleted));
     }
 
-    public class BranchChanges : EventArgs, IEnumerable<LocalBranch> {
-        public LocalBranch[] Changed { get; }
-        
-        public BranchChanges(params LocalBranch[] changed) => Changed = changed;
+    public class BranchDeletedArgs : EventArgs {
+        public LocalBranch Deleted { get; }
+        public BranchDeletedArgs(LocalBranch deleted) => Deleted = deleted;
+    }
 
-        public IEnumerator<LocalBranch> GetEnumerator() => Changed.AsEnumerable().GetEnumerator();
+    public class BranchCreatedArgs : EventArgs {
+        public Branch Created { get; }
+        public BranchCreatedArgs(Branch created) => Created = created;
+    }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public class HeadChangedArgs : EventArgs {
+        public OneOf<LocalBranch, Branch> NewHead { get; }
+        public HeadChangedArgs(OneOf<LocalBranch, Branch> newHead) => NewHead = newHead;
     }
 }

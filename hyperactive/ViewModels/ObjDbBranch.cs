@@ -11,6 +11,8 @@
     public class ObjDbBranch : LocalBranch {
         private readonly Tree repoRoot;
 
+        public override ICommand CheckoutCmd => new Command(Checkout);
+
         public override ICommand CommitCmd => new InvalidCommand();
 
         public override ICommand DeleteCmd => new Command(Delete);
@@ -45,6 +47,17 @@
                     : new[] { new ObjDbItem(this, "[ .. ]", folder.ParentItem.GitObject, folder.ParentItem.ParentItem) },
                 index: 0)
             .ToArray();
+
+        private void Checkout() {
+            repo.Reset(ResetMode.Hard);
+            Commands.Checkout(repo, Name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
+            repo.RemoveUntrackedFiles();
+
+            Snackbar.Show("branch checked out");
+
+            Events.RaiseWTreeCleaned();
+            Events.RaiseHeadChanged(newHead: this);
+        }
 
         private async void Delete() {
             if (!await Dialog.Show(new Confirm(action: "delete branch", subject: Name)))

@@ -14,6 +14,8 @@
 
         public string CurrentPath { get; private set; }
 
+        public override ICommand CheckoutCmd => new Command(Checkout);
+
         public override ICommand CommitCmd => new Command(Commit);
 
         public override ICommand DeleteCmd => new InvalidCommand();
@@ -53,6 +55,17 @@
                 index: 0)
             .ToArray();
 
+        private void Checkout() {
+            repo.Reset(ResetMode.Hard);
+            Commands.Checkout(repo, Name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
+            repo.RemoveUntrackedFiles();
+
+            Snackbar.Show("branch restored");
+
+            ReloadCurrentFolder();
+            Events.RaiseWTreeCleaned();
+        }
+
         private async void Commit() {
             var (ok, message) = await Dialog.Show(new EnterCommitMessage(), vm => vm.CommitMessage);
             if (!ok) return;
@@ -64,7 +77,7 @@
 
             Snackbar.Show("local changes committed");
 
-            Events.RaiseWTreeCleared();
+            Events.RaiseWTreeCleaned();
             CurrentDirectory.OfType<WTreeItem>().ForEach(item => item.ResetStatus());
         }
 
@@ -93,7 +106,7 @@
 
             Snackbar.Show("file created");
 
-            Events.RaiseWTreeChanged();
+            Events.RaiseWTreeModified();
             ReloadCurrentFolder();
         }
 
@@ -117,7 +130,7 @@
 
             Snackbar.Show($"{type} renamed");
 
-            Events.RaiseWTreeChanged();
+            Events.RaiseWTreeModified();
             ReloadCurrentFolder();
         }
 
@@ -138,7 +151,7 @@
 
             Snackbar.Show($"{type} deleted");
 
-            Events.RaiseWTreeChanged();
+            Events.RaiseWTreeModified();
             ReloadCurrentFolder();
         }
 

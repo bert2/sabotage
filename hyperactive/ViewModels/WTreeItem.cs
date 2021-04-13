@@ -35,7 +35,7 @@
                 if (SetProp(ref content, value)) {
                     File.WriteAllText(Path, value);
                     ResetStatus();
-                    Events.RaiseWTreeChanged();
+                    Events.RaiseWTreeModified();
                 }
             }
         }
