@@ -74,7 +74,7 @@
                 .Select<Branch, LocalBranch>(b => b.IsCurrentRepositoryHead
                     ? new WTreeBranch(this, b)
                     : new ObjDbBranch(this, b))
-                .OrderBy(b => b.Name, sortDevelopFirstMainLast));
+                .OrderBy(b => b.Name, developFirstMainLast));
 
         private void LoadRemoteBranches()
             => RemoteBranches = LibGitRepo
@@ -83,7 +83,7 @@
                     => b.IsRemote
                     && b.Reference is DirectReference) // skips refs like "remotes/origin/HEAD -> origin/master"
                 .Select(b => new RemoteBranch(this, b.FriendlyName))
-                .OrderBy(b => b.Name, sortDevelopFirstMainLast)
+                .OrderBy(b => b.Name, developFirstMainLast)
                 .ToArray();
 
         private void RefreshStatus(object? sender, EventArgs args) => LoadStatus();
@@ -92,7 +92,8 @@
 
         private void RefreshHead(object? sender, EventArgs args) => RaisePropertyChanged(nameof(WTree));
 
-        private void AddBranches(object? sender, BranchChanges created) => created.ForEach(b => Branches.Add(b));
+        private void AddBranches(object? sender, BranchChanges created)
+            => created.ForEach(b => Branches.InsertSorted(b, DevelopFirstMainLast));
 
         private void RemoveBranches(object? sender, BranchChanges deleted) => deleted.ForEach(b => Branches.Remove(b));
 
@@ -144,18 +145,20 @@
             WTree.ReloadCurrentFolder();
         }
 
-        private static readonly IComparer<string> sortDevelopFirstMainLast = Comparer<string>.Create(DevelopFirstMainLast);
+        private static readonly IComparer<string> developFirstMainLast = Comparer<string>.Create(DevelopFirstMainLast);
 
-        private static int DevelopFirstMainLast(string branch1, string branch2) => (branch1, branch2) switch {
-            ("main", _)    =>  1,
-            (_, "main")    => -1,
-            ("master", _)  =>  1,
-            (_, "master")  => -1,
+        private static int DevelopFirstMainLast(LocalBranch x, LocalBranch y) => DevelopFirstMainLast(x.Name, y.Name);
 
-            ("develop", _) => -1,
-            (_, "develop") =>  1,
+        private static int DevelopFirstMainLast(string x, string y) => (x, y) switch {
+            ("main"   , _        ) =>  1,
+            (_        , "main"   ) => -1,
+            ("master" , _        ) =>  1,
+            (_        , "master" ) => -1,
 
-            (_, _)         => branch1.CompareTo(branch2)
+            ("develop", _        ) => -1,
+            (_        , "develop") =>  1,
+
+            (_        , _        ) => x.CompareTo(y)
         };
     }
 }
