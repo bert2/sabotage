@@ -124,7 +124,7 @@
                 vm => vm.SelectedSource);
             if (!ok) return;
 
-            var merge = LibGitRepo.Merge(source.NotNull().Name, LibGitRepo.CreateSignature());
+            var merge = LibGitRepo.Merge(source.NotNull().LibGitBranch, LibGitRepo.CreateSignature());
 
             Snackbar.ShowImportant(merge.Status switch {
                 MergeStatus.NonFastForward => "merge succeeded",

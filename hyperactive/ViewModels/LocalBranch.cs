@@ -53,7 +53,7 @@
             var (ok, target) = await Dialog.Show(new EnterNewBranchName(owner: this), vm => vm.NewName);
             if (!ok) return;
 
-            var created = repo.CreateBranch(branchName: target, name);
+            var created = repo.CreateBranch(branchName: target, target: LibGitBranch.Tip);
 
             Snackbar.Show("branch created");
 
@@ -66,7 +66,7 @@
                 vm => vm.NewName);
             if (!ok) return;
 
-            _ = repo.Branches.Rename(name, newName);
+            _ = repo.Branches.Rename(LibGitBranch, newName);
             Name = newName.NotNull();
 
             Snackbar.Show("branch renamed");

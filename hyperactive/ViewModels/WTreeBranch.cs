@@ -57,7 +57,7 @@
 
         private void Checkout() {
             repo.Reset(ResetMode.Hard);
-            Commands.Checkout(repo, Name, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
+            Commands.Checkout(repo, LibGitBranch, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
             repo.RemoveUntrackedFiles();
 
             Snackbar.Show("branch restored");
