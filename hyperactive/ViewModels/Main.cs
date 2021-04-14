@@ -18,6 +18,7 @@
         public ICommand LoadRepositoryCmd => new Command(LoadRepository);
 
         protected override string? Validate(string property) => property switch {
+            nameof(Directory) when !System.IO.Directory.Exists(Directory) => "not found",
             nameof(Directory) when !IsRepo(Directory) => "not a git repository",
             _ => null
         };
