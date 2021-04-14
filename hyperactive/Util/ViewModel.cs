@@ -6,15 +6,15 @@
     public abstract class ViewModel : INotifyPropertyChanged {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        protected void RaisePropertyChanged([CallerMemberName] string? property = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
 
-        protected bool SetProp<T>(ref T backingField, T value, [CallerMemberName] string? propertyName = "") {
+        protected virtual bool SetProp<T>(ref T backingField, T value, [CallerMemberName] string? property = "") {
             if (EqualityComparer<T>.Default.Equals(backingField, value))
                 return false;
 
             backingField = value;
-            RaisePropertyChanged(propertyName);
+            RaisePropertyChanged(property);
             return true;
         }
     }

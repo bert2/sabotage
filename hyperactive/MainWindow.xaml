@@ -628,7 +628,7 @@
               Text="{Binding Repo.Status.CurrentOperation, Mode=OneWay, Converter={StaticResource CurrOpToTextConv}}" />
           </StackPanel>
 
-          <!--  repo reload button  -->
+          <!--  repo load button  -->
           <Button
             Grid.Row="1"
             Grid.Column="1"
@@ -636,17 +636,8 @@
             Command="{Binding LoadRepositoryCmd}"
             Content="{mat:PackIcon Reload,
                                    Size=20}"
-            ToolTip="reload git repository">
-            <Button.IsEnabled>
-              <MultiBinding Converter="{StaticResource AndConv}">
-                <Binding
-                  Converter="{StaticResource NotConverter}"
-                  ElementName="txtDirectory"
-                  Path="(Validation.HasError)" />
-                <Binding Converter="{StaticResource NullToFalseConv}" Path="Repo" />
-              </MultiBinding>
-            </Button.IsEnabled>
-          </Button>
+            IsEnabled="{Binding IsValid}"
+            ToolTip="reload git repository" />
         </Grid>
       </mat:Card>
 

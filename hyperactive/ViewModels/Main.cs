@@ -1,37 +1,26 @@
 ﻿namespace hyperactive {
     using System;
-    using System.ComponentModel;
     using System.IO;
     using System.Windows.Forms;
     using System.Windows.Input;
 
     using LibGit2Sharp;
 
-    public class Main : ViewModel, IDataErrorInfo {
+    public class Main : ValidatableViewModel {
         private string? directory = @"D:\DEV\git-conflicts"; // TODO: remove test value
-        public string? Directory {
-            get => directory;
-            set { if (SetProp(ref directory, value)) Touched = true; }
-        }
+        public string? Directory { get => directory; set => SetProp(ref directory, value); }
 
         private Repo? repo;
         public Repo? Repo { get => repo; set => SetProp(ref repo, value); }
-
-        private bool touched;
-        public bool Touched { get => touched; set => SetProp(ref touched, value); }
 
         public ICommand SelectDirectoryCmd => new Command(SelectDirectory);
 
         public ICommand LoadRepositoryCmd => new Command(LoadRepository);
 
-        public string Error { get; } = "";
-        public string this[string columnName] {
-            get => columnName switch {
-                _ when !Touched => "",
-                nameof(Directory) when !IsRepo(Directory) => "not a git repository",
-                _ => ""
-            };
-        }
+        protected override string? Validate(string property) => property switch {
+            nameof(Directory) when !IsRepo(Directory) => "not a git repository",
+            _ => null
+        };
 
         public Main() => LoadRepository(); // TODO: remove test code
 

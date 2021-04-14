@@ -13,7 +13,7 @@
         private void LoadRepoOnReturn(object sender, System.Windows.Input.KeyEventArgs e) {
             if (e.Key == System.Windows.Input.Key.Return
                 && DataContext is Main main
-                && main[nameof(Main.Directory)]?.Length == 0) {
+                && main.IsValid) {
                 main.LoadRepositoryCmd.Execute(parameter: null);
             }
         }
