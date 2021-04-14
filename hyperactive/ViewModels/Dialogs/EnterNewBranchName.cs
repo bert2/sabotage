@@ -25,6 +25,8 @@ namespace hyperactive {
         public string Error { get; } = "";
         public string this[string columnName] {
             get => columnName switch {
+                _ when !Touched => "",
+                nameof(NewName) when string.IsNullOrWhiteSpace(NewName) => "cannot be empty",
                 nameof(NewName) when BranchExists(repo, NewName) => "already exists",
                 _ => ""
             };
@@ -34,7 +36,6 @@ namespace hyperactive {
             => (repo, OldName) = (owner.Parent.LibGitRepo, oldName);
 
         private static bool BranchExists(Repository repo, string? name)
-            => !string.IsNullOrEmpty(name)
-            && repo.Branches.Any(b => b.FriendlyName == name);
+            => repo.Branches.Any(b => b.FriendlyName == name);
     }
 }

@@ -24,6 +24,8 @@
         public string Error { get; } = "";
         public string this[string columnName] {
             get => columnName switch {
+                _ when !Touched => "",
+                nameof(NewName) when string.IsNullOrWhiteSpace(NewName) => "cannot be empty",
                 nameof(NewName) when FileExists(path, NewName) => "already exists",
                 _ => ""
             };
@@ -32,10 +34,9 @@
         public EnterNewItemName(WTreeBranch owner, ItemType type, string? oldName = null)
             => (path, Type, OldName) = (owner.CurrentPath, type.ToString().ToLower(), oldName);
 
-        private static bool FileExists(string path, string? newName) {
+        private static bool FileExists(string path, string newName) {
             var fullName = Path.Join(path, newName);
-            return !string.IsNullOrEmpty(newName)
-                && (File.Exists(fullName) || Directory.Exists(fullName));
+            return File.Exists(fullName) || Directory.Exists(fullName);
         }
     }
 }

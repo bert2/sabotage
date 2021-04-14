@@ -81,15 +81,8 @@
             Grid.Row="0"
             Width="200"
             Margin="0,16,0,0"
-            mat:TextFieldAssist.HasClearButton="True">
-            <TextBox.Text>
-              <Binding Path="CommitMessage" UpdateSourceTrigger="PropertyChanged">
-                <Binding.ValidationRules>
-                  <local:ValidateNotEmpty />
-                </Binding.ValidationRules>
-              </Binding>
-            </TextBox.Text>
-          </TextBox>
+            mat:TextFieldAssist.HasClearButton="True"
+            Text="{Binding CommitMessage, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
         </StackPanel>
 
         <Grid Grid.Row="1" Margin="16">
@@ -155,18 +148,8 @@
             Grid.Row="0"
             Width="200"
             Margin="0,16,0,0"
-            mat:TextFieldAssist.HasClearButton="True">
-            <TextBox.Text>
-              <Binding
-                Path="NewName"
-                UpdateSourceTrigger="PropertyChanged"
-                ValidatesOnDataErrors="True">
-                <Binding.ValidationRules>
-                  <local:ValidateNotEmpty />
-                </Binding.ValidationRules>
-              </Binding>
-            </TextBox.Text>
-          </TextBox>
+            mat:TextFieldAssist.HasClearButton="True"
+            Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
         </StackPanel>
 
         <Grid Grid.Row="1" Margin="16">
@@ -395,18 +378,8 @@
             Grid.Row="0"
             Width="200"
             Margin="0,16,0,0"
-            mat:TextFieldAssist.HasClearButton="True">
-            <TextBox.Text>
-              <Binding
-                Path="NewName"
-                UpdateSourceTrigger="PropertyChanged"
-                ValidatesOnDataErrors="True">
-                <Binding.ValidationRules>
-                  <local:ValidateNotEmpty />
-                </Binding.ValidationRules>
-              </Binding>
-            </TextBox.Text>
-          </TextBox>
+            mat:TextFieldAssist.HasClearButton="True"
+            Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
         </StackPanel>
 
         <Grid Grid.Row="1" Margin="16">
