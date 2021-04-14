@@ -157,10 +157,12 @@
             Margin="0,16,0,0"
             mat:TextFieldAssist.HasClearButton="True">
             <TextBox.Text>
-              <Binding Path="BranchName" UpdateSourceTrigger="PropertyChanged">
+              <Binding
+                Path="BranchName"
+                UpdateSourceTrigger="PropertyChanged"
+                ValidatesOnDataErrors="True">
                 <Binding.ValidationRules>
                   <local:ValidateNotEmpty />
-                  <local:ValidateBranchName />
                 </Binding.ValidationRules>
               </Binding>
             </TextBox.Text>
