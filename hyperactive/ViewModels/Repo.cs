@@ -10,8 +10,6 @@
     using MoreLinq;
 
     public sealed class Repo : ViewModel, IDisposable {
-        public static Repo? Instance { get; private set; } // TODO: refactor
-
         public string Path { get; }
 
         public Repository LibGitRepo { get; }
@@ -41,8 +39,6 @@
             Events.Instance.HeadChanged += RefreshHead;
             Events.Instance.BranchCreated += AddBranch;
             Events.Instance.BranchDeleted += RemoveBranch;
-
-            Instance = this; // TODO: refactor
         }
 
         public void Dispose() {
@@ -53,8 +49,6 @@
             Events.Instance.BranchDeleted -= RemoveBranch;
 
             LibGitRepo.Dispose();
-
-            Instance = null; // TODO: refactor
         }
 
         #region loading

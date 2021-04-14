@@ -140,8 +140,8 @@
             _ => throw new NotSupportedException($"Unexpected folder item status when comparing {a} vs {b}.")
         };
 
-        private static string GetRelativeGitPath(string path) => System.IO.Path
-            .GetRelativePath(Repo.Instance.NotNull().Path.NotNull(), path)
+        private string GetRelativeGitPath(string path) => System.IO.Path
+            .GetRelativePath(Parent.Parent.Path, path)
             .Replace('\\', '/');
     }
 }
