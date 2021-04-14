@@ -1,23 +1,11 @@
 ﻿namespace hyperactive {
-    using System.ComponentModel;
-
-    public class EnterCommitMessage : ViewModel, IDataErrorInfo {
+    public class EnterCommitMessage : ValidatableViewModel {
         private string? commitMessage;
-        public string? CommitMessage {
-            get => commitMessage;
-            set { if (SetProp(ref commitMessage, value)) Touched = true; }
-        }
+        public string? CommitMessage { get => commitMessage; set => SetProp(ref commitMessage, value); }
 
-        private bool touched;
-        public bool Touched { get => touched; set => SetProp(ref touched, value); }
-
-        public string Error { get; } = "";
-        public string this[string columnName] {
-            get => columnName switch {
-                _ when !Touched => "",
-                nameof(CommitMessage) when string.IsNullOrWhiteSpace(CommitMessage) => "cannot be empty",
-                _ => ""
-            };
-        }
+        protected override string? Validate(string property) => property switch {
+            nameof(CommitMessage) when string.IsNullOrWhiteSpace(CommitMessage) => "cannot be empty",
+            _ => null
+        };
     }
 }

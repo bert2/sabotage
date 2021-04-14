@@ -19,7 +19,7 @@
                 if (!Touched) return null;
 
                 var err = Validate(columnName);
-                propValid[columnName] = err is null;
+                propValid[columnName] = string.IsNullOrEmpty(err);
                 IsValid = propValid.Values.All(isValid => isValid);
                 return err;
             }
