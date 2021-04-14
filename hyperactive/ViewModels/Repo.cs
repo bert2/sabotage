@@ -128,6 +128,7 @@
 
             Branches.Add(new WTreeBranch(this, LibGitRepo.Branches[newName].NotNull()));
             RaisePropertyChanged(nameof(Head));
+            LoadStatus();
         }
 
         private async void MergeBranch(LocalBranch target) {

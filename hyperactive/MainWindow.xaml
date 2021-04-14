@@ -499,6 +499,7 @@
             Margin="0,8,0,0"
             Orientation="Horizontal"
             Visibility="{Binding Repo, Converter={StaticResource NullVisibilityConverter}}">
+            <!--  local branches  -->
             <mat:PopupBox IsEnabled="{Binding Repo.Branches.Count, Converter={StaticResource NotZeroConverter}}" PlacementMode="BottomAndAlignLeftEdges">
               <mat:PopupBox.ToggleContent>
                 <mat:Badged Badge="{Binding Repo.Branches.Count}">
@@ -536,6 +537,7 @@
               </ItemsControl>
             </mat:PopupBox>
 
+            <!--  remote branches  -->
             <mat:PopupBox
               Margin="32,0,0,0"
               IsEnabled="{Binding Repo.RemoteBranches.Length, Converter={StaticResource NotZeroConverter}}"
@@ -574,16 +576,32 @@
               </ItemsControl>
             </mat:PopupBox>
 
+            <!--  "status" label  -->
             <TextBlock
               Margin="32,0,0,0"
               VerticalAlignment="Center"
               Text="status:" />
+
+            <!--  HEAD  -->
+            <TextBlock
+              Margin="8,0,0,0"
+              VerticalAlignment="Center"
+              Text="{Binding Repo.Head.Name, Mode=OneWay}"
+              Visibility="{Binding Repo.Head, Converter={StaticResource NullVisibilityConverter}}" />
+
+            <!--  unborn HEAD  -->
+            <TextBlock
+              Margin="8,0,0,0"
+              VerticalAlignment="Center"
+              Text="{Binding Repo.LibGitRepo.Head.FriendlyName, Mode=OneWay}"
+              Visibility="{Binding Repo.Head, Converter={StaticResource InvertedNullVisibilityConverter}}" />
+
+            <!--  status  -->
             <TextBlock
               Margin="8,0,0,0"
               VerticalAlignment="Center"
               FontFamily="Consolas"
               Foreground="{Binding Repo.Status.WTreeStatus, Converter={StaticResource WTreeStatusToBrushConv}, Mode=OneWay}">
-              <Run Text="{Binding Repo.Head.Name, Mode=OneWay}" />
               +<Run Text="{Binding Repo.Status.IdxAdd, Mode=OneWay}" />
               ~<Run Text="{Binding Repo.Status.IdxMod, Mode=OneWay}" />
               -<Run Text="{Binding Repo.Status.IdxDel, Mode=OneWay}" />
@@ -593,6 +611,8 @@
               -<Run Text="{Binding Repo.Status.WdirDel, Mode=OneWay}" />
               !<Run Text="{Binding Repo.Status.WdirCon, Mode=OneWay}" />
             </TextBlock>
+
+            <!--  operation in progress  -->
             <TextBlock
               Margin="8,0,0,0"
               VerticalAlignment="Center"
