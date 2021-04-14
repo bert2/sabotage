@@ -87,7 +87,7 @@
         }
 
         private async void CreateFolder() {
-            var (ok, folderName) = await Dialog.Show(new EnterNewItemName(ItemType.Folder), vm => vm.NewName);
+            var (ok, folderName) = await Dialog.Show(new EnterNewItemName(owner: this, ItemType.Folder), vm => vm.NewName);
             if (!ok) return;
 
             _ = Directory.CreateDirectory(Path.Join(CurrentPath, folderName.NotNull()));
@@ -98,7 +98,7 @@
         }
 
         private async void CreateFile() {
-            var (ok, fileName) = await Dialog.Show(new EnterNewItemName(ItemType.File), vm => vm.NewName);
+            var (ok, fileName) = await Dialog.Show(new EnterNewItemName(owner: this, ItemType.File), vm => vm.NewName);
             if (!ok) return;
 
             File.Open(Path.Join(CurrentPath, fileName.NotNull()), FileMode.CreateNew)
@@ -116,7 +116,7 @@
             var type = SelectedItem.Type.ToString().ToLower();
 
             var (ok, newName) = await Dialog.Show(
-                new EnterNewItemName(SelectedItem.Type, oldName: SelectedItem.Name),
+                new EnterNewItemName(owner: this, SelectedItem.Type, oldName: SelectedItem.Name),
                 vm => vm.NewName);
             if (!ok) return;
 

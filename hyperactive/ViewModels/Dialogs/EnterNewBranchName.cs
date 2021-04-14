@@ -10,11 +10,11 @@ namespace hyperactive {
 
         public string? OldName { get; }
 
-        private string? branchName;
-        public string? BranchName {
-            get => branchName;
+        private string? newName;
+        public string? NewName {
+            get => newName;
             set {
-                if (SetProp(ref branchName, value))
+                if (SetProp(ref newName, value))
                     Touched = true;
             }
         }
@@ -25,7 +25,7 @@ namespace hyperactive {
         public string Error { get; } = "";
         public string this[string columnName] {
             get => columnName switch {
-                nameof(BranchName) when BranchExists(repo, BranchName) => "already exists",
+                nameof(NewName) when BranchExists(repo, NewName) => "already exists",
                 _ => ""
             };
         }
