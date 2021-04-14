@@ -7,7 +7,7 @@
     using LibGit2Sharp;
 
     public class Main : ValidatableViewModel {
-        private string? directory;// = @"D:\DEV\git-conflicts"; // TODO: remove test value
+        private string? directory = @"D:\DEV\git-empty"; // TODO: remove test value
         public string? Directory { get => directory; set => SetProp(ref directory, value); }
 
         private Repo? repo;
@@ -23,7 +23,7 @@
             _ => null
         };
 
-        //public Main() => LoadRepository(); // TODO: remove test code
+        public Main() => LoadRepository(); // TODO: remove test code
 
         private async void SelectDirectory() {
             using var dialog = new FolderBrowserDialog {

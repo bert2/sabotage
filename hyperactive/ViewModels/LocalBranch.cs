@@ -50,7 +50,7 @@
         }
 
         private async void BranchOff() {
-            var (ok, target) = await Dialog.Show(new EnterNewBranchName(owner: this), vm => vm.NewName);
+            var (ok, target) = await Dialog.Show(new EnterNewBranchName(owner: Parent), vm => vm.NewName);
             if (!ok) return;
 
             var created = repo.CreateBranch(branchName: target, target: LibGitBranch.Tip);
@@ -62,7 +62,7 @@
 
         private async void Rename() {
             var (ok, newName) = await Dialog.Show(
-                new EnterNewBranchName(owner: this, oldName: name),
+                new EnterNewBranchName(owner: Parent, oldName: name),
                 vm => vm.NewName);
             if (!ok) return;
 

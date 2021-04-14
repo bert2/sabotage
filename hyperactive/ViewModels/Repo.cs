@@ -23,7 +23,9 @@
         private RemoteBranch[] remoteBranches = null!;
         public RemoteBranch[] RemoteBranches { get => remoteBranches; private set => SetProp(ref remoteBranches, value); }
 
-        public WTreeBranch Head => Branches.OfType<WTreeBranch>().Single();
+        public WTreeBranch? Head => Branches.OfType<WTreeBranch>().SingleOrDefault();
+
+        public ICommand CreateInitialBranchCmd => new Command(CreateInitialBranch);
 
         public ICommand MergeBranchCmd => new Command<LocalBranch>(MergeBranch);
 
@@ -90,7 +92,7 @@
                 Branches.InsertSorted(CreateBranch(branch.LibGitBranch), DevelopFirstMainLast);
             }
 
-            ReloadBranch(Head);
+            if (Head is not null) ReloadBranch(Head);
 
             if (args.NewHead.Is<LocalBranch>()) {
                 ReloadBranch(args.NewHead);
@@ -112,6 +114,22 @@
 
         #region command handlers
 
+        private async void CreateInitialBranch() {
+            var (ok, newName) = await Dialog.Show(new EnterNewBranchName(owner: this), vm => vm.NewName);
+            if (!ok) return;
+
+            LibGitRepo.Refs.UpdateTarget("HEAD", $"refs/heads/{newName}");
+
+            Commands.Stage(LibGitRepo, "*");
+            var sig = LibGitRepo.CreateSignature();
+            var initial = LibGitRepo.Commit("initial commit", sig, sig, new() { AllowEmptyCommit = true });
+
+            Snackbar.Show("initial branch created");
+
+            Branches.Add(new WTreeBranch(this, LibGitRepo.Branches[newName].NotNull()));
+            RaisePropertyChanged(nameof(Head));
+        }
+
         private async void MergeBranch(LocalBranch target) {
             var (ok, source) = await Dialog.Show(
                 new SelectMergeSource(target, sources: Branches.Where(b => b.Name != target.Name)),
@@ -129,7 +147,7 @@
             });
 
             LoadStatus();
-            Head.ReloadCurrentFolder();
+            Head.NotNull().ReloadCurrentFolder();
         }
 
         private async void CherryPick(LocalBranch mergeTarget) {
@@ -155,7 +173,7 @@
             });
 
             LoadStatus();
-            Head.ReloadCurrentFolder();
+            Head.NotNull().ReloadCurrentFolder();
         }
 
         #endregion command handlers

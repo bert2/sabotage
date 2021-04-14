@@ -11,8 +11,8 @@
         private string? newName;
         public string? NewName { get => newName; set => SetProp(ref newName, value); }
 
-        public EnterNewBranchName(LocalBranch owner, string? oldName = null)
-            => (repo, OldName) = (owner.Parent.LibGitRepo, oldName);
+        public EnterNewBranchName(Repo owner, string? oldName = null)
+            => (repo, OldName) = (owner.LibGitRepo, oldName);
 
         protected override string? Validate(string property) => property switch {
             nameof(NewName) when string.IsNullOrWhiteSpace(NewName) => "cannot be empty",

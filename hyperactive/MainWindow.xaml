@@ -28,6 +28,8 @@
 
     <local:AndConverter x:Key="AndConv" />
 
+    <local:ZeroToTrueConverter x:Key="ZeroToTrueConv" />
+
     <local:BoolToColorConverter x:Key="BoolToColorConv" />
 
     <local:NullableToBoolConverter x:Key="NullToFalseConv" />
@@ -612,15 +614,47 @@
 
       <!--  branches  -->
       <Grid Grid.Row="1">
+        <!--  no repo opened  -->
         <TextBlock
           HorizontalAlignment="Center"
           VerticalAlignment="Center"
           Foreground="{DynamicResource MaterialDesignLightSeparatorBackground}"
           Visibility="{Binding Repo, Converter={StaticResource InvertedNullVisibilityConverter}}">
-          no git repositroy opened
+          no git repository opened
         </TextBlock>
 
-        <ItemsControl ItemsSource="{Binding Repo.Branches}" Visibility="{Binding Repo, Converter={StaticResource NullVisibilityConverter}}">
+        <!--  empty repo  -->
+        <StackPanel VerticalAlignment="Center">
+          <StackPanel.Visibility>
+            <MultiBinding Converter="{StaticResource andTrueAsVisibleConverter}">
+              <Binding Converter="{StaticResource NullToFalseConv}" Path="Repo.Branches" />
+              <Binding Converter="{StaticResource ZeroToTrueConv}" Path="Repo.Branches.Count" />
+            </MultiBinding>
+          </StackPanel.Visibility>
+
+          <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource MaterialDesignLightSeparatorBackground}">
+            repository is empty
+          </TextBlock>
+
+          <Button
+            Margin="0,8,0,0"
+            Command="{Binding Repo.CreateInitialBranchCmd}"
+            CommandParameter="{Binding}"
+            Content="{mat:PackIcon SourceBranchPlus,
+                                   Size=32}"
+            Style="{StaticResource MaterialDesignIconButton}"
+            ToolTip="create branch" />
+        </StackPanel>
+
+        <!--  repo with branches  -->
+        <ItemsControl ItemsSource="{Binding Repo.Branches}">
+          <ItemsControl.Visibility>
+            <MultiBinding Converter="{StaticResource andTrueAsVisibleConverter}">
+              <Binding Converter="{StaticResource NullToFalseConv}" Path="Repo.Branches" />
+              <Binding Converter="{StaticResource NotZeroConverter}" Path="Repo.Branches.Count" />
+            </MultiBinding>
+          </ItemsControl.Visibility>
+
           <ItemsControl.ItemTemplate>
             <DataTemplate DataType="{x:Type local:LocalBranch}">
               <mat:Card
