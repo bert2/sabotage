@@ -495,7 +495,8 @@
             Grid.Row="1"
             Grid.Column="0"
             Margin="0,8,0,0"
-            Orientation="Horizontal">
+            Orientation="Horizontal"
+            Visibility="{Binding Repo, Converter={StaticResource NullVisibilityConverter}}">
             <mat:PopupBox IsEnabled="{Binding Repo.Branches.Count, Converter={StaticResource NotZeroConverter}}" PlacementMode="BottomAndAlignLeftEdges">
               <mat:PopupBox.ToggleContent>
                 <mat:Badged Badge="{Binding Repo.Branches.Count}">
@@ -610,311 +611,320 @@
       </mat:Card>
 
       <!--  branches  -->
-      <ItemsControl Grid.Row="1" ItemsSource="{Binding Repo.Branches}">
-        <ItemsControl.ItemTemplate>
-          <DataTemplate DataType="{x:Type local:LocalBranch}">
-            <mat:Card
-              Margin="16"
-              Padding="8"
-              Background="{DynamicResource MaterialDesignPaper}">
-              <Grid>
-                <Grid.RowDefinitions>
-                  <RowDefinition Height="auto" />
-                  <RowDefinition Height="2*" />
-                  <RowDefinition Height="3*" />
-                </Grid.RowDefinitions>
+      <Grid Grid.Row="1">
+        <TextBlock
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center"
+          Foreground="{DynamicResource MaterialDesignLightSeparatorBackground}"
+          Visibility="{Binding Repo, Converter={StaticResource InvertedNullVisibilityConverter}}">
+          no git repositroy opened
+        </TextBlock>
 
-                <!--  branch header  -->
-                <Grid Grid.Row="0">
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                  </Grid.ColumnDefinitions>
+        <ItemsControl ItemsSource="{Binding Repo.Branches}" Visibility="{Binding Repo, Converter={StaticResource NullVisibilityConverter}}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type local:LocalBranch}">
+              <mat:Card
+                Margin="16"
+                Padding="8"
+                Background="{DynamicResource MaterialDesignPaper}">
+                <Grid>
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="2*" />
+                    <RowDefinition Height="3*" />
+                  </Grid.RowDefinitions>
 
-                  <!--  branch name  -->
-                  <StackPanel
-                    Grid.Column="0"
-                    Margin="8,0,0,0"
-                    VerticalAlignment="Center"
-                    Orientation="Horizontal">
-                    <TextBlock
-                      Foreground="{Binding IsHead, Converter={StaticResource IsHeadToHeaderBrushConv}}"
-                      Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
-                      Text="* "
-                      Visibility="{Binding IsHead, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                  <!--  branch header  -->
+                  <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="*" />
+                      <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                    <TextBlock
-                      Foreground="{Binding IsHead, Converter={StaticResource IsHeadToHeaderBrushConv}}"
-                      Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
-                      Text="{Binding Name, Mode=OneWay}" />
-                  </StackPanel>
+                    <!--  branch name  -->
+                    <StackPanel
+                      Grid.Column="0"
+                      Margin="8,0,0,0"
+                      VerticalAlignment="Center"
+                      Orientation="Horizontal">
+                      <TextBlock
+                        Foreground="{Binding IsHead, Converter={StaticResource IsHeadToHeaderBrushConv}}"
+                        Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
+                        Text="* "
+                        Visibility="{Binding IsHead, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-                  <!--  branch actions  -->
-                  <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button
-                      Command="{Binding CheckoutCmd}"
-                      CommandParameter="{Binding}"
-                      Content="{mat:PackIcon TrayArrowDown,
-                                             Size=20}"
-                      Style="{StaticResource MaterialDesignIconButton}"
-                      ToolTip="checkout this branch (discards all local changes and aborts failed merges)" />
+                      <TextBlock
+                        Foreground="{Binding IsHead, Converter={StaticResource IsHeadToHeaderBrushConv}}"
+                        Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
+                        Text="{Binding Name, Mode=OneWay}" />
+                    </StackPanel>
 
-                    <Button
-                      Command="{Binding CommitCmd}"
-                      Content="{mat:PackIcon ContentSave,
-                                             Size=20}"
-                      IsEnabled="{Binding IsHead}"
-                      Style="{StaticResource MaterialDesignIconButton}"
-                      ToolTip="stage and commit all local changes" />
-
-                    <mat:PopupBox Foreground="{DynamicResource PrimaryHueMidBrush}" PlacementMode="BottomAndAlignLeftEdges">
-                      <StackPanel>
-                        <Button
-                          HorizontalContentAlignment="Left"
-                          Command="{Binding BranchOffCmd}"
-                          CommandParameter="{Binding}"
-                          Foreground="{DynamicResource PrimaryHueLightBrush}"
-                          Style="{DynamicResource MaterialDesignFlatButton}"
-                          ToolTip="create a new branch from here">
-                          <StackPanel Orientation="Horizontal">
-                            <mat:PackIcon Kind="SourceBranchPlus" />
-                            <TextBlock
-                              Margin="8,0,0,0"
-                              VerticalAlignment="Center"
-                              Foreground="{DynamicResource MaterialDesignBody}"
-                              Text="branch" />
-                          </StackPanel>
-                        </Button>
-
-                        <Separator />
-
-                        <Button
-                          HorizontalContentAlignment="Left"
-                          Command="{Binding Parent.MergeBranchCmd}"
-                          CommandParameter="{Binding}"
-                          Foreground="{DynamicResource PrimaryHueLightBrush}"
-                          IsEnabled="{Binding IsHead}"
-                          Style="{DynamicResource MaterialDesignFlatButton}"
-                          ToolTip="merge another branch into this one">
-                          <StackPanel Orientation="Horizontal">
-                            <mat:PackIcon Kind="SourceMerge" />
-                            <TextBlock
-                              Margin="8,0,0,0"
-                              VerticalAlignment="Center"
-                              Foreground="{DynamicResource MaterialDesignBody}"
-                              Text="merge" />
-                          </StackPanel>
-                        </Button>
-
-                        <Button
-                          HorizontalContentAlignment="Left"
-                          Command="{Binding Parent.CherryPickCmd}"
-                          CommandParameter="{Binding}"
-                          Foreground="{DynamicResource PrimaryHueLightBrush}"
-                          IsEnabled="{Binding IsHead}"
-                          Style="{DynamicResource MaterialDesignFlatButton}"
-                          ToolTip="cherry-pick a commit into this branch">
-                          <StackPanel Orientation="Horizontal">
-                            <mat:PackIcon Kind="SourceCommit" />
-                            <TextBlock
-                              Margin="8,0,0,0"
-                              VerticalAlignment="Center"
-                              Foreground="{DynamicResource MaterialDesignBody}"
-                              Text="cherry-pick" />
-                          </StackPanel>
-                        </Button>
-
-                        <Separator />
-
-                        <Button
-                          HorizontalContentAlignment="Left"
-                          Command="{Binding RenameCmd}"
-                          CommandParameter="{Binding}"
-                          Foreground="{DynamicResource PrimaryHueLightBrush}"
-                          Style="{DynamicResource MaterialDesignFlatButton}"
-                          ToolTip="rename this branch">
-                          <StackPanel Orientation="Horizontal">
-                            <mat:PackIcon Kind="Pencil" />
-                            <TextBlock
-                              Margin="8,0,0,0"
-                              VerticalAlignment="Center"
-                              Foreground="{DynamicResource MaterialDesignBody}"
-                              Text="rename" />
-                          </StackPanel>
-                        </Button>
-
-                        <Button
-                          HorizontalContentAlignment="Left"
-                          Command="{Binding DeleteCmd}"
-                          CommandParameter="{Binding}"
-                          Foreground="{DynamicResource PrimaryHueLightBrush}"
-                          IsEnabled="{Binding IsHead, Converter={StaticResource NotConverter}}"
-                          Style="{DynamicResource MaterialDesignFlatButton}"
-                          ToolTip="delete this branch locally">
-                          <StackPanel Orientation="Horizontal">
-                            <mat:PackIcon Kind="TrashCan" />
-                            <TextBlock
-                              Margin="8,0,0,0"
-                              VerticalAlignment="Center"
-                              Foreground="{DynamicResource MaterialDesignBody}"
-                              Text="delete" />
-                          </StackPanel>
-                        </Button>
-                      </StackPanel>
-                    </mat:PopupBox>
-                  </StackPanel>
-                </Grid>
-
-                <!--  directory view  -->
-                <Border
-                  Grid.Row="1"
-                  Margin="0,16,0,0"
-                  BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
-                  BorderThickness="1">
-                  <Grid>
-                    <Grid.RowDefinitions>
-                      <RowDefinition Height="*" />
-                      <RowDefinition Height="auto" />
-                    </Grid.RowDefinitions>
-
-                    <ListBox
-                      Grid.Row="0"
-                      BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
-                      BorderThickness="0,0,0,1"
-                      ItemsSource="{Binding CurrentDirectory}"
-                      SelectedItem="{Binding SelectedItem}">
-                      <ListBox.ItemTemplate>
-                        <DataTemplate DataType="{x:Type local:IDirectoryItem}">
-                          <ContentControl Content="{Binding}">
-                            <ContentControl.Style>
-                              <Style TargetType="{x:Type ContentControl}">
-                                <Setter Property="ContentTemplate">
-                                  <Setter.Value>
-                                    <DataTemplate DataType="{x:Type local:IDirectoryItem}">
-                                      <StackPanel Orientation="Horizontal">
-                                        <mat:PackIcon Kind="FileOutline" />
-                                        <TextBlock
-                                          Margin="8,0,0,0"
-                                          Foreground="{Binding Status, Converter={StaticResource StatusToBrushConv}}"
-                                          Text="{Binding Name}"
-                                          ToolTip="{Binding Status, Converter={StaticResource StatusToToolTipConv}, ConverterParameter={x:Static local:ItemType.File}}" />
-                                      </StackPanel>
-                                    </DataTemplate>
-                                  </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                  <DataTrigger Binding="{Binding Type}" Value="{x:Static local:ItemType.Folder}">
-                                    <Setter Property="ContentTemplate">
-                                      <Setter.Value>
-                                        <DataTemplate DataType="{x:Type local:IDirectoryItem}">
-                                          <StackPanel Orientation="Horizontal">
-                                            <mat:PackIcon Kind="Folder" />
-                                            <TextBlock
-                                              Margin="8,0,0,0"
-                                              Foreground="{Binding Status, Converter={StaticResource StatusToBrushConv}}"
-                                              Text="{Binding Name}"
-                                              ToolTip="{Binding Status, Converter={StaticResource StatusToToolTipConv}, ConverterParameter={x:Static local:ItemType.Folder}}" />
-                                          </StackPanel>
-                                        </DataTemplate>
-                                      </Setter.Value>
-                                    </Setter>
-                                  </DataTrigger>
-                                </Style.Triggers>
-                              </Style>
-                            </ContentControl.Style>
-                            <ContentControl.InputBindings>
-                              <MouseBinding Command="{Binding Parent.NavigateCmd}" MouseAction="LeftDoubleClick" />
-                            </ContentControl.InputBindings>
-                          </ContentControl>
-                        </DataTemplate>
-                      </ListBox.ItemTemplate>
-                    </ListBox>
-
-                    <ToolBar
-                      Grid.Row="1"
-                      Background="{DynamicResource MaterialDesignPaper}"
-                      Style="{DynamicResource MaterialDesignToolBar}"
-                      ToolBarTray.IsLocked="True">
+                    <!--  branch actions  -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
                       <Button
-                        Command="{Binding CreateFolderCmd}"
-                        Content="{mat:PackIcon FolderPlus}"
+                        Command="{Binding CheckoutCmd}"
+                        CommandParameter="{Binding}"
+                        Content="{mat:PackIcon TrayArrowDown,
+                                               Size=20}"
+                        Style="{StaticResource MaterialDesignIconButton}"
+                        ToolTip="checkout this branch (discards all local changes and aborts failed merges)" />
+
+                      <Button
+                        Command="{Binding CommitCmd}"
+                        Content="{mat:PackIcon ContentSave,
+                                               Size=20}"
                         IsEnabled="{Binding IsHead}"
-                        Style="{StaticResource MaterialDesignToolButton}"
-                        ToolTip="create new folder" />
+                        Style="{StaticResource MaterialDesignIconButton}"
+                        ToolTip="stage and commit all local changes" />
 
-                      <Button
-                        Command="{Binding CreateFileCmd}"
-                        Content="{mat:PackIcon FilePlusOutline}"
-                        IsEnabled="{Binding IsHead}"
-                        Style="{StaticResource MaterialDesignToolButton}"
-                        ToolTip="create new file" />
+                      <mat:PopupBox Foreground="{DynamicResource PrimaryHueMidBrush}" PlacementMode="BottomAndAlignLeftEdges">
+                        <StackPanel>
+                          <Button
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding BranchOffCmd}"
+                            CommandParameter="{Binding}"
+                            Foreground="{DynamicResource PrimaryHueLightBrush}"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            ToolTip="create a new branch from here">
+                            <StackPanel Orientation="Horizontal">
+                              <mat:PackIcon Kind="SourceBranchPlus" />
+                              <TextBlock
+                                Margin="8,0,0,0"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource MaterialDesignBody}"
+                                Text="branch" />
+                            </StackPanel>
+                          </Button>
 
-                      <Separator />
+                          <Separator />
 
-                      <Button
-                        Command="{Binding RenameItemCmd}"
-                        Content="{mat:PackIcon Pencil}"
-                        Style="{StaticResource MaterialDesignToolButton}"
-                        ToolTip="rename selected item">
-                        <Button.IsEnabled>
-                          <MultiBinding Converter="{StaticResource AndConv}">
-                            <Binding Path="IsHead" />
-                            <Binding Converter="{StaticResource NullToFalseConv}" Path="SelectedItem" />
-                          </MultiBinding>
-                        </Button.IsEnabled>
-                      </Button>
+                          <Button
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding Parent.MergeBranchCmd}"
+                            CommandParameter="{Binding}"
+                            Foreground="{DynamicResource PrimaryHueLightBrush}"
+                            IsEnabled="{Binding IsHead}"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            ToolTip="merge another branch into this one">
+                            <StackPanel Orientation="Horizontal">
+                              <mat:PackIcon Kind="SourceMerge" />
+                              <TextBlock
+                                Margin="8,0,0,0"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource MaterialDesignBody}"
+                                Text="merge" />
+                            </StackPanel>
+                          </Button>
 
-                      <Button
-                        Command="{Binding DeleteItemCmd}"
-                        Content="{mat:PackIcon TrashCan}"
-                        Style="{StaticResource MaterialDesignToolButton}"
-                        ToolTip="delete selected item">
-                        <Button.IsEnabled>
-                          <MultiBinding Converter="{StaticResource AndConv}">
-                            <Binding Path="IsHead" />
-                            <Binding Converter="{StaticResource NullToFalseConv}" Path="SelectedItem" />
-                          </MultiBinding>
-                        </Button.IsEnabled>
-                      </Button>
-                    </ToolBar>
+                          <Button
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding Parent.CherryPickCmd}"
+                            CommandParameter="{Binding}"
+                            Foreground="{DynamicResource PrimaryHueLightBrush}"
+                            IsEnabled="{Binding IsHead}"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            ToolTip="cherry-pick a commit into this branch">
+                            <StackPanel Orientation="Horizontal">
+                              <mat:PackIcon Kind="SourceCommit" />
+                              <TextBlock
+                                Margin="8,0,0,0"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource MaterialDesignBody}"
+                                Text="cherry-pick" />
+                            </StackPanel>
+                          </Button>
+
+                          <Separator />
+
+                          <Button
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding RenameCmd}"
+                            CommandParameter="{Binding}"
+                            Foreground="{DynamicResource PrimaryHueLightBrush}"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            ToolTip="rename this branch">
+                            <StackPanel Orientation="Horizontal">
+                              <mat:PackIcon Kind="Pencil" />
+                              <TextBlock
+                                Margin="8,0,0,0"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource MaterialDesignBody}"
+                                Text="rename" />
+                            </StackPanel>
+                          </Button>
+
+                          <Button
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding DeleteCmd}"
+                            CommandParameter="{Binding}"
+                            Foreground="{DynamicResource PrimaryHueLightBrush}"
+                            IsEnabled="{Binding IsHead, Converter={StaticResource NotConverter}}"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
+                            ToolTip="delete this branch locally">
+                            <StackPanel Orientation="Horizontal">
+                              <mat:PackIcon Kind="TrashCan" />
+                              <TextBlock
+                                Margin="8,0,0,0"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource MaterialDesignBody}"
+                                Text="delete" />
+                            </StackPanel>
+                          </Button>
+                        </StackPanel>
+                      </mat:PopupBox>
+                    </StackPanel>
                   </Grid>
-                </Border>
 
-                <!--  file editor  -->
-                <TextBox
-                  Grid.Row="2"
-                  Margin="0,16,0,0"
-                  VerticalContentAlignment="Stretch"
-                  mat:TextFieldAssist.UnderlineBrush="{Binding SelectedItem.ReadOnly, Converter={StaticResource IsReadOnlyToBorderBrushConv}}"
-                  AcceptsReturn="True"
-                  AcceptsTab="False"
-                  FontFamily="Consolas"
-                  HorizontalScrollBarVisibility="Auto"
-                  IsReadOnly="{Binding SelectedItem.ReadOnly}"
-                  LostFocus="UpdateTextBoxBindingOnLeave"
-                  Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                  Text="{Binding SelectedItem.Content, UpdateSourceTrigger=PropertyChanged, Delay=1000}"
-                  TextWrapping="NoWrap"
-                  VerticalScrollBarVisibility="Auto">
-                  <TextBox.IsEnabled>
-                    <MultiBinding Converter="{StaticResource AndConv}">
-                      <Binding Converter="{StaticResource NullToFalseConv}" Path="SelectedItem" />
-                      <Binding Converter="{StaticResource NullToFalseConv}" Path="SelectedItem.Content" />
-                    </MultiBinding>
-                  </TextBox.IsEnabled>
-                </TextBox>
-              </Grid>
-            </mat:Card>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
+                  <!--  directory view  -->
+                  <Border
+                    Grid.Row="1"
+                    Margin="0,16,0,0"
+                    BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
+                    BorderThickness="1">
+                    <Grid>
+                      <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="auto" />
+                      </Grid.RowDefinitions>
 
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <UniformGrid Rows="1" />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-      </ItemsControl>
+                      <ListBox
+                        Grid.Row="0"
+                        BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
+                        BorderThickness="0,0,0,1"
+                        ItemsSource="{Binding CurrentDirectory}"
+                        SelectedItem="{Binding SelectedItem}">
+                        <ListBox.ItemTemplate>
+                          <DataTemplate DataType="{x:Type local:IDirectoryItem}">
+                            <ContentControl Content="{Binding}">
+                              <ContentControl.Style>
+                                <Style TargetType="{x:Type ContentControl}">
+                                  <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                      <DataTemplate DataType="{x:Type local:IDirectoryItem}">
+                                        <StackPanel Orientation="Horizontal">
+                                          <mat:PackIcon Kind="FileOutline" />
+                                          <TextBlock
+                                            Margin="8,0,0,0"
+                                            Foreground="{Binding Status, Converter={StaticResource StatusToBrushConv}}"
+                                            Text="{Binding Name}"
+                                            ToolTip="{Binding Status, Converter={StaticResource StatusToToolTipConv}, ConverterParameter={x:Static local:ItemType.File}}" />
+                                        </StackPanel>
+                                      </DataTemplate>
+                                    </Setter.Value>
+                                  </Setter>
+                                  <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Type}" Value="{x:Static local:ItemType.Folder}">
+                                      <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                          <DataTemplate DataType="{x:Type local:IDirectoryItem}">
+                                            <StackPanel Orientation="Horizontal">
+                                              <mat:PackIcon Kind="Folder" />
+                                              <TextBlock
+                                                Margin="8,0,0,0"
+                                                Foreground="{Binding Status, Converter={StaticResource StatusToBrushConv}}"
+                                                Text="{Binding Name}"
+                                                ToolTip="{Binding Status, Converter={StaticResource StatusToToolTipConv}, ConverterParameter={x:Static local:ItemType.Folder}}" />
+                                            </StackPanel>
+                                          </DataTemplate>
+                                        </Setter.Value>
+                                      </Setter>
+                                    </DataTrigger>
+                                  </Style.Triggers>
+                                </Style>
+                              </ContentControl.Style>
+                              <ContentControl.InputBindings>
+                                <MouseBinding Command="{Binding Parent.NavigateCmd}" MouseAction="LeftDoubleClick" />
+                              </ContentControl.InputBindings>
+                            </ContentControl>
+                          </DataTemplate>
+                        </ListBox.ItemTemplate>
+                      </ListBox>
 
+                      <ToolBar
+                        Grid.Row="1"
+                        Background="{DynamicResource MaterialDesignPaper}"
+                        Style="{DynamicResource MaterialDesignToolBar}"
+                        ToolBarTray.IsLocked="True">
+                        <Button
+                          Command="{Binding CreateFolderCmd}"
+                          Content="{mat:PackIcon FolderPlus}"
+                          IsEnabled="{Binding IsHead}"
+                          Style="{StaticResource MaterialDesignToolButton}"
+                          ToolTip="create new folder" />
+
+                        <Button
+                          Command="{Binding CreateFileCmd}"
+                          Content="{mat:PackIcon FilePlusOutline}"
+                          IsEnabled="{Binding IsHead}"
+                          Style="{StaticResource MaterialDesignToolButton}"
+                          ToolTip="create new file" />
+
+                        <Separator />
+
+                        <Button
+                          Command="{Binding RenameItemCmd}"
+                          Content="{mat:PackIcon Pencil}"
+                          Style="{StaticResource MaterialDesignToolButton}"
+                          ToolTip="rename selected item">
+                          <Button.IsEnabled>
+                            <MultiBinding Converter="{StaticResource AndConv}">
+                              <Binding Path="IsHead" />
+                              <Binding Converter="{StaticResource NullToFalseConv}" Path="SelectedItem" />
+                            </MultiBinding>
+                          </Button.IsEnabled>
+                        </Button>
+
+                        <Button
+                          Command="{Binding DeleteItemCmd}"
+                          Content="{mat:PackIcon TrashCan}"
+                          Style="{StaticResource MaterialDesignToolButton}"
+                          ToolTip="delete selected item">
+                          <Button.IsEnabled>
+                            <MultiBinding Converter="{StaticResource AndConv}">
+                              <Binding Path="IsHead" />
+                              <Binding Converter="{StaticResource NullToFalseConv}" Path="SelectedItem" />
+                            </MultiBinding>
+                          </Button.IsEnabled>
+                        </Button>
+                      </ToolBar>
+                    </Grid>
+                  </Border>
+
+                  <!--  file editor  -->
+                  <TextBox
+                    Grid.Row="2"
+                    Margin="0,16,0,0"
+                    VerticalContentAlignment="Stretch"
+                    mat:TextFieldAssist.UnderlineBrush="{Binding SelectedItem.ReadOnly, Converter={StaticResource IsReadOnlyToBorderBrushConv}}"
+                    AcceptsReturn="True"
+                    AcceptsTab="False"
+                    FontFamily="Consolas"
+                    HorizontalScrollBarVisibility="Auto"
+                    IsReadOnly="{Binding SelectedItem.ReadOnly}"
+                    LostFocus="UpdateTextBoxBindingOnLeave"
+                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                    Text="{Binding SelectedItem.Content, UpdateSourceTrigger=PropertyChanged, Delay=1000}"
+                    TextWrapping="NoWrap"
+                    VerticalScrollBarVisibility="Auto">
+                    <TextBox.IsEnabled>
+                      <MultiBinding Converter="{StaticResource AndConv}">
+                        <Binding Converter="{StaticResource NullToFalseConv}" Path="SelectedItem" />
+                        <Binding Converter="{StaticResource NullToFalseConv}" Path="SelectedItem.Content" />
+                      </MultiBinding>
+                    </TextBox.IsEnabled>
+                  </TextBox>
+                </Grid>
+              </mat:Card>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Rows="1" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+        </ItemsControl>
+      </Grid>
       <mat:Snackbar Grid.Row="1" MessageQueue="{x:Static local:Snackbar.Queue}" />
     </Grid>
   </mat:DialogHost>
