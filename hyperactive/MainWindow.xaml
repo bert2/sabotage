@@ -508,16 +508,9 @@
             mat:TextFieldAssist.HasLeadingIcon="True"
             mat:TextFieldAssist.LeadingIcon="Git"
             FontSize="16"
-            KeyUp="UpdateTextBoxBindingOnReturn"
-            Style="{StaticResource MaterialDesignFloatingHintTextBox}">
-            <TextBox.Text>
-              <Binding Path="Directory">
-                <Binding.ValidationRules>
-                  <local:ValidateGitDirectory />
-                </Binding.ValidationRules>
-              </Binding>
-            </TextBox.Text>
-          </TextBox>
+            KeyUp="LoadRepoOnReturn"
+            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+            Text="{Binding Directory, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
 
           <!--  directory selection button  -->
           <Button

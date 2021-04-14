@@ -5,10 +5,7 @@
         private string? commitMessage;
         public string? CommitMessage {
             get => commitMessage;
-            set {
-                if (SetProp(ref commitMessage, value))
-                    Touched = true;
-            }
+            set { if (SetProp(ref commitMessage, value)) Touched = true; }
         }
 
         private bool touched;

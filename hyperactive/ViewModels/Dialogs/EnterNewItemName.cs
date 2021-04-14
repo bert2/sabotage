@@ -12,10 +12,7 @@
         private string? newName;
         public string? NewName {
             get => newName;
-            set {
-                if (SetProp(ref newName, value))
-                    Touched = true;
-            }
+            set { if (SetProp(ref newName, value)) Touched = true; }
         }
 
         private bool touched;
