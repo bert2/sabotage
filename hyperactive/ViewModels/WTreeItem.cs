@@ -9,6 +9,8 @@
     using MoreLinq;
 
     public class WTreeItem: ViewModel, IDirectoryItem {
+        private readonly Repository repo;
+
         // true when item is the "[..]" entry that navigates backwards
         private readonly bool isVirtual;
 
@@ -42,12 +44,24 @@
 
         public bool ReadOnly { get; } = false;
 
-        public WTreeItem(WTreeBranch parent, FileSystemInfo fsi)
-            => (Parent, Name, Path, Type, isVirtual) = (parent, fsi.Name, fsi.FullName, GetItemType(fsi), false);
+        public WTreeItem(WTreeBranch parent, FileSystemInfo fsi) {
+            repo = parent.Parent.LibGitRepo;
+            isVirtual = false;
+            Parent = parent;
+            Name = fsi.Name;
+            Path = fsi.FullName;
+            Type = GetItemType(fsi);
+        }
 
         // used to create the "[..]" entry that navigates backwards
-        public WTreeItem(WTreeBranch parent, string name, string path)
-            => (Parent, Name, Path, Type, isVirtual) = (parent, name, path, ItemType.Folder, true);
+        public WTreeItem(WTreeBranch parent, string name, string path) {
+            repo = parent.Parent.LibGitRepo;
+            isVirtual = true;
+            Parent = parent;
+            Name = name;
+            Path = path;
+            Type = ItemType.Folder;
+        }
 
         // will cause a new status retrieval next time the item is rendered
         public void ResetStatus() => SetProp(ref status, null, nameof(Status));
@@ -57,9 +71,7 @@
                 ? ItemType.Folder
                 : ItemType.File;
 
-        private static ItemStatus GetFileStatus(string path) => Repo
-            .Instance.NotNull()
-            .LibGitRepo.NotNull()
+        private ItemStatus GetFileStatus(string path) => repo
             .RetrieveStatus(path) switch {
                 FileStatus.NewInWorkdir        => ItemStatus.Added,
                 FileStatus.NewInIndex          => ItemStatus.Added,
@@ -84,9 +96,7 @@
                 _                              => ItemStatus.Unchanged,
         };
 
-        private static ItemStatus GetFolderStatus(string path) => Repo
-            .Instance.NotNull()
-            .LibGitRepo.NotNull()
+        private ItemStatus GetFolderStatus(string path) => repo
             .RetrieveStatus(new StatusOptions {
                 PathSpec = new[] { GetRelativeGitPath(path) },
                 IncludeUntracked = true,
