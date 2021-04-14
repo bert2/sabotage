@@ -6,6 +6,8 @@
 
     using LibGit2Sharp;
 
+    using MoreLinq;
+
     public class Main : ValidatableViewModel {
         private string? directory;// = @"D:\DEV\git-empty"; // TODO: remove test value
         public string? Directory { get => directory; set => SetProp(ref directory, value); }
@@ -30,18 +32,27 @@
                 Description = "Select Git Repository",
                 UseDescriptionForTitle = true,
                 SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + Path.DirectorySeparatorChar,
-                ShowNewFolderButton = false
+                ShowNewFolderButton = true
             };
 
             if (dialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            if (!Repository.IsValid(dialog.SelectedPath)) {
-                await Dialog.Show(new Error("not a git repository", details: dialog.SelectedPath));
-                return;
+            var path = dialog.SelectedPath;
+
+            if (!Repository.IsValid(path)) {
+                if (!await Dialog.Show(new Confirm("do you want to init a git repository in", subject: path)))
+                    return;
+
+                Repository.Init(path);
+
+                // Init() creates a symlink like "_git2_a05400 -> testing" for some reason
+                new DirectoryInfo(dialog.SelectedPath)
+                    .EnumerateFileSystemInfos("_git2_*")
+                    .ForEach(f => f.Delete());
             }
 
-            Directory = dialog.SelectedPath;
+            Directory = path;
             LoadRepository();
         }
 
