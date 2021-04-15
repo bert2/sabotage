@@ -6,9 +6,9 @@
     public abstract class LocalBranch: ViewModel {
         protected readonly Repository repo;
 
-        public Repo Parent { get; } // TODO: refactor to remove this?
+        public Repo Parent { get; }
 
-        public Branch LibGitBranch { get; }
+        public Branch LibGitBranch => repo.Branches[Name].NotNull();
 
         private string name;
         public string Name { get => name; set => SetProp(ref name, value); }
@@ -44,7 +44,6 @@
         protected LocalBranch(Repo parent, Branch branch) {
             repo = parent.LibGitRepo;
             Parent = parent;
-            LibGitBranch = branch;
             name = branch.FriendlyName;
             IsHead = branch.IsCurrentRepositoryHead;
         }
