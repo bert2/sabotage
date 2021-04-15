@@ -1,6 +1,4 @@
 ﻿namespace hyperactive {
-    using System;
-    using System.IO;
     using System.Windows.Forms;
     using System.Windows.Input;
 
@@ -9,7 +7,7 @@
     using MoreLinq;
 
     public class Main : ValidatableViewModel {
-        private string? directory;// = @"D:\DEV\git-empty"; // TODO: remove test value
+        private string? directory;
         public string? Directory { get => directory; set => SetProp(ref directory, value); }
 
         private Repo? repo;
@@ -25,15 +23,8 @@
             _ => null
         };
 
-        //public Main() => LoadRepository(); // TODO: remove test code
-
         private async void SelectDirectory() {
-            using var dialog = new FolderBrowserDialog {
-                Description = "Select Git Repository",
-                UseDescriptionForTitle = true,
-                ShowNewFolderButton = true
-            };
-
+            using var dialog = new FolderBrowserDialog { Description = "Select Git Repository", UseDescriptionForTitle = true };
             if (dialog.ShowDialog() != DialogResult.OK)
                 return;
 
@@ -46,9 +37,9 @@
                 Repository.Init(path);
 
                 // Init() creates a symlink like "_git2_a05400 -> testing" for some reason
-                new DirectoryInfo(dialog.SelectedPath)
-                    .EnumerateFileSystemInfos("_git2_*")
-                    .ForEach(f => f.Delete());
+                System.IO.Directory
+                    .EnumerateFileSystemEntries(dialog.SelectedPath, "_git2_*")
+                    .ForEach(System.IO.Directory.Delete);
             }
 
             Directory = path;
