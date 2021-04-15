@@ -95,6 +95,7 @@
             Snackbar.Show("folder created");
 
             ReloadCurrentFolder();
+            SelectedItem = CurrentDirectory.Single(item => item.Name == folderName);
         }
 
         private async void CreateFile() {
@@ -108,6 +109,7 @@
 
             Events.RaiseWTreeModified();
             ReloadCurrentFolder();
+            SelectedItem = CurrentDirectory.Single(item => item.Name == fileName);
         }
 
         private async void RenameItem() {
