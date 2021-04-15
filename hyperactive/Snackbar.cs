@@ -4,17 +4,22 @@
     using MaterialDesignThemes.Wpf;
 
     public static class Snackbar {
-        public static readonly ISnackbarMessageQueue Queue = new SnackbarMessageQueue(messageDuration: TimeSpan.FromSeconds(2));
+        public static readonly SnackbarMessageQueue Queue = new(messageDuration: TimeSpan.FromSeconds(2));
 
-        public static void Show(string message) => Queue.Enqueue(message);
+        public static void Show(string message) => ShowImmediately(message);
 
-        public static void ShowImportant(string message) => Queue.Enqueue(
-            message,
-            actionContent: null,
-            actionHandler: null,
-            actionArgument: null,
-            promote: true,
-            neverConsiderToBeDuplicate: true,
-            durationOverride: TimeSpan.FromSeconds(5));
+        public static void ShowImportant(string message) => ShowImmediately(message, duration: TimeSpan.FromSeconds(5));
+
+        private static void ShowImmediately(string message, TimeSpan? duration = null) {
+            Queue.Clear(); // we don't want the queueing behavior
+            Queue.Enqueue(
+                message,
+                actionContent: null,
+                actionHandler: null,
+                actionArgument: null,
+                promote: true,
+                neverConsiderToBeDuplicate: true,
+                durationOverride: duration);
+        }
     }
 }
