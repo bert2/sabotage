@@ -31,7 +31,6 @@
             using var dialog = new FolderBrowserDialog {
                 Description = "Select Git Repository",
                 UseDescriptionForTitle = true,
-                SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + Path.DirectorySeparatorChar,
                 ShowNewFolderButton = true
             };
 
