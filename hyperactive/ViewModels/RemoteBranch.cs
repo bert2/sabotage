@@ -21,7 +21,7 @@
 
             _ = repo.Branches.Update(localBranch, b => b.TrackedBranch = remoteBranch.CanonicalName);
 
-            repo.Reset(ResetMode.Hard);
+            if (!repo.Info.IsHeadUnborn) repo.Reset(ResetMode.Hard);
             Commands.Checkout(repo, localBranch, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
             repo.RemoveUntrackedFiles();
 
