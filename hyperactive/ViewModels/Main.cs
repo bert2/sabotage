@@ -50,6 +50,7 @@
             Repo?.Dispose();
             Repo = null; // ensure bound controls don't hang onto old repo in case of load errors
             Repo = new Repo(Directory.NotNull());
+            IsValid = true;
         }
 
         private static bool IsRepo(string? path) => !string.IsNullOrWhiteSpace(path) && Repository.IsValid(path);

@@ -619,7 +619,7 @@
               Text="{Binding Repo.Status.CurrentOperation, Mode=OneWay, Converter={StaticResource CurrOpToTextConv}}" />
           </StackPanel>
 
-          <!--  repo load button  -->
+          <!--  load button  -->
           <Button
             Grid.Row="1"
             Grid.Column="1"
