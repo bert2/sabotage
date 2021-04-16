@@ -20,7 +20,7 @@ Only a small subset of Git's features are supported. Here is a list of the thing
 - Rename and delete local branches.
 - Merge a branch into the currently checked-out branch.
 - Cherry-pick a commit into the currently checked-out branch.
-- Working tree status summary in a format very similar to [posh-git](https://github.com/dahlbyk/posh-git#git-status-summary-information).
+- Working tree status summary in a format similar to [posh-git](https://github.com/dahlbyk/posh-git#git-status-summary-information).
 
 There is no possibility to see the commit history or a commit graph. A graph of branches would certainly be helpful, though. Maybe later.
 
@@ -52,7 +52,6 @@ PS> git clone https://github.com/bert2/hyperactive.git
 PS> cd hyperactive
 PS> dotnet run -p .\hyperactive\hyperactive.csproj
 ```
-
 
 ## known issues
 
