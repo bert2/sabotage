@@ -40,7 +40,7 @@ PS> choco install dotnet-sdk
 PS> choco install git
 ```
 
-3. Download the [source](https://github.com/bert2/microscope/archive/refs/heads/main.zip) or clone it using Git. You did install it, right?
+3. Download the [source](https://github.com/bert2/hyperactive/archive/refs/heads/main.zip) or clone it using Git. You did install it, right?
 
 ```powershell
 PS> git clone https://github.com/bert2/hyperactive.git
