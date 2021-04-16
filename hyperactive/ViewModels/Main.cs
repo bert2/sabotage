@@ -15,7 +15,7 @@
 
         public ICommand SelectDirectoryCmd => new Command(SelectDirectory);
 
-        public ICommand LoadRepositoryCmd => new Command(ReloadRepository);
+        public ICommand LoadRepositoryCmd => new Command(LoadRepository);
 
         protected override string? Validate(string property) => property switch {
             nameof(Directory) when !System.IO.Directory.Exists(Directory) => "not found",
@@ -46,16 +46,13 @@
             LoadRepository();
         }
 
-        private void ReloadRepository() {
-            LoadRepository();
-
-            Snackbar.Show("repository reloaded");
-        }
-
         private void LoadRepository() {
             Repo?.Dispose();
             Repo = null; // ensure bound controls don't hang onto old repo in case of load errors
             Repo = new Repo(Directory.NotNull());
+
+            Snackbar.Show("repository reloaded");
+
             IsValid = true;
         }
 
