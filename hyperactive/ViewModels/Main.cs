@@ -15,7 +15,7 @@
 
         public ICommand SelectDirectoryCmd => new Command(SelectDirectory);
 
-        public ICommand LoadRepositoryCmd => new Command(LoadRepository);
+        public ICommand LoadRepositoryCmd => new Command(ReloadRepository);
 
         protected override string? Validate(string property) => property switch {
             nameof(Directory) when !System.IO.Directory.Exists(Directory) => "not found",
@@ -44,6 +44,12 @@
 
             Directory = path;
             LoadRepository();
+        }
+
+        private void ReloadRepository() {
+            LoadRepository();
+
+            Snackbar.Show("repository reloaded");
         }
 
         private void LoadRepository() {
