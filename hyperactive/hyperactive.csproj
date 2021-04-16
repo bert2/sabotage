@@ -7,6 +7,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <Nullable>enable</Nullable>
+    <ApplicationIcon>hprctv.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
