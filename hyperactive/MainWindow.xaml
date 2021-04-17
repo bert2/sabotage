@@ -843,6 +843,7 @@
 
                       <ListBox
                         Grid.Row="0"
+                        HorizontalContentAlignment="Stretch"
                         BorderBrush="{DynamicResource MaterialDesignLightSeparatorBackground}"
                         BorderThickness="0,0,0,1"
                         ItemsSource="{Binding CurrentDirectory}"
@@ -856,7 +857,7 @@
                                   <Setter Property="ContentTemplate">
                                     <Setter.Value>
                                       <DataTemplate DataType="{x:Type local:IDirectoryItem}">
-                                        <StackPanel Orientation="Horizontal">
+                                        <StackPanel Background="Transparent" Orientation="Horizontal">
                                           <mat:PackIcon Kind="FileOutline" />
 
                                           <TextBlock
@@ -875,7 +876,7 @@
                                       <Setter Property="ContentTemplate">
                                         <Setter.Value>
                                           <DataTemplate DataType="{x:Type local:IDirectoryItem}">
-                                            <StackPanel Orientation="Horizontal">
+                                            <StackPanel Background="Transparent" Orientation="Horizontal">
                                               <mat:PackIcon Kind="Folder" />
 
                                               <TextBlock

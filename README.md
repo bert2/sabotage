@@ -61,8 +61,7 @@ PS> dotnet run -p .\hyperactive\hyperactive.csproj
 
 ## known issues
 
-- When you want to navigate into a working tree folder you'll have to double click directly on the folder's name or icon. Not on the empty space after or between the two. This is just some WPF ListBox weirdness I haven't found the patience to deal with yet.
-- When you open bigger repositories the UI might freeze for a couple of seconds. This is because everything is done in the UI thread and nothing is off-loaded into a background thread. Since hyperactive is only built for smaller toy repositories, I see no need to change that.
+- Opening bigger repositories might freeze the UI for a couple of seconds. This is because everything is done in the UI thread and nothing is off-loaded into a background thread. Since hyperactive is only built for smaller toy repositories, I see no need to change that.
 
 ## credits
 
