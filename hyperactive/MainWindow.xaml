@@ -851,12 +851,14 @@
                           <DataTemplate DataType="{x:Type local:IDirectoryItem}">
                             <ContentControl Content="{Binding}">
                               <ContentControl.Style>
+                                <!--  file item  -->
                                 <Style TargetType="{x:Type ContentControl}">
                                   <Setter Property="ContentTemplate">
                                     <Setter.Value>
                                       <DataTemplate DataType="{x:Type local:IDirectoryItem}">
                                         <StackPanel Orientation="Horizontal">
                                           <mat:PackIcon Kind="FileOutline" />
+
                                           <TextBlock
                                             Margin="8,0,0,0"
                                             Foreground="{Binding Status, Converter={StaticResource StatusToBrushConv}}"
@@ -866,6 +868,8 @@
                                       </DataTemplate>
                                     </Setter.Value>
                                   </Setter>
+
+                                  <!--  folder item  -->
                                   <Style.Triggers>
                                     <DataTrigger Binding="{Binding Type}" Value="{x:Static local:ItemType.Folder}">
                                       <Setter Property="ContentTemplate">
@@ -873,6 +877,7 @@
                                           <DataTemplate DataType="{x:Type local:IDirectoryItem}">
                                             <StackPanel Orientation="Horizontal">
                                               <mat:PackIcon Kind="Folder" />
+
                                               <TextBlock
                                                 Margin="8,0,0,0"
                                                 Foreground="{Binding Status, Converter={StaticResource StatusToBrushConv}}"
@@ -886,6 +891,7 @@
                                   </Style.Triggers>
                                 </Style>
                               </ContentControl.Style>
+
                               <ContentControl.InputBindings>
                                 <MouseBinding Command="{Binding Parent.NavigateCmd}" MouseAction="LeftDoubleClick" />
                               </ContentControl.InputBindings>
