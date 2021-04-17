@@ -26,6 +26,12 @@ There is no possibility to see the commit history or a commit graph. A graph of 
 
 No fetching from or pushing to remote repositories. Use your favorite real Git client to interact with them.
 
+Only works on Windows systems, because it uses WPF.
+
+## installation
+
+There is no installer, but you can download a pre-compiled version in the [releases](https://github.com/bert2/hyperactive/releases) section.
+
 ## building from source
 
 1. Install the [.NET 5.0 SDK](https://dotnet.microsoft.com/download). If you have [chocolatey](https://chocolatey.org/) installed you can execute the command below in PowerShell:
