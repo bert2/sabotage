@@ -6,7 +6,7 @@ This is a simple Git GUI for educational purposes. It's main shtick is that it a
 
 It's named hyperactive, because it enables you to switch, edit, and merge branches very quickly... and because I couldn't think of a better name. Even though it's fairly robust, I wouldn't recommend using it on production repositories simply for ergonomic reasons.
 
-## features
+## features & limitations
 
 Only a small subset of Git's features are supported. Here is a list of the things hyperactive can do:
 
