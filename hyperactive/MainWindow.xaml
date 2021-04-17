@@ -653,7 +653,7 @@
           </StackPanel.Visibility>
 
           <TextBlock HorizontalAlignment="Center" Foreground="{DynamicResource MaterialDesignLightSeparatorBackground}">
-            repository is empty
+            repository has no local branches
           </TextBlock>
 
           <Button
@@ -666,7 +666,7 @@
             ToolTip="create branch" />
         </StackPanel>
 
-        <!--  repo with branches  -->
+        <!--  repo with local branches  -->
         <ItemsControl ItemsSource="{Binding Repo.Branches}">
           <ItemsControl.Visibility>
             <MultiBinding Converter="{StaticResource andTrueAsVisibleConverter}">
@@ -979,6 +979,7 @@
           </ItemsControl.ItemsPanel>
         </ItemsControl>
       </Grid>
+
       <mat:Snackbar Grid.Row="1" MessageQueue="{x:Static local:Snackbar.Queue}" />
     </Grid>
   </mat:DialogHost>
