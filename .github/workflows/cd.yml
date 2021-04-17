@@ -25,17 +25,14 @@ jobs:
     - name: 🔨 build
       run: dotnet build -c Release -o dist
 
-    - name: 🤏 package binaries
-      uses: thedoctor0/zip-release@master
-      with:
-        path: dist/
-        filename: 'hyperactive.zip'
+    - name: 🤏 zip binaries
+      run: Compress-Archive -Path .\dist\* -DestinationPath "hyperactive-$($GITHUB_REF -replace "refs/tags/v").zip"
 
     - name: 📦 release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          hyperactive.zip
+          hyperactive-*.zip
           LICENSE
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
