@@ -28,7 +28,7 @@ jobs:
     - name: 🤏 zip binaries
       run: Compress-Archive -Path .\dist\* -DestinationPath "hyperactive-$($env:GITHUB_REF -replace "refs/tags/v").zip"
 
-    - name: 📦 release
+    - name: 📦 create release
       uses: softprops/action-gh-release@v1
       with:
         files: |
