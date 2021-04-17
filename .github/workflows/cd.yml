@@ -1,24 +1,24 @@
-name: .NET
+name: 👷‍♂️ build & release tags
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+#  push:
+#    branches: [ main ]
+#  pull_request:
+#    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
-    name: Build on windows-latest
+    name: 🔨 build on windows-latest and release tags on GitHub
     runs-on: windows-latest
     env:
       DOTNET_NOLOGO: true
       DOTNET_CLI_TELEMETRY_OPTOUT: true
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET
+    - name: ⬇ setup .net 5.0
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - name: Build
+    - name: 🔨 build
       run: dotnet build -c Release
