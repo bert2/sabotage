@@ -16,6 +16,7 @@ jobs:
     steps:
 
     - uses: actions/checkout@v2
+
     - name: ⬇ setup .net 5.0
       uses: actions/setup-dotnet@v1
       with:
@@ -24,11 +25,17 @@ jobs:
     - name: 🔨 build
       run: dotnet build -c Release -o dist
 
+    - name: 🤏 package binaries
+      uses: thedoctor0/zip-release@master
+      with:
+        path: dist/
+        filename: 'hyperactive.zip'
+
     - name: 📦 release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          out/*
+          hyperactive.zip
           LICENSE
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
