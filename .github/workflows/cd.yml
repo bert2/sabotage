@@ -1,4 +1,4 @@
-name: 👷‍♂️ CD
+name: 📦👷‍♂️ CD
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
       run: dotnet build -c Release -o dist
 
     - name: 🤏 zip binaries
-      run: Compress-Archive -Path .\dist\* -DestinationPath "hyperactive-$($GITHUB_REF -replace "refs/tags/v").zip"
+      run: Compress-Archive -Path .\dist\* -DestinationPath "hyperactive-$($env:GITHUB_REF -replace "refs/tags/v").zip"
 
     - name: 📦 release
       uses: softprops/action-gh-release@v1
