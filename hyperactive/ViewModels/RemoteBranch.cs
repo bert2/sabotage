@@ -4,17 +4,24 @@
     using LibGit2Sharp;
 
     public class RemoteBranch {
+        private readonly Repo parent;
+
         private readonly Repository repo;
 
         public string Name { get; }
 
         public ICommand CheckoutCmd => new Command(Checkout);
 
-        public RemoteBranch(Repo parent, string name) => (repo, Name) = (parent.LibGitRepo, name);
+        public RemoteBranch(Repo parent, string name) => (this.parent, repo, Name) = (parent, parent.LibGitRepo, name);
 
-        private void Checkout() {
+        private async void Checkout() {
             var remoteBranch = repo.Branches[Name].NotNull();
             var localBranchName = remoteBranch.FriendlyNameWithoutRemote();
+
+            if (parent.Status.WTreeStatus != WTreeStatus.Clean
+                && !await Dialog.Show(new Confirm("discard all changes and checkout", subject: Name))) {
+                return;
+            }
 
             var localBranch = repo.Branches[localBranchName]
                 ?? repo.CreateBranch(localBranchName, remoteBranch.Tip);

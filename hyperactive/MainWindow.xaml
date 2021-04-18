@@ -721,7 +721,7 @@
                         Content="{mat:PackIcon TrayArrowDown,
                                                Size=20}"
                         Style="{StaticResource MaterialDesignIconButton}"
-                        ToolTip="checkout this branch (discards all local changes and aborts failed merges)" />
+                        ToolTip="checkout this branch" />
 
                       <Button
                         Command="{Binding CommitCmd}"

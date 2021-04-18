@@ -48,7 +48,12 @@
                 index: 0)
             .ToArray();
 
-        private void Checkout() {
+        private async void Checkout() {
+            if (Parent.Status.WTreeStatus != WTreeStatus.Clean
+                && !await Dialog.Show(new Confirm("discard all changes and checkout", subject: Name))) {
+                return;
+            }
+
             if (!repo.Info.IsHeadUnborn) repo.Reset(ResetMode.Hard);
             Commands.Checkout(repo, LibGitBranch, new CheckoutOptions { CheckoutModifiers = CheckoutModifiers.Force });
             repo.RemoveUntrackedFiles();
