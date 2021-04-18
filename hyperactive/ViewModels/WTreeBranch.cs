@@ -36,7 +36,14 @@
             OpenFolder(repoRootPath);
         }
 
-        public void ReloadCurrentFolder() => CurrentDirectory = LoadFolder(new DirectoryInfo(CurrentPath));
+        public void ReloadCurrentFolder(bool preserveSelection = true) {
+            var selectedItem = SelectedItem?.Name;
+
+            CurrentDirectory = LoadFolder(new DirectoryInfo(CurrentPath));
+
+            if (preserveSelection)
+                SelectedItem = CurrentDirectory.SingleOrDefault(item => item.Name == selectedItem);
+        }
 
         private void OpenFolder(string path) {
             CurrentDirectory = LoadFolder(new DirectoryInfo(path));
@@ -67,9 +74,7 @@
 
             Snackbar.Show("branch restored");
 
-            var selectedItem = SelectedItem?.Name;
             ReloadCurrentFolder();
-            SelectedItem = CurrentDirectory.SingleOrDefault(item => item.Name == selectedItem);
             Events.RaiseWTreeCleaned();
         }
 
@@ -101,7 +106,7 @@
 
             Snackbar.Show("folder created");
 
-            ReloadCurrentFolder();
+            ReloadCurrentFolder(preserveSelection: false);
             SelectedItem = CurrentDirectory.Single(item => item.Name == folderName);
         }
 
@@ -115,7 +120,7 @@
             Snackbar.Show("file created");
 
             Events.RaiseWTreeModified();
-            ReloadCurrentFolder();
+            ReloadCurrentFolder(preserveSelection: false);
             SelectedItem = CurrentDirectory.Single(item => item.Name == fileName);
         }
 
@@ -140,7 +145,8 @@
             Snackbar.Show($"{type} renamed");
 
             Events.RaiseWTreeModified();
-            ReloadCurrentFolder();
+            ReloadCurrentFolder(preserveSelection: false);
+            SelectedItem = CurrentDirectory.SingleOrDefault(item => item.Name == newName);
         }
 
         private async void DeleteItem() {
@@ -161,7 +167,7 @@
             Snackbar.Show($"{type} deleted");
 
             Events.RaiseWTreeModified();
-            ReloadCurrentFolder();
+            ReloadCurrentFolder(preserveSelection: false);
         }
 
         private static int DirectoriesFirst(FileSystemInfo a, FileSystemInfo b) {
