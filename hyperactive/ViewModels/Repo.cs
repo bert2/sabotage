@@ -87,9 +87,15 @@
         private void ResetStatus(object? sender, EventArgs args) => Status = new();
 
         private void RefreshHead(object? sender, HeadChangedArgs args) {
-            void ReloadBranch(LocalBranch branch) {
-                Branches.Remove(branch);
-                Branches.InsertSorted(CreateBranch(branch.LibGitBranch), DevelopFirstMainLast);
+            void ReloadBranch(LocalBranch oldBranch) {
+                Branches.Remove(oldBranch);
+
+                var newBranch = CreateBranch(oldBranch.LibGitBranch);
+                Branches.InsertSorted(newBranch, DevelopFirstMainLast);
+
+                newBranch.SelectedItem = newBranch
+                    .CurrentDirectory
+                    .SingleOrDefault(item => item.Name == oldBranch.SelectedItem?.Name);
             }
 
             if (Head is not null) ReloadBranch(Head);

@@ -67,7 +67,9 @@
 
             Snackbar.Show("branch restored");
 
+            var selectedItem = SelectedItem?.Name;
             ReloadCurrentFolder();
+            SelectedItem = CurrentDirectory.SingleOrDefault(item => item.Name == selectedItem);
             Events.RaiseWTreeCleaned();
         }
 
