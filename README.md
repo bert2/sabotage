@@ -1,10 +1,8 @@
 # sabotage
 
-This is a simple Git GUI for educational purposes. It's main shtick is that it allows you to view the contents of multiple branches in parallel. The goal is to give users new to Git a basic understanding of branches, what they are used for, and how to prevent/resolve merge conflicts.
+This is a simple Git GUI for research purposes. It's main shtick is that it allows you to view the contents of multiple branches in parallel. I built it for myself to better understand when exactly merge conflicts happen. Its simplified UI helps to easily provoke conflicts.
 
 ![Screenshot](screenshot.png "Screenshot")
-
-It's named sabotage, because it enables you to switch, edit, and merge branches very quickly... and because I couldn't think of a better name. Even though it's fairly robust, I wouldn't recommend using it on production repositories simply for ergonomic reasons.
 
 ## features & limitations
 
