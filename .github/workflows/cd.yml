@@ -26,13 +26,13 @@ jobs:
       run: dotnet build -c Release -o dist
 
     - name: 🤏 zip binaries
-      run: Compress-Archive -Path .\dist\* -DestinationPath "hyperactive-$($env:GITHUB_REF -replace "refs/tags/v").zip"
+      run: Compress-Archive -Path .\dist\* -DestinationPath "sabotage-$($env:GITHUB_REF -replace "refs/tags/v").zip"
 
     - name: 📦 create release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          hyperactive-*.zip
+          sabotage-*.zip
           LICENSE
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
